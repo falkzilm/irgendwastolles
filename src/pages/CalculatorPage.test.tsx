@@ -118,4 +118,54 @@ describe('CalculatorPage', () => {
       screen.getByText(/noch keine berechnungen vorhanden/i),
     ).toBeInTheDocument()
   })
+
+  it('zeigt im einfachen Modus keine wissenschaftlichen Tasten oder DEG/RAD', () => {
+    render(<CalculatorPage />)
+
+    expect(
+      screen.queryByRole('group', { name: 'Wissenschaftliche Funktionen' }),
+    ).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('group', { name: 'Winkeleinheit' }),
+    ).not.toBeInTheDocument()
+  })
+
+  it('schaltet auf wissenschaftlichen Modus um und zeigt die erweiterten Tasten sowie DEG/RAD', () => {
+    render(<CalculatorPage />)
+
+    pressKeys('Einfach')
+
+    expect(
+      screen.getByRole('group', { name: 'Wissenschaftliche Funktionen' }),
+    ).toBeInTheDocument()
+    ;[
+      'Sinus',
+      'Kosinus',
+      'Tangens',
+      'Logarithmus zur Basis 10',
+      'Natürlicher Logarithmus',
+      'Quadratwurzel',
+      'Potenz',
+      'Pi',
+      'Eulersche Zahl',
+      'Fakultät',
+    ].forEach((label) => {
+      expect(screen.getByRole('button', { name: label })).toBeInTheDocument()
+    })
+    expect(
+      screen.getByRole('group', { name: 'Winkeleinheit' }),
+    ).toBeInTheDocument()
+  })
+
+  it('DEG/RAD beeinflusst das Ergebnis von sin() im wissenschaftlichen Modus', () => {
+    render(<CalculatorPage />)
+
+    pressKeys('Einfach', 'DEG', 'Sinus')
+    pressKeys('9', '0', ')', '=')
+    expect(screen.getByLabelText('Ergebnis')).toHaveTextContent('1')
+
+    pressKeys('Alles löschen', 'RAD', 'Sinus')
+    pressKeys('9', '0', ')', '=')
+    expect(screen.getByLabelText('Ergebnis').textContent).not.toBe('1')
+  })
 })

@@ -66,10 +66,10 @@ export const createCalculatorSlice: StateCreator<
     }),
 
   evaluate: () => {
-    const { expression } = get()
+    const { expression, angleMode } = get()
     if (!expression) return
 
-    const outcome = evaluateExpression(expression)
+    const outcome = evaluateExpression(expression, { angleMode })
     if (outcome.ok) {
       const result = formatResult(outcome.value)
       set({ result, error: null, justEvaluated: true })

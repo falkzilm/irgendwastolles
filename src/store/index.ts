@@ -17,5 +17,10 @@ export const useAppStore = create<AppState>()((...args) => ({
 
 export type { AppState } from './types'
 export type { CalculatorSlice } from './slices/calculatorSlice'
-export type { AngleMode, SettingsSlice, Theme } from './slices/settingsSlice'
+export type {
+  AngleMode,
+  CalculatorMode,
+  SettingsSlice,
+  Theme,
+} from './slices/settingsSlice'
 export type { VerlaufEintrag, VerlaufSlice } from './slices/verlaufSlice'

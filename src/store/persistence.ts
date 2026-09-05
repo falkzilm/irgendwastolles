@@ -1,5 +1,6 @@
 import { useAppStore } from './index'
 import type { AppState } from './types'
+import { MAX_VERLAUF_EINTRAEGE } from './slices/verlaufSlice'
 import type { VerlaufEintrag } from './slices/verlaufSlice'
 
 /**
@@ -11,6 +12,7 @@ import type { VerlaufEintrag } from './slices/verlaufSlice'
 export interface PersistableState {
   theme: AppState['theme']
   angleMode: AppState['angleMode']
+  calculatorMode: AppState['calculatorMode']
   verlauf: AppState['verlauf']
 }
 
@@ -18,6 +20,7 @@ export function selectPersistableState(state: AppState): PersistableState {
   return {
     theme: state.theme,
     angleMode: state.angleMode,
+    calculatorMode: state.calculatorMode,
     verlauf: state.verlauf,
   }
 }
@@ -39,9 +42,39 @@ function isPersistableState(value: unknown): value is PersistableState {
   return (
     (candidate.theme === 'light' || candidate.theme === 'dark') &&
     (candidate.angleMode === 'deg' || candidate.angleMode === 'rad') &&
+    (candidate.calculatorMode === 'simple' ||
+      candidate.calculatorMode === 'scientific') &&
     Array.isArray(candidate.verlauf) &&
     candidate.verlauf.every(isVerlaufEintrag)
   )
+}
+
+/**
+ * Normalisiert geladene Rohdaten vor der Validierung, damit ältere,
+ * schema-kompatible Dateien ohne `verlauf` (z. B. vor IRGENDWAST-26) nicht
+ * komplett verworfen werden, und ein zu langer Verlauf (über
+ * `MAX_VERLAUF_EINTRAEGE`) auf die neuesten Einträge gekappt wird, statt die
+ * Slice-Begrenzung zu umgehen.
+ */
+function normalizePersistedData(value: unknown): unknown {
+  if (typeof value !== 'object' || value === null) return value
+  const candidate = value as Record<string, unknown>
+
+  if (!('verlauf' in candidate)) {
+    return { ...candidate, verlauf: [] }
+  }
+
+  if (
+    Array.isArray(candidate.verlauf) &&
+    candidate.verlauf.length > MAX_VERLAUF_EINTRAEGE
+  ) {
+    return {
+      ...candidate,
+      verlauf: candidate.verlauf.slice(0, MAX_VERLAUF_EINTRAEGE),
+    }
+  }
+
+  return value
 }
 
 /**
@@ -55,9 +88,10 @@ export async function hydratePersistedState(): Promise<void> {
 
   const defaults = selectPersistableState(useAppStore.getState())
   const response = await window.api.loadPersistedState({ defaults })
+  const normalized = normalizePersistedData(response.data)
 
-  if (isPersistableState(response.data)) {
-    useAppStore.setState(response.data)
+  if (isPersistableState(normalized)) {
+    useAppStore.setState(normalized)
   }
 }
 
@@ -75,6 +109,7 @@ export function subscribeToPersistState(): () => void {
     if (
       next.theme === previous.theme &&
       next.angleMode === previous.angleMode &&
+      next.calculatorMode === previous.calculatorMode &&
       next.verlauf === previous.verlauf
     ) {
       return

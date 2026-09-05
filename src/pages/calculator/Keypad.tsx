@@ -1,7 +1,9 @@
 import { Button } from '../../ui/Button'
 import './Keypad.css'
+import type { CalculatorMode } from '../../store/slices/settingsSlice'
 
 interface KeypadProps {
+  mode: CalculatorMode
   onInput: (token: string) => void
   onClear: () => void
   onBackspace: () => void
@@ -38,61 +40,105 @@ const KEYS: KeyDef[] = [
 ]
 
 /**
- * Tastenfeld für die Grundrechenarten (IRGENDWAST-24): Ziffern, Komma,
- * Operatoren, Klammern, AC, Backspace und =. Weitere Engine-Items (z. B.
- * wissenschaftliche Funktionen) bauen auf diesem Layout auf.
+ * Wissenschaftliche Zusatztasten (IRGENDWAST-25): Funktionen fügen ihre
+ * öffnende Klammer gleich mit ein (z. B. `sin(`), `pi`/`e` sind Konstanten
+ * ohne Klammern, `x^y` fügt den Potenz-Operator `^` ein.
+ */
+const SCIENTIFIC_KEYS: KeyDef[] = [
+  { kind: 'input', label: 'sin', value: 'sin(', ariaLabel: 'Sinus' },
+  { kind: 'input', label: 'cos', value: 'cos(', ariaLabel: 'Kosinus' },
+  { kind: 'input', label: 'tan', value: 'tan(', ariaLabel: 'Tangens' },
+  {
+    kind: 'input',
+    label: 'log',
+    value: 'log(',
+    ariaLabel: 'Logarithmus zur Basis 10',
+  },
+  {
+    kind: 'input',
+    label: 'ln',
+    value: 'ln(',
+    ariaLabel: 'Natürlicher Logarithmus',
+  },
+  { kind: 'input', label: '√', value: 'sqrt(', ariaLabel: 'Quadratwurzel' },
+  { kind: 'input', label: 'xʸ', value: '^', ariaLabel: 'Potenz' },
+  { kind: 'input', label: 'π', value: 'pi', ariaLabel: 'Pi' },
+  { kind: 'input', label: 'e', value: 'e', ariaLabel: 'Eulersche Zahl' },
+  { kind: 'input', label: 'x!', value: 'fact(', ariaLabel: 'Fakultät' },
+]
+
+/**
+ * Tastenfeld für die Grundrechenarten (IRGENDWAST-24) sowie, im
+ * wissenschaftlichen Modus, ein zusätzliches Feld mit erweiterten Tasten
+ * (IRGENDWAST-25). Beide Felder sind eigenständige CSS-Grids statt eines
+ * umbrechenden Flex-Layouts, damit sich bei schmalem Fenster die Spalten
+ * verkleinern statt in neue Zeilen umzubrechen.
  */
 export function Keypad({
+  mode,
   onInput,
   onClear,
   onBackspace,
   onEquals,
 }: KeypadProps) {
+  function renderKey(key: KeyDef) {
+    if (key.kind === 'clear') {
+      return (
+        <Button
+          key={key.label}
+          variant="danger"
+          aria-label={key.ariaLabel}
+          onClick={onClear}
+        >
+          {key.label}
+        </Button>
+      )
+    }
+    if (key.kind === 'backspace') {
+      return (
+        <Button
+          key={key.label}
+          variant="secondary"
+          aria-label={key.ariaLabel}
+          onClick={onBackspace}
+        >
+          {key.label}
+        </Button>
+      )
+    }
+    if (key.kind === 'equals') {
+      return (
+        <Button key={key.label} variant="primary" onClick={onEquals}>
+          {key.label}
+        </Button>
+      )
+    }
+    return (
+      <Button
+        key={key.label}
+        variant="secondary"
+        aria-label={key.ariaLabel}
+        onClick={() => onInput(key.value)}
+      >
+        {key.label}
+      </Button>
+    )
+  }
+
   return (
-    <div className="calculator-keypad" role="group" aria-label="Tastenfeld">
-      {KEYS.map((key) => {
-        if (key.kind === 'clear') {
-          return (
-            <Button
-              key={key.label}
-              variant="danger"
-              aria-label={key.ariaLabel}
-              onClick={onClear}
-            >
-              {key.label}
-            </Button>
-          )
-        }
-        if (key.kind === 'backspace') {
-          return (
-            <Button
-              key={key.label}
-              variant="secondary"
-              aria-label={key.ariaLabel}
-              onClick={onBackspace}
-            >
-              {key.label}
-            </Button>
-          )
-        }
-        if (key.kind === 'equals') {
-          return (
-            <Button key={key.label} variant="primary" onClick={onEquals}>
-              {key.label}
-            </Button>
-          )
-        }
-        return (
-          <Button
-            key={key.label}
-            variant="secondary"
-            aria-label={key.ariaLabel}
-            onClick={() => onInput(key.value)}
-          >
-            {key.label}
-          </Button>
-        )
-      })}
+    <div className="calculator-keypad-wrapper">
+      {mode === 'scientific' && (
+        <div
+          className="calculator-keypad calculator-keypad--scientific"
+          role="group"
+          aria-label="Wissenschaftliche Funktionen"
+        >
+          {SCIENTIFIC_KEYS.map(renderKey)}
+        </div>
+      )}
+      <div className="calculator-keypad" role="group" aria-label="Tastenfeld">
+        {KEYS.map(renderKey)}
+      </div>
     </div>
   )
 }

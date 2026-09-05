@@ -1,5 +1,6 @@
 import { Display } from './calculator/Display'
 import { Keypad } from './calculator/Keypad'
+import { ModeToggle } from './calculator/ModeToggle'
 import { Verlauf } from './calculator/Verlauf'
 import { useAppStore } from '../store'
 
@@ -14,12 +15,25 @@ export function CalculatorPage() {
   const loadExpression = useAppStore((state) => state.loadExpression)
   const verlauf = useAppStore((state) => state.verlauf)
   const clearVerlauf = useAppStore((state) => state.clearVerlauf)
+  const calculatorMode = useAppStore((state) => state.calculatorMode)
+  const toggleCalculatorMode = useAppStore(
+    (state) => state.toggleCalculatorMode,
+  )
+  const angleMode = useAppStore((state) => state.angleMode)
+  const setAngleMode = useAppStore((state) => state.setAngleMode)
 
   return (
     <div className="page">
       <h1>Rechner</h1>
+      <ModeToggle
+        mode={calculatorMode}
+        angleMode={angleMode}
+        onToggleMode={toggleCalculatorMode}
+        onSetAngleMode={setAngleMode}
+      />
       <Display expression={expression} result={result} error={error} />
       <Keypad
+        mode={calculatorMode}
         onInput={input}
         onClear={clear}
         onBackspace={backspace}
