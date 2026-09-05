@@ -100,6 +100,23 @@ describe('store persistence', () => {
     expect(useAppStore.getState().verlauf).toEqual([])
   })
 
+  it('ergänzt bei alten, vor IRGENDWAST-25 persistierten Daten ohne calculatorMode den Default "simple", statt theme/angleMode zu verwerfen', async () => {
+    window.api = {
+      loadPersistedState: vi.fn().mockResolvedValue({
+        data: { theme: 'dark', angleMode: 'rad' },
+      }),
+      savePersistedState: vi.fn(),
+      ping: vi.fn(),
+    }
+
+    await hydratePersistedState()
+
+    expect(useAppStore.getState().theme).toBe('dark')
+    expect(useAppStore.getState().angleMode).toBe('rad')
+    expect(useAppStore.getState().calculatorMode).toBe('simple')
+    expect(useAppStore.getState().verlauf).toEqual([])
+  })
+
   it('kappt einen zu langen geladenen Verlauf auf MAX_VERLAUF_EINTRAEGE Einträge', async () => {
     const verlauf = Array.from({ length: 110 }, (_, i) => ({
       id: `${i}`,

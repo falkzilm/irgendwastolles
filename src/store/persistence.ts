@@ -51,30 +51,34 @@ function isPersistableState(value: unknown): value is PersistableState {
 
 /**
  * Normalisiert geladene Rohdaten vor der Validierung, damit ältere,
- * schema-kompatible Dateien ohne `verlauf` (z. B. vor IRGENDWAST-26) nicht
- * komplett verworfen werden, und ein zu langer Verlauf (über
- * `MAX_VERLAUF_EINTRAEGE`) auf die neuesten Einträge gekappt wird, statt die
- * Slice-Begrenzung zu umgehen.
+ * schema-kompatible Dateien ohne `verlauf` (z. B. vor IRGENDWAST-26) oder
+ * ohne `calculatorMode` (z. B. vor IRGENDWAST-25) nicht komplett verworfen
+ * werden, und ein zu langer Verlauf (über `MAX_VERLAUF_EINTRAEGE`) auf die
+ * neuesten Einträge gekappt wird, statt die Slice-Begrenzung zu umgehen.
  */
 function normalizePersistedData(value: unknown): unknown {
   if (typeof value !== 'object' || value === null) return value
-  const candidate = value as Record<string, unknown>
+  let candidate = value as Record<string, unknown>
 
   if (!('verlauf' in candidate)) {
-    return { ...candidate, verlauf: [] }
+    candidate = { ...candidate, verlauf: [] }
+  }
+
+  if (!('calculatorMode' in candidate)) {
+    candidate = { ...candidate, calculatorMode: 'simple' }
   }
 
   if (
     Array.isArray(candidate.verlauf) &&
     candidate.verlauf.length > MAX_VERLAUF_EINTRAEGE
   ) {
-    return {
+    candidate = {
       ...candidate,
       verlauf: candidate.verlauf.slice(0, MAX_VERLAUF_EINTRAEGE),
     }
   }
 
-  return value
+  return candidate
 }
 
 /**

@@ -1,5 +1,10 @@
+import { useState } from 'react'
+import './CalculatorPage.css'
 import { Display } from './calculator/Display'
+import { HelpPopover } from './calculator/HelpPopover'
 import { Keypad } from './calculator/Keypad'
+import { useCalculatorKeyboard } from './calculator/useCalculatorKeyboard'
+import { Button } from '../ui/Button'
 import { ModeToggle } from './calculator/ModeToggle'
 import { Verlauf } from './calculator/Verlauf'
 import { useAppStore } from '../store'
@@ -22,9 +27,28 @@ export function CalculatorPage() {
   const angleMode = useAppStore((state) => state.angleMode)
   const setAngleMode = useAppStore((state) => state.setAngleMode)
 
+  const [helpOpen, setHelpOpen] = useState(false)
+
+  const activeKeyId = useCalculatorKeyboard({
+    enabled: !helpOpen,
+    onInput: input,
+    onClear: clear,
+    onBackspace: backspace,
+    onEvaluate: evaluate,
+  })
+
   return (
     <div className="page">
-      <h1>Rechner</h1>
+      <div className="calculator-page__header">
+        <h1>Rechner</h1>
+        <Button
+          variant="secondary"
+          aria-label="Tastenkürzel anzeigen"
+          onClick={() => setHelpOpen(true)}
+        >
+          ?
+        </Button>
+      </div>
       <ModeToggle
         mode={calculatorMode}
         angleMode={angleMode}
@@ -38,7 +62,9 @@ export function CalculatorPage() {
         onClear={clear}
         onBackspace={backspace}
         onEquals={evaluate}
+        activeKeyId={activeKeyId}
       />
+      <HelpPopover open={helpOpen} onClose={() => setHelpOpen(false)} />
       <Verlauf
         verlauf={verlauf}
         onSelect={loadExpression}

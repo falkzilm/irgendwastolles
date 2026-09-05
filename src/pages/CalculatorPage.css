@@ -1,0 +1,10 @@
+.calculator-page__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.calculator-page__header h1 {
+  margin: 0;
+}
