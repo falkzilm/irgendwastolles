@@ -23,6 +23,10 @@ npm run dev:electron
 - `electron/preload.ts` exponiert über `contextBridge` eine typisierte `window.api` an den Renderer (`contextIsolation` aktiv, kein `nodeIntegration`).
 - `shared/ipc.ts` definiert Kanalnamen und Payload-Typen (u.a. den Testkanal `app:ping` sowie Platzhalter für künftige Persistenz-Kanäle) und wird sowohl von Main- als auch von Renderer-Code importiert, damit beide Seiten synchron bleiben.
 
+Die sicherheitsrelevanten Standardeinstellungen (Sandbox, Context Isolation, CSP,
+Blockieren von Navigation/`window.open`) sind in [`docs/security.md`](docs/security.md)
+dokumentiert.
+
 ## npm-Scripts
 
 | Script                  | Beschreibung                                                                |

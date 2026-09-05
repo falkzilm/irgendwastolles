@@ -8,9 +8,14 @@ export default tseslint.config(
   { ignores: ['dist', 'coverage'] },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
-    files: ['src/**/*.{ts,tsx}'],
+    files: ['**/*.{ts,tsx}'],
     languageOptions: {
       ecmaVersion: 2020,
+    },
+  },
+  {
+    files: ['src/**/*.{ts,tsx}'],
+    languageOptions: {
       globals: globals.browser,
     },
     plugins: {
@@ -26,18 +31,14 @@ export default tseslint.config(
     },
   },
   {
-    extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: ['electron/**/*.ts'],
     languageOptions: {
-      ecmaVersion: 2020,
       globals: globals.node,
     },
   },
   {
-    extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: ['shared/**/*.ts', '*.config.ts'],
     languageOptions: {
-      ecmaVersion: 2020,
       globals: { ...globals.node, ...globals.browser },
     },
   },

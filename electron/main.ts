@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from 'electron'
+import { app, BrowserWindow, ipcMain, session } from 'electron'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import {
@@ -6,11 +6,18 @@ import {
   type PingRequest,
   type PingResponse,
 } from '../shared/ipc.ts'
+import {
+  applyContentSecurityPolicy,
+  blockNavigation,
+  denyWindowOpen,
+} from './security.ts'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
 const RENDERER_DIST = join(__dirname, '../dist')
 const PRELOAD_PATH = join(__dirname, 'preload.mjs')
+
+const DEV_SERVER_URL = process.env.VITE_DEV_SERVER_URL
 
 function createWindow(): BrowserWindow {
   const win = new BrowserWindow({
@@ -20,11 +27,23 @@ function createWindow(): BrowserWindow {
       preload: PRELOAD_PATH,
       contextIsolation: true,
       nodeIntegration: false,
+      sandbox: true,
     },
   })
 
-  if (process.env.VITE_DEV_SERVER_URL) {
-    win.loadURL(process.env.VITE_DEV_SERVER_URL)
+  // Blockiert window.open()/target="_blank" vollständig. Offene Frage laut Ticket:
+  // ob externe Links (z.B. Quellenangaben) im System-Browser geöffnet werden dürfen
+  // ist ungeklärt – bis dahin werden neue Fenster grundsätzlich unterbunden.
+  win.webContents.setWindowOpenHandler(denyWindowOpen)
+
+  // `will-navigate` feuert nicht bei den programmatischen `loadURL`/`loadFile`-Aufrufen
+  // unten, sondern nur bei Navigationsversuchen aus der Seite heraus (Linkklicks,
+  // `window.location`-Änderungen etc.). Da die App keine Navigation innerhalb der
+  // WebContents benötigt, wird jeder solche Versuch im Main-Prozess abgefangen.
+  win.webContents.on('will-navigate', blockNavigation)
+
+  if (DEV_SERVER_URL) {
+    win.loadURL(DEV_SERVER_URL)
   } else {
     win.loadFile(join(RENDERER_DIST, 'index.html'))
   }
@@ -43,6 +62,13 @@ ipcMain.handle(
 )
 
 app.whenReady().then(() => {
+  // Restriktive CSP für den Produktions-Build (siehe docs/security.md). Im Dev-Modus
+  // bräuchte Vites HMR-Client u.a. 'unsafe-eval' und eine WebSocket-Verbindung, daher
+  // bleibt der Header dort deaktiviert.
+  if (!DEV_SERVER_URL) {
+    applyContentSecurityPolicy(session.defaultSession.webRequest)
+  }
+
   createWindow()
 
   app.on('activate', () => {
