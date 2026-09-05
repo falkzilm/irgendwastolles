@@ -1,6 +1,6 @@
 # irgendwastolles
 
-Renderer-Grundstruktur auf Basis von Vite + React + TypeScript (nur Renderer-Seite, ohne Electron).
+Vite + React + TypeScript Renderer mit Electron-Hülle (Main-/Preload-Prozess und typisierter IPC-Basis).
 
 ## Setup
 
@@ -9,14 +9,28 @@ npm install
 npm run dev
 ```
 
-Der Dev-Server startet unter der im Terminal angezeigten URL (standardmäßig http://localhost:5173/) und zeigt die Platzhalterseite.
+Der Dev-Server startet unter der im Terminal angezeigten URL (standardmäßig http://localhost:5173/) und zeigt die Platzhalterseite im Browser.
+
+Um die App als Electron-Desktopfenster zu starten:
+
+```bash
+npm run dev:electron
+```
+
+## Electron
+
+- `electron/main.ts` erstellt das Browser-Fenster. Im Dev-Modus (`npm run dev:electron`) lädt es den Vite-Dev-Server, im Produktions-Build lädt es `dist/index.html` per `loadFile` – ohne laufenden Dev-Server.
+- `electron/preload.ts` exponiert über `contextBridge` eine typisierte `window.api` an den Renderer (`contextIsolation` aktiv, kein `nodeIntegration`).
+- `shared/ipc.ts` definiert Kanalnamen und Payload-Typen (u.a. den Testkanal `app:ping` sowie Platzhalter für künftige Persistenz-Kanäle) und wird sowohl von Main- als auch von Renderer-Code importiert, damit beide Seiten synchron bleiben.
 
 ## npm-Scripts
 
-| Script              | Beschreibung                                              |
-| ------------------- | ---------------------------------------------------------- |
-| `npm run dev`       | Startet den Vite-Dev-Server mit HMR                        |
-| `npm run build`     | Prüft die Typen und erzeugt ein Produktions-Bundle in `dist/` |
-| `npm run typecheck` | Führt die TypeScript-Typprüfung ohne Ausgabe von Dateien aus |
-| `npm run lint`      | Führt Oxlint über den Quellcode aus                        |
-| `npm run preview`   | Startet einen lokalen Server für das gebaute `dist/`-Bundle |
+| Script                 | Beschreibung                                                          |
+| ---------------------- | ---------------------------------------------------------------------- |
+| `npm run dev`          | Startet den Vite-Dev-Server mit HMR (Browser, ohne Electron)            |
+| `npm run dev:electron` | Startet Vite-Dev-Server und öffnet die App im Electron-Fenster          |
+| `npm run build`        | Prüft die Typen und baut Renderer (`dist/`) und Electron (`dist-electron/`) |
+| `npm run start`        | Startet die gebaute App per Electron ohne laufenden Dev-Server          |
+| `npm run typecheck`    | Führt die TypeScript-Typprüfung ohne Ausgabe von Dateien aus            |
+| `npm run lint`         | Führt Oxlint über den Quellcode aus                                     |
+| `npm run preview`      | Startet einen lokalen Server für das gebaute `dist/`-Bundle             |

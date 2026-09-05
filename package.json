@@ -3,9 +3,12 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "main": "dist-electron/main.js",
   "scripts": {
     "dev": "vite",
+    "dev:electron": "vite --mode electron",
     "build": "tsc -b && vite build",
+    "start": "electron .",
     "typecheck": "tsc -b",
     "lint": "oxlint",
     "preview": "vite preview"
@@ -19,8 +22,10 @@
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.4",
     "@vitejs/plugin-react": "^6.1.0",
+    "electron": "^44.2.0",
     "oxlint": "^1.79.0",
     "typescript": "~6.0.2",
-    "vite": "^8.2.2"
+    "vite": "^8.2.2",
+    "vite-plugin-electron": "^1.1.2"
   }
 }
