@@ -1,4 +1,5 @@
 import { fireEvent, render, screen } from '@testing-library/react'
+import { axe } from 'jest-axe'
 import { describe, expect, it } from 'vitest'
 import { AppShell } from './AppShell'
 import { ThemeProvider } from '../ui/theme'
@@ -61,5 +62,13 @@ describe('AppShell', () => {
       'aria-current',
       'page',
     )
+  })
+
+  it('has no critical axe violations', async () => {
+    const { container } = renderAppShell()
+
+    const results = await axe(container)
+
+    expect(results).toHaveNoViolations()
   })
 })
