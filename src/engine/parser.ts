@@ -13,6 +13,12 @@ import type { AstNode, Token } from './types'
  * `inputLength` dient nur dazu, Fehlermeldungen für ein unerwartetes Ende
  * der Eingabe (kein weiteres Token vorhanden) eine sinnvolle Position
  * zuzuordnen.
+ *
+ * Ein Bezeichner ohne folgende `(` wird als Konstante (`identifier`-Knoten),
+ * mit folgender `(` als Ein-Argument-Funktionsaufruf (`call`-Knoten)
+ * geparst - der Parser prüft nicht, ob der Name bekannt ist, das übernimmt
+ * `evaluateAst` (siehe `functions.ts`), da erst dort das Funktionsregister
+ * gebraucht wird.
  */
 export function parse(tokens: Token[], inputLength: number): AstNode {
   let pos = 0
@@ -91,6 +97,30 @@ export function parse(tokens: Token[], inputLength: number): AstNode {
     if (token.type === 'number') {
       pos++
       return { type: 'number', value: Number(token.value) }
+    }
+    if (token.type === 'identifier') {
+      pos++
+      const name = token.value
+      if (peek()?.type === 'lparen') {
+        pos++
+        if (peek()?.type === 'rparen') {
+          throw new EngineSyntaxError(
+            `Fehlendes Argument für "${name}" an Position ${token.position}`,
+            token.position,
+          )
+        }
+        const arg = parseExpression()
+        const closing = peek()
+        if (!closing || closing.type !== 'rparen') {
+          throw new EngineSyntaxError(
+            'Fehlende schließende Klammer',
+            closing ? closing.position : inputLength,
+          )
+        }
+        pos++
+        return { type: 'call', name, args: [arg], position: token.position }
+      }
+      return { type: 'identifier', name, position: token.position }
     }
     if (token.type === 'lparen') {
       pos++

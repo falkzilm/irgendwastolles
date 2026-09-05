@@ -115,4 +115,86 @@ describe('evaluate', () => {
       expect(formatResult(result.value)).toBe('0.3')
     }
   })
+
+  describe('wissenschaftliche Funktionen und Winkelmodus', () => {
+    it('sin(90) im DEG-Modus ergibt 1', () => {
+      const result = evaluate('sin(90)', { angleMode: 'deg' })
+      expect(result.ok).toBe(true)
+      if (result.ok) expect(result.value).toBeCloseTo(1, 10)
+    })
+
+    it('sin(pi/2) im RAD-Modus ergibt 1', () => {
+      const result = evaluate('sin(pi/2)', { angleMode: 'rad' })
+      expect(result.ok).toBe(true)
+      if (result.ok) expect(result.value).toBeCloseTo(1, 10)
+    })
+
+    it('derselbe Ausdruck liefert je nach Winkelmodus unterschiedliche Ergebnisse', () => {
+      const deg = evaluate('cos(60)', { angleMode: 'deg' })
+      const rad = evaluate('cos(60)', { angleMode: 'rad' })
+      expect(deg.ok && rad.ok).toBe(true)
+      if (deg.ok && rad.ok) {
+        expect(deg.value).toBeCloseTo(0.5, 10)
+        expect(deg.value).not.toBeCloseTo(rad.value, 5)
+      }
+    })
+
+    it('ohne angeben Winkelmodus wird Radiant angenommen', () => {
+      expect(evaluate('sin(pi/2)')).toEqual(
+        evaluate('sin(pi/2)', { angleMode: 'rad' }),
+      )
+    })
+
+    it('log(100) = 2 und ln(e) = 1', () => {
+      const log = evaluate('log(100)')
+      const ln = evaluate('ln(e)')
+      expect(log.ok).toBe(true)
+      expect(ln.ok).toBe(true)
+      if (log.ok) expect(log.value).toBeCloseTo(2, 10)
+      if (ln.ok) expect(ln.value).toBeCloseTo(1, 10)
+    })
+
+    it('exp(0) = 1 (Randfall)', () => {
+      const result = evaluate('exp(0)')
+      expect(result).toEqual({ ok: true, value: 1 })
+    })
+
+    it('sqrt(16) = 4, abs(-3) = 3', () => {
+      expect(evaluate('sqrt(16)')).toEqual({ ok: true, value: 4 })
+      expect(evaluate('abs(-3)')).toEqual({ ok: true, value: 3 })
+    })
+
+    it('fact(5) = 120, fact(0) = 1 (Randfall)', () => {
+      expect(evaluate('fact(5)')).toEqual({ ok: true, value: 120 })
+      expect(evaluate('fact(0)')).toEqual({ ok: true, value: 1 })
+    })
+
+    it('fact(-1) liefert einen evaluation-error (Randfall)', () => {
+      const result = evaluate('fact(-1)')
+      expect(result.ok).toBe(false)
+      if (!result.ok) expect(result.error.type).toBe('evaluation-error')
+    })
+
+    it('unbekannte Funktionsnamen liefern einen Fehler mit Position im Ausdruck', () => {
+      const result = evaluate('foo(1)')
+      expect(result.ok).toBe(false)
+      if (!result.ok) {
+        expect(result.error.message).toMatch(/unbekannte Funktion/i)
+        expect(result.error.position).toBe(0)
+      }
+    })
+
+    it('unbekannte Funktionsnamen an anderer Position im Ausdruck', () => {
+      const result = evaluate('1+bar(2)')
+      expect(result.ok).toBe(false)
+      if (!result.ok) {
+        expect(result.error.message).toMatch(/unbekannte Funktion/i)
+        expect(result.error.position).toBe(2)
+      }
+    })
+
+    it('sqrt(9) verschachtelt in weiterer Rechnung', () => {
+      expect(evaluate('sqrt(9)+1')).toEqual({ ok: true, value: 4 })
+    })
+  })
 })

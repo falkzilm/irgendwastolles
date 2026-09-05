@@ -7,10 +7,16 @@ function isDigit(char: string): boolean {
   return char >= '0' && char <= '9'
 }
 
+function isAlpha(char: string): boolean {
+  return (char >= 'a' && char <= 'z') || (char >= 'A' && char <= 'Z')
+}
+
 /**
- * Zerlegt einen Ausdruck in Tokens (Zahlen, Operatoren, Klammern).
- * Whitespace wird übersprungen. Wirft `EngineSyntaxError` bei unbekannten
- * Zeichen oder einer ungültigen Zahl (z. B. einem einzelnen `.`).
+ * Zerlegt einen Ausdruck in Tokens (Zahlen, Operatoren, Klammern, Bezeichner
+ * für Funktionen/Konstanten wie `sin`/`pi`). Whitespace wird übersprungen.
+ * Wirft `EngineSyntaxError` bei unbekannten Zeichen oder einer ungültigen
+ * Zahl (z. B. einem einzelnen `.`). Ob ein Bezeichner eine bekannte Funktion
+ * oder Konstante ist, prüft nicht der Tokenizer, sondern Parser/Evaluator.
  */
 export function tokenize(input: string): Token[] {
   const tokens: Token[] = []
@@ -64,6 +70,19 @@ export function tokenize(input: string): Token[] {
         )
       }
       tokens.push({ type: 'number', value: raw, position: start })
+      continue
+    }
+
+    if (isAlpha(char)) {
+      const start = i
+      while (i < input.length && isAlpha(input[i])) {
+        i++
+      }
+      tokens.push({
+        type: 'identifier',
+        value: input.slice(start, i),
+        position: start,
+      })
       continue
     }
 
