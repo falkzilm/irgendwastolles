@@ -21,6 +21,12 @@ describe('FUNCTIONS', () => {
       expect(FUNCTIONS.sin(Math.PI / 2, 'rad')).toBeCloseTo(1, 10)
       expect(FUNCTIONS.cos(Math.PI, 'rad')).toBeCloseTo(-1, 10)
     })
+
+    it('liefern für den Randwinkel 0 die Werte sin(0)=0, cos(0)=1, tan(0)=0', () => {
+      expect(FUNCTIONS.sin(0, 'deg')).toBeCloseTo(0, 10)
+      expect(FUNCTIONS.cos(0, 'rad')).toBeCloseTo(1, 10)
+      expect(FUNCTIONS.tan(0, 'deg')).toBeCloseTo(0, 10)
+    })
   })
 
   describe('asin/acos/atan', () => {
@@ -31,6 +37,13 @@ describe('FUNCTIONS', () => {
 
     it('liefern im RAD-Modus Radiant zurück', () => {
       expect(FUNCTIONS.asin(1, 'rad')).toBeCloseTo(Math.PI / 2, 10)
+      expect(FUNCTIONS.acos(1, 'rad')).toBeCloseTo(0, 10)
+      expect(FUNCTIONS.acos(0, 'deg')).toBeCloseTo(90, 10)
+    })
+
+    it('liefern für den Randfall 0 den Wert atan(0)=0', () => {
+      expect(FUNCTIONS.atan(0, 'rad')).toBe(0)
+      expect(FUNCTIONS.atan(0, 'deg')).toBe(0)
     })
 
     it('liefern für einen Wert außerhalb [-1, 1] NaN (Randfall Definitionsbereich)', () => {
@@ -46,11 +59,17 @@ describe('FUNCTIONS', () => {
     })
 
     it('exp ist die Umkehrfunktion von ln', () => {
+      expect(FUNCTIONS.exp(1, 'rad')).toBeCloseTo(Math.E, 10)
       expect(FUNCTIONS.exp(0, 'rad')).toBe(1)
     })
 
     it('log(0) liefert -Infinity (Randfall Definitionsbereich)', () => {
       expect(FUNCTIONS.log(0, 'rad')).toBe(-Infinity)
+    })
+
+    it('ln(0) liefert -Infinity und ln(-1) liefert NaN (Randfall Definitionsbereich)', () => {
+      expect(FUNCTIONS.ln(0, 'rad')).toBe(-Infinity)
+      expect(FUNCTIONS.ln(-1, 'rad')).toBeNaN()
     })
   })
 
