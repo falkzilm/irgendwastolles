@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { evaluate } from './index'
+import { evaluate, formatResult } from './index'
 
 describe('evaluate', () => {
   describe('gültige Ausdrücke', () => {
@@ -88,6 +88,31 @@ describe('evaluate', () => {
     if (!result.ok) {
       expect(result.error.type).toBe('syntax-error')
       expect(result.error.position).toBe(3)
+    }
+  })
+
+  it('meldet Overflow (Ergebnis wird Infinity) als evaluation-error', () => {
+    const result = evaluate('10^400')
+    expect(result.ok).toBe(false)
+    if (!result.ok) {
+      expect(result.error.type).toBe('evaluation-error')
+      expect(typeof result.error.message).toBe('string')
+    }
+  })
+
+  it('meldet NaN-Ergebnisse (z. B. Wurzel aus negativer Zahl) als evaluation-error', () => {
+    const result = evaluate('(-8)^0.5')
+    expect(result.ok).toBe(false)
+    if (!result.ok) {
+      expect(result.error.type).toBe('evaluation-error')
+    }
+  })
+
+  it('formatiert 0.1+0.2 wie gefordert als 0.3', () => {
+    const result = evaluate('0.1+0.2')
+    expect(result.ok).toBe(true)
+    if (result.ok) {
+      expect(formatResult(result.value)).toBe('0.3')
     }
   })
 })
