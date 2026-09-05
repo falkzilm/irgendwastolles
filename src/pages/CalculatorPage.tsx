@@ -1,5 +1,6 @@
 import { Display } from './calculator/Display'
 import { Keypad } from './calculator/Keypad'
+import { Verlauf } from './calculator/Verlauf'
 import { useAppStore } from '../store'
 
 export function CalculatorPage() {
@@ -10,6 +11,9 @@ export function CalculatorPage() {
   const clear = useAppStore((state) => state.clear)
   const backspace = useAppStore((state) => state.backspace)
   const evaluate = useAppStore((state) => state.evaluate)
+  const loadExpression = useAppStore((state) => state.loadExpression)
+  const verlauf = useAppStore((state) => state.verlauf)
+  const clearVerlauf = useAppStore((state) => state.clearVerlauf)
 
   return (
     <div className="page">
@@ -20,6 +24,11 @@ export function CalculatorPage() {
         onClear={clear}
         onBackspace={backspace}
         onEquals={evaluate}
+      />
+      <Verlauf
+        verlauf={verlauf}
+        onSelect={loadExpression}
+        onClear={clearVerlauf}
       />
     </div>
   )

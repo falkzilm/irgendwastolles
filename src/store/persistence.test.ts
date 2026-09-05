@@ -23,13 +23,15 @@ describe('store persistence', () => {
 
     expect(useAppStore.getState().theme).toBe('light')
     expect(useAppStore.getState().angleMode).toBe('deg')
+    expect(useAppStore.getState().verlauf).toEqual([])
   })
 
   it('übernimmt gültige, über IPC geladene Daten in den Store', async () => {
+    const verlauf = [{ id: '1', expression: '2+3', result: '5', timestamp: 1 }]
     window.api = {
-      loadPersistedState: vi
-        .fn()
-        .mockResolvedValue({ data: { theme: 'dark', angleMode: 'rad' } }),
+      loadPersistedState: vi.fn().mockResolvedValue({
+        data: { theme: 'dark', angleMode: 'rad', verlauf },
+      }),
       savePersistedState: vi.fn(),
       ping: vi.fn(),
     }
@@ -38,6 +40,7 @@ describe('store persistence', () => {
 
     expect(useAppStore.getState().theme).toBe('dark')
     expect(useAppStore.getState().angleMode).toBe('rad')
+    expect(useAppStore.getState().verlauf).toEqual(verlauf)
   })
 
   it('ignoriert ungültige geladene Daten und behält die Defaults', async () => {
@@ -52,6 +55,25 @@ describe('store persistence', () => {
     await hydratePersistedState()
 
     expect(useAppStore.getState().theme).toBe('light')
+  })
+
+  it('ignoriert geladene Daten mit ungültigem Verlauf und behält die Defaults', async () => {
+    window.api = {
+      loadPersistedState: vi.fn().mockResolvedValue({
+        data: {
+          theme: 'dark',
+          angleMode: 'rad',
+          verlauf: [{ expression: '2+3' }],
+        },
+      }),
+      savePersistedState: vi.fn(),
+      ping: vi.fn(),
+    }
+
+    await hydratePersistedState()
+
+    expect(useAppStore.getState().theme).toBe('light')
+    expect(useAppStore.getState().verlauf).toEqual([])
   })
 
   it('speichert Store-Änderungen über window.api.savePersistedState', () => {

@@ -1,5 +1,6 @@
 import { useAppStore } from './index'
 import type { AppState } from './types'
+import type { VerlaufEintrag } from './slices/verlaufSlice'
 
 /**
  * Anteil des Stores, der über IPC persistiert wird - nur reine Daten, keine
@@ -10,10 +11,26 @@ import type { AppState } from './types'
 export interface PersistableState {
   theme: AppState['theme']
   angleMode: AppState['angleMode']
+  verlauf: AppState['verlauf']
 }
 
 export function selectPersistableState(state: AppState): PersistableState {
-  return { theme: state.theme, angleMode: state.angleMode }
+  return {
+    theme: state.theme,
+    angleMode: state.angleMode,
+    verlauf: state.verlauf,
+  }
+}
+
+function isVerlaufEintrag(value: unknown): value is VerlaufEintrag {
+  if (typeof value !== 'object' || value === null) return false
+  const candidate = value as Partial<VerlaufEintrag>
+  return (
+    typeof candidate.id === 'string' &&
+    typeof candidate.expression === 'string' &&
+    typeof candidate.result === 'string' &&
+    typeof candidate.timestamp === 'number'
+  )
 }
 
 function isPersistableState(value: unknown): value is PersistableState {
@@ -21,7 +38,9 @@ function isPersistableState(value: unknown): value is PersistableState {
   const candidate = value as Partial<PersistableState>
   return (
     (candidate.theme === 'light' || candidate.theme === 'dark') &&
-    (candidate.angleMode === 'deg' || candidate.angleMode === 'rad')
+    (candidate.angleMode === 'deg' || candidate.angleMode === 'rad') &&
+    Array.isArray(candidate.verlauf) &&
+    candidate.verlauf.every(isVerlaufEintrag)
   )
 }
 
@@ -55,7 +74,8 @@ export function subscribeToPersistState(): () => void {
     const next = selectPersistableState(state)
     if (
       next.theme === previous.theme &&
-      next.angleMode === previous.angleMode
+      next.angleMode === previous.angleMode &&
+      next.verlauf === previous.verlauf
     ) {
       return
     }
