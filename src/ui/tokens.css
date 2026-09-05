@@ -1,0 +1,61 @@
+/*
+ * Design-Tokens als CSS-Variablen. Basiskomponenten dürfen ausschließlich
+ * über diese Variablen gestylt werden (keine Hardcoded-Hexwerte).
+ */
+:root,
+[data-theme='light'] {
+  --color-bg: #ffffff;
+  --color-bg-elevated: #f5f5f7;
+  --color-fg: #1a1a1e;
+  --color-fg-muted: #5a5a63;
+  --color-border: #d8d8de;
+  --color-primary: #3b5bfd;
+  --color-primary-fg: #ffffff;
+  --color-primary-hover: #2c46d1;
+  --color-danger: #d92d20;
+  --color-danger-fg: #ffffff;
+  --color-focus-ring: #3b5bfd;
+  --color-overlay: rgb(0 0 0 / 45%);
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+
+  --font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
+  --font-size-sm: 0.875rem;
+  --font-size-md: 1rem;
+  --font-size-lg: 1.25rem;
+  --font-weight-normal: 400;
+  --font-weight-bold: 600;
+  --line-height: 1.45;
+
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 8%);
+  --shadow-md: 0 4px 12px rgb(0 0 0 / 12%);
+  --shadow-lg: 0 12px 32px rgb(0 0 0 / 24%);
+}
+
+[data-theme='dark'] {
+  --color-bg: #1a1a1e;
+  --color-bg-elevated: #232328;
+  --color-fg: #f2f2f4;
+  --color-fg-muted: #a6a6b0;
+  --color-border: #3a3a42;
+  --color-primary: #7f9dff;
+  --color-primary-fg: #10121c;
+  --color-primary-hover: #a3b8ff;
+  --color-danger: #ff6a5f;
+  --color-danger-fg: #2a0a06;
+  --color-focus-ring: #7f9dff;
+  --color-overlay: rgb(0 0 0 / 65%);
+
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 50%);
+  --shadow-md: 0 4px 12px rgb(0 0 0 / 50%);
+  --shadow-lg: 0 12px 32px rgb(0 0 0 / 60%);
+}
