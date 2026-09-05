@@ -100,6 +100,19 @@ describe('calculatorSlice', () => {
     expect(useAppStore.getState().result).toBe('10')
   })
 
+  it('wertet trigonometrische Funktionen abhängig vom Winkelmodus aus', () => {
+    useAppStore.getState().setAngleMode('deg')
+    useAppStore.getState().input('sin(90)')
+    useAppStore.getState().evaluate()
+    expect(useAppStore.getState().result).toBe('1')
+
+    useAppStore.getState().clear()
+    useAppStore.getState().setAngleMode('rad')
+    useAppStore.getState().input('sin(90)')
+    useAppStore.getState().evaluate()
+    expect(useAppStore.getState().result).toBe('0.893996663601')
+  })
+
   it('backspace() nach = beginnt eine leere neue Eingabe', () => {
     useAppStore.getState().input('2')
     useAppStore.getState().input('+')

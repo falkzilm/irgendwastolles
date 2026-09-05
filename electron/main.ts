@@ -30,6 +30,10 @@ function createWindow(): BrowserWindow {
   const win = new BrowserWindow({
     width: 1280,
     height: 800,
+    // Damit das wissenschaftliche Tastenfeld (IRGENDWAST-25) bei jeder
+    // erlaubten Fenstergröße als festes Grid ohne Umbruch passt.
+    minWidth: 480,
+    minHeight: 720,
     webPreferences: {
       preload: PRELOAD_PATH,
       contextIsolation: true,
