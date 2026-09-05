@@ -1,12 +1,14 @@
+@import './ui/tokens.css';
+
 :root {
-  font:
-    16px/145% system-ui,
-    'Segoe UI',
-    Roboto,
-    sans-serif;
+  font-family: var(--font-family);
+  font-size: 16px;
+  line-height: var(--line-height);
   color-scheme: light dark;
 }
 
 body {
   margin: 0;
+  background-color: var(--color-bg);
+  color: var(--color-fg);
 }
