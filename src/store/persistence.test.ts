@@ -23,13 +23,14 @@ describe('store persistence', () => {
 
     expect(useAppStore.getState().theme).toBe('light')
     expect(useAppStore.getState().angleMode).toBe('deg')
+    expect(useAppStore.getState().calculatorMode).toBe('simple')
   })
 
   it('übernimmt gültige, über IPC geladene Daten in den Store', async () => {
     window.api = {
-      loadPersistedState: vi
-        .fn()
-        .mockResolvedValue({ data: { theme: 'dark', angleMode: 'rad' } }),
+      loadPersistedState: vi.fn().mockResolvedValue({
+        data: { theme: 'dark', angleMode: 'rad', calculatorMode: 'scientific' },
+      }),
       savePersistedState: vi.fn(),
       ping: vi.fn(),
     }
@@ -38,6 +39,7 @@ describe('store persistence', () => {
 
     expect(useAppStore.getState().theme).toBe('dark')
     expect(useAppStore.getState().angleMode).toBe('rad')
+    expect(useAppStore.getState().calculatorMode).toBe('scientific')
   })
 
   it('ignoriert ungültige geladene Daten und behält die Defaults', async () => {

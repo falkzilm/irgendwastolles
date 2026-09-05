@@ -71,6 +71,8 @@ oder die Actions im State geändert – nicht direkt mutiert.
 
 - `theme: 'light' | 'dark'`, `setTheme`, `toggleTheme`
 - `angleMode: 'deg' | 'rad'` (Winkelmodus für den Rechner), `setAngleMode`
+- `calculatorMode: 'simple' | 'scientific'` (IRGENDWAST-25: einfaches vs.
+  wissenschaftliches Tastenfeld), `setCalculatorMode`, `toggleCalculatorMode`
 
 Der Store ist über den Hook `useAppStore` aus `src/store` im Renderer nutzbar.
 
@@ -83,7 +85,9 @@ und Tastenfeld für Grundrechenarten):
 - `input(token)` hängt ein Zeichen an den Ausdruck an; `clear()` leert
   Ausdruck/Ergebnis/Fehler; `backspace()` entfernt das letzte Zeichen;
   `evaluate()` ruft `evaluate()`/`formatResult()` aus `src/engine` auf und
-  befüllt `result` bzw. `error`.
+  befüllt `result` bzw. `error`. Dabei wird `angleMode` aus dem
+  `settingsSlice` als `EngineContext` mitgegeben, damit trigonometrische
+  Funktionen (IRGENDWAST-25) den gewählten Winkelmodus berücksichtigen.
 - `justEvaluated` merkt sich intern, ob `result` gerade durch `=` entstanden
   ist: Der nächste `input()`-Aufruf beginnt dann einen neuen Ausdruck (bei
   einem Operator wird mit dem vorigen Ergebnis weitergerechnet), statt den
