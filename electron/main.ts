@@ -3,9 +3,14 @@ import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import {
   IPC_CHANNELS,
+  type PersistenceLoadRequest,
+  type PersistenceLoadResponse,
+  type PersistenceSaveRequest,
+  type PersistenceSaveResponse,
   type PingRequest,
   type PingResponse,
 } from '../shared/ipc.ts'
+import { loadPersistedState, savePersistedState } from './persistence.ts'
 import {
   applyContentSecurityPolicy,
   blockNavigation,
@@ -16,6 +21,8 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 
 const RENDERER_DIST = join(__dirname, '../dist')
 const PRELOAD_PATH = join(__dirname, 'preload.mjs')
+
+const STORE_FILE_PATH = join(app.getPath('userData'), 'store.json')
 
 const DEV_SERVER_URL = process.env.VITE_DEV_SERVER_URL
 
@@ -58,6 +65,20 @@ ipcMain.handle(
       message: `pong: ${request.message}`,
       receivedAt: Date.now(),
     }
+  },
+)
+
+ipcMain.handle(
+  IPC_CHANNELS.STORE_GET,
+  (_event, request: PersistenceLoadRequest): PersistenceLoadResponse => {
+    return { data: loadPersistedState(STORE_FILE_PATH, request.defaults) }
+  },
+)
+
+ipcMain.handle(
+  IPC_CHANNELS.STORE_SET,
+  (_event, request: PersistenceSaveRequest): PersistenceSaveResponse => {
+    savePersistedState(STORE_FILE_PATH, request.data)
   },
 )
 
