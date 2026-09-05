@@ -51,8 +51,9 @@ Slices, die persistiert werden sollen, ergänzen ihre Felder in
 `PersistableState`/`selectPersistableState` sowie in der
 Validierung `isPersistableState`.
 
-`theme` wird zusätzlich weiterhin über `localStorage` durch
-`ThemeProvider` (siehe state.md) gesetzt, das beim Mount stets die
-bevorzugte bzw. dort gespeicherte Einstellung übernimmt - der über IPC
-persistierte `theme`-Wert wird dadurch aktuell direkt danach überschrieben.
-Für `angleMode` gibt es diesen Nebeneffekt nicht.
+`theme` wird zusätzlich weiterhin über `localStorage` durch `ThemeProvider`
+(siehe state.md) gespiegelt. Da `hydratePersistedState()` bereits vor dem
+ersten Render abgeschlossen ist, initialisiert `ThemeProvider` beim Mount nur
+noch dann aus `localStorage`/Systempräferenz, wenn kein `window.api`
+existiert (reiner Browser-Dev-Server) - mit Electron-IPC bleibt der
+hydrierte Wert maßgeblich und wird nicht überschrieben.

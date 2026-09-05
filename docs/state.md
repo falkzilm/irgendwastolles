@@ -73,9 +73,12 @@ oder die Actions im State geändert – nicht direkt mutiert.
 Der Store ist über den Hook `useAppStore` aus `src/store` im Renderer nutzbar.
 
 `src/ui/theme.tsx` ist die einzige Quelle für DOM-/localStorage-Seiteneffekte
-des Themes: `ThemeProvider` liest beim Mount die gespeicherte bzw. bevorzugte
-Einstellung und schreibt sie in den Store, und spiegelt `theme` aus dem Store
-in das `data-theme`-Attribut sowie `localStorage`. Der Theme-Wert selbst lebt
-ausschließlich im `settingsSlice`; `useTheme()` ist ein dünner Wrapper um
-`useAppStore`-Selektoren, es gibt keinen separaten React-Context mehr für das
-Theme.
+des Themes: `ThemeProvider` spiegelt `theme` aus dem Store in das
+`data-theme`-Attribut sowie `localStorage`. Ohne `window.api` (reiner
+Browser-Dev-Server, siehe [persistence.md](./persistence.md)) liest es beim
+Mount zusätzlich die gespeicherte bzw. bevorzugte Einstellung aus
+`localStorage`/Systempräferenz und schreibt sie in den Store; mit
+Electron-IPC ist stattdessen der bereits vor dem ersten Render hydrierte Wert
+maßgeblich. Der Theme-Wert selbst lebt ausschließlich im `settingsSlice`;
+`useTheme()` ist ein dünner Wrapper um `useAppStore`-Selektoren, es gibt
+keinen separaten React-Context mehr für das Theme.

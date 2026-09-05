@@ -31,7 +31,15 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const setTheme = useAppStore((state) => state.setTheme)
 
   useEffect(() => {
-    setTheme(getPreferredTheme())
+    // `hydratePersistedState()` (siehe src/store/persistence.ts) läuft in
+    // src/main.tsx bereits vor dem ersten Render und ist damit - sofern
+    // `window.api` existiert - die maßgebliche Quelle für das Theme beim
+    // Start (siehe IRGENDWAST-13). Die localStorage-/Systempräferenz greift
+    // nur noch als Fallback im reinen Browser-Dev-Server ohne IPC-Persistenz;
+    // sonst würde sie den gerade hydrierten Wert sofort wieder überschreiben.
+    if (!window.api) {
+      setTheme(getPreferredTheme())
+    }
     // Nur beim Mount die bevorzugte Einstellung übernehmen.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
