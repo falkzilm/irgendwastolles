@@ -27,6 +27,10 @@ Die sicherheitsrelevanten Standardeinstellungen (Sandbox, Context Isolation, CSP
 Blockieren von Navigation/`window.open`) sind in [`docs/security.md`](docs/security.md)
 dokumentiert.
 
+Installierbare Desktop-Artefakte werden mit `npm run package` (electron-builder)
+gebaut; Details und die aktuell verbindlichen Zielplattformen sind in
+[`docs/packaging.md`](docs/packaging.md) dokumentiert.
+
 ## npm-Scripts
 
 | Script                  | Beschreibung                                                                |
@@ -35,6 +39,8 @@ dokumentiert.
 | `npm run dev:electron`  | Startet Vite-Dev-Server und öffnet die App im Electron-Fenster              |
 | `npm run build`         | Prüft die Typen und baut Renderer (`dist/`) und Electron (`dist-electron/`) |
 | `npm run start`         | Startet die gebaute App per Electron ohne laufenden Dev-Server              |
+| `npm run package`       | Baut ein installierbares Linux-Artefakt (AppImage) nach `release/`          |
+| `npm run package:win`   | Baut einen Windows-Installer (NSIS) nach `release/` (benötigt Wine)         |
 | `npm run typecheck`     | Führt die TypeScript-Typprüfung ohne Ausgabe von Dateien aus                |
 | `npm run lint`          | Führt ESLint über alle `.ts`/`.tsx`-Dateien aus                             |
 | `npm run format`        | Formatiert den Code mit Prettier                                            |
