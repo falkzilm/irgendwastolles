@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { createCalculatorSlice } from './slices/calculatorSlice'
 import { createSettingsSlice } from './slices/settingsSlice'
 import type { AppState } from './types'
 
@@ -9,7 +10,9 @@ import type { AppState } from './types'
  */
 export const useAppStore = create<AppState>()((...args) => ({
   ...createSettingsSlice(...args),
+  ...createCalculatorSlice(...args),
 }))
 
 export type { AppState } from './types'
+export type { CalculatorSlice } from './slices/calculatorSlice'
 export type { AngleMode, SettingsSlice, Theme } from './slices/settingsSlice'
