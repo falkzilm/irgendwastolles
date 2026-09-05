@@ -31,4 +31,20 @@ describe('settingsSlice', () => {
 
     expect(useAppStore.getState().angleMode).toBe('rad')
   })
+
+  it('setzt und liest den Rechner-Modus', () => {
+    expect(useAppStore.getState().calculatorMode).toBe('simple')
+
+    useAppStore.getState().setCalculatorMode('scientific')
+
+    expect(useAppStore.getState().calculatorMode).toBe('scientific')
+  })
+
+  it('wechselt den Rechner-Modus per toggleCalculatorMode', () => {
+    useAppStore.getState().toggleCalculatorMode()
+    expect(useAppStore.getState().calculatorMode).toBe('scientific')
+
+    useAppStore.getState().toggleCalculatorMode()
+    expect(useAppStore.getState().calculatorMode).toBe('simple')
+  })
 })

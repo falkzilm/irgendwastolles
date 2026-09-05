@@ -10,10 +10,15 @@ import type { AppState } from './types'
 export interface PersistableState {
   theme: AppState['theme']
   angleMode: AppState['angleMode']
+  calculatorMode: AppState['calculatorMode']
 }
 
 export function selectPersistableState(state: AppState): PersistableState {
-  return { theme: state.theme, angleMode: state.angleMode }
+  return {
+    theme: state.theme,
+    angleMode: state.angleMode,
+    calculatorMode: state.calculatorMode,
+  }
 }
 
 function isPersistableState(value: unknown): value is PersistableState {
@@ -21,7 +26,9 @@ function isPersistableState(value: unknown): value is PersistableState {
   const candidate = value as Partial<PersistableState>
   return (
     (candidate.theme === 'light' || candidate.theme === 'dark') &&
-    (candidate.angleMode === 'deg' || candidate.angleMode === 'rad')
+    (candidate.angleMode === 'deg' || candidate.angleMode === 'rad') &&
+    (candidate.calculatorMode === 'simple' ||
+      candidate.calculatorMode === 'scientific')
   )
 }
 
@@ -55,7 +62,8 @@ export function subscribeToPersistState(): () => void {
     const next = selectPersistableState(state)
     if (
       next.theme === previous.theme &&
-      next.angleMode === previous.angleMode
+      next.angleMode === previous.angleMode &&
+      next.calculatorMode === previous.calculatorMode
     ) {
       return
     }
