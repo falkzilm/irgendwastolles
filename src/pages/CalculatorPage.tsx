@@ -1,6 +1,7 @@
 import { Display } from './calculator/Display'
 import { Keypad } from './calculator/Keypad'
 import { ModeToggle } from './calculator/ModeToggle'
+import { Verlauf } from './calculator/Verlauf'
 import { useAppStore } from '../store'
 
 export function CalculatorPage() {
@@ -11,6 +12,9 @@ export function CalculatorPage() {
   const clear = useAppStore((state) => state.clear)
   const backspace = useAppStore((state) => state.backspace)
   const evaluate = useAppStore((state) => state.evaluate)
+  const loadExpression = useAppStore((state) => state.loadExpression)
+  const verlauf = useAppStore((state) => state.verlauf)
+  const clearVerlauf = useAppStore((state) => state.clearVerlauf)
   const calculatorMode = useAppStore((state) => state.calculatorMode)
   const toggleCalculatorMode = useAppStore(
     (state) => state.toggleCalculatorMode,
@@ -34,6 +38,11 @@ export function CalculatorPage() {
         onClear={clear}
         onBackspace={backspace}
         onEquals={evaluate}
+      />
+      <Verlauf
+        verlauf={verlauf}
+        onSelect={loadExpression}
+        onClear={clearVerlauf}
       />
     </div>
   )

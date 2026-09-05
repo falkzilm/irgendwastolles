@@ -92,6 +92,28 @@ und Tastenfeld für Grundrechenarten):
   ist: Der nächste `input()`-Aufruf beginnt dann einen neuen Ausdruck (bei
   einem Operator wird mit dem vorigen Ergebnis weitergerechnet), statt den
   Text einfach an das Ergebnis anzuhängen.
+- `loadExpression(expression)` übernimmt einen Ausdruck (z. B. aus dem
+  Verlauf, siehe unten) ins Display und setzt `result`/`error` zurück.
+
+Eine erfolgreiche `evaluate()` legt zusätzlich per `get().addVerlaufEintrag(...)`
+einen Eintrag im `verlaufSlice` an (IRGENDWAST-26).
+
+## Verlauf-Slice
+
+`verlaufSlice.ts` setzt die Anforderungen aus IRGENDWAST-26 um (Berechnungsverlauf
+mit Wiederverwendung):
+
+- `verlauf: VerlaufEintrag[]` (`{ id, expression, result, timestamp }`), neueste
+  Einträge zuerst.
+- `addVerlaufEintrag(expression, result)` fügt vorne einen Eintrag an und kappt
+  bei `MAX_VERLAUF_EINTRAEGE` (100).
+- `clearVerlauf()` leert den Verlauf vollständig.
+
+`src/pages/calculator/Verlauf.tsx` zeigt den Verlauf auf der Rechner-Seite: ein
+Klick auf einen Eintrag ruft `loadExpression()` mit dessen Ausdruck auf, ist der
+Verlauf leer erscheint ein erklärender Hinweistext. `verlauf` wird wie `theme`
+und `angleMode` über `src/store/persistence.ts` persistiert, siehe
+[persistence.md](./persistence.md).
 
 `src/ui/theme.tsx` ist die einzige Quelle für DOM-/localStorage-Seiteneffekte
 des Themes: `ThemeProvider` spiegelt `theme` aus dem Store in das
