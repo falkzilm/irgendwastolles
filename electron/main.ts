@@ -26,6 +26,15 @@ const STORE_FILE_PATH = join(app.getPath('userData'), 'store.json')
 
 const DEV_SERVER_URL = process.env.VITE_DEV_SERVER_URL
 
+// Für den E2E-Smoke-Test (IRGENDWAST-16): erzwingt Chromiums Headless-Rendering,
+// damit die App auch auf CI-Runnern ohne Display (kein Xvfb) startet. Muss vor
+// `app.whenReady()` gesetzt werden; betrifft nur Läufe mit `E2E_HEADLESS=1`
+// (siehe `e2e/app.spec.ts`), das reguläre Produktionsverhalten bleibt unverändert.
+if (process.env.E2E_HEADLESS === '1') {
+  app.commandLine.appendSwitch('headless', 'new')
+  app.commandLine.appendSwitch('disable-gpu')
+}
+
 function createWindow(): BrowserWindow {
   const win = new BrowserWindow({
     width: 1280,
