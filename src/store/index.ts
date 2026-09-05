@@ -1,0 +1,15 @@
+import { create } from 'zustand'
+import { createSettingsSlice } from './slices/settingsSlice'
+import type { AppState } from './types'
+
+/**
+ * Zentraler App-Store. Der Hook wird direkt exportiert, damit Komponenten
+ * per Selektor nur die benötigten Slice-Ausschnitte abonnieren, siehe
+ * docs/state.md.
+ */
+export const useAppStore = create<AppState>()((...args) => ({
+  ...createSettingsSlice(...args),
+}))
+
+export type { AppState } from './types'
+export type { AngleMode, SettingsSlice, Theme } from './slices/settingsSlice'
