@@ -5,6 +5,7 @@ import { tokenize } from './tokenizer'
 import type { EngineContext, EngineResult } from './types'
 
 export type {
+  AngleMode,
   AstNode,
   BinaryOperator,
   EngineContext,
@@ -17,29 +18,33 @@ export type {
 } from './types'
 export { evaluateAst } from './evaluator'
 export { EngineEvaluationError, EngineSyntaxError } from './errors'
+export { CONSTANTS, FUNCTIONS } from './functions'
 export { parse } from './parser'
 export { tokenize } from './tokenizer'
 
 /**
  * Öffentliche Engine-API: wertet einen Ausdruck der Grundrechenarten
- * (`+ - * / % ^`, Klammern, Vorzeichen, Dezimalzahlen) aus.
+ * (`+ - * / % ^`, Klammern, Vorzeichen, Dezimalzahlen), wissenschaftlicher
+ * Funktionen (`sin`/`cos`/`tan`/`asin`/`acos`/`atan`/`log`/`ln`/`exp`/`sqrt`/
+ * `abs`/`fact`) und der Konstanten `pi`/`e` aus.
  *
- * Liefert bei ungültigen Ausdrücken (z. B. `2++` oder `(1+2`) ein
- * typisiertes `{ ok: false, error }` statt eine Exception zu werfen.
+ * Liefert bei ungültigen Ausdrücken (z. B. `2++`, `(1+2` oder einem
+ * unbekannten Funktionsnamen) ein typisiertes `{ ok: false, error }` statt
+ * eine Exception zu werfen.
  *
- * `context` ist für künftige Engine-Items reserviert (z. B. Variablen) und
- * hat aktuell keinen Einfluss auf das Ergebnis.
+ * `context.angleMode` (Standard `'rad'`) steuert die Winkeleinheit der
+ * trigonometrischen Funktionen und wird pro Aufruf übergeben statt global
+ * gesetzt. `context.variables` ist weiterhin ein Platzhalter ohne Einfluss
+ * auf das Ergebnis.
  */
 export function evaluate(
   expression: string,
   context: EngineContext = {},
 ): EngineResult {
-  void context
-
   try {
     const tokens = tokenize(expression)
     const ast = parse(tokens, expression.length)
-    const value = evaluateAst(ast)
+    const value = evaluateAst(ast, context)
 
     if (!Number.isFinite(value)) {
       return {

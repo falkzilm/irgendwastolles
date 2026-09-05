@@ -64,6 +64,27 @@ describe('parse', () => {
     })
   })
 
+  it('parst einen Funktionsaufruf als call-Knoten', () => {
+    expect(parseExpression('sin(90)')).toEqual({
+      type: 'call',
+      name: 'sin',
+      args: [{ type: 'number', value: 90 }],
+      position: 0,
+    })
+  })
+
+  it('parst eine Konstante als identifier-Knoten', () => {
+    expect(parseExpression('pi')).toEqual({
+      type: 'identifier',
+      name: 'pi',
+      position: 0,
+    })
+  })
+
+  it('wirft bei leeren Klammern nach einem Funktionsnamen einen EngineSyntaxError', () => {
+    expect(() => parseExpression('sin()')).toThrow(EngineSyntaxError)
+  })
+
   it('wirft bei "2++" einen EngineSyntaxError', () => {
     expect(() => parseExpression('2++')).toThrow(EngineSyntaxError)
   })

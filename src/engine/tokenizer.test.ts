@@ -35,8 +35,17 @@ describe('tokenize', () => {
     ])
   })
 
+  it('erkennt Bezeichner für Funktionen/Konstanten', () => {
+    expect(tokenize('sin(pi)')).toEqual([
+      { type: 'identifier', value: 'sin', position: 0 },
+      { type: 'lparen', value: '(', position: 3 },
+      { type: 'identifier', value: 'pi', position: 4 },
+      { type: 'rparen', value: ')', position: 6 },
+    ])
+  })
+
   it('wirft bei unbekannten Zeichen einen EngineSyntaxError', () => {
-    expect(() => tokenize('2+x')).toThrow(EngineSyntaxError)
+    expect(() => tokenize('2+#')).toThrow(EngineSyntaxError)
   })
 
   it('wirft bei einem einzelnen Punkt einen EngineSyntaxError', () => {
