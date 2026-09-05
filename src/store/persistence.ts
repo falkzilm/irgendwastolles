@@ -1,5 +1,7 @@
 import { useAppStore } from './index'
 import type { AppState } from './types'
+import { MAX_VERLAUF_EINTRAEGE } from './slices/verlaufSlice'
+import type { VerlaufEintrag } from './slices/verlaufSlice'
 
 /**
  * Anteil des Stores, der über IPC persistiert wird - nur reine Daten, keine
@@ -11,6 +13,7 @@ export interface PersistableState {
   theme: AppState['theme']
   angleMode: AppState['angleMode']
   calculatorMode: AppState['calculatorMode']
+  verlauf: AppState['verlauf']
 }
 
 export function selectPersistableState(state: AppState): PersistableState {
@@ -18,7 +21,19 @@ export function selectPersistableState(state: AppState): PersistableState {
     theme: state.theme,
     angleMode: state.angleMode,
     calculatorMode: state.calculatorMode,
+    verlauf: state.verlauf,
   }
+}
+
+function isVerlaufEintrag(value: unknown): value is VerlaufEintrag {
+  if (typeof value !== 'object' || value === null) return false
+  const candidate = value as Partial<VerlaufEintrag>
+  return (
+    typeof candidate.id === 'string' &&
+    typeof candidate.expression === 'string' &&
+    typeof candidate.result === 'string' &&
+    typeof candidate.timestamp === 'number'
+  )
 }
 
 function isPersistableState(value: unknown): value is PersistableState {
@@ -28,8 +43,42 @@ function isPersistableState(value: unknown): value is PersistableState {
     (candidate.theme === 'light' || candidate.theme === 'dark') &&
     (candidate.angleMode === 'deg' || candidate.angleMode === 'rad') &&
     (candidate.calculatorMode === 'simple' ||
-      candidate.calculatorMode === 'scientific')
+      candidate.calculatorMode === 'scientific') &&
+    Array.isArray(candidate.verlauf) &&
+    candidate.verlauf.every(isVerlaufEintrag)
   )
+}
+
+/**
+ * Normalisiert geladene Rohdaten vor der Validierung, damit ältere,
+ * schema-kompatible Dateien ohne `verlauf` (z. B. vor IRGENDWAST-26) oder
+ * ohne `calculatorMode` (z. B. vor IRGENDWAST-25) nicht komplett verworfen
+ * werden, und ein zu langer Verlauf (über `MAX_VERLAUF_EINTRAEGE`) auf die
+ * neuesten Einträge gekappt wird, statt die Slice-Begrenzung zu umgehen.
+ */
+function normalizePersistedData(value: unknown): unknown {
+  if (typeof value !== 'object' || value === null) return value
+  let candidate = value as Record<string, unknown>
+
+  if (!('verlauf' in candidate)) {
+    candidate = { ...candidate, verlauf: [] }
+  }
+
+  if (!('calculatorMode' in candidate)) {
+    candidate = { ...candidate, calculatorMode: 'simple' }
+  }
+
+  if (
+    Array.isArray(candidate.verlauf) &&
+    candidate.verlauf.length > MAX_VERLAUF_EINTRAEGE
+  ) {
+    candidate = {
+      ...candidate,
+      verlauf: candidate.verlauf.slice(0, MAX_VERLAUF_EINTRAEGE),
+    }
+  }
+
+  return candidate
 }
 
 /**
@@ -43,9 +92,10 @@ export async function hydratePersistedState(): Promise<void> {
 
   const defaults = selectPersistableState(useAppStore.getState())
   const response = await window.api.loadPersistedState({ defaults })
+  const normalized = normalizePersistedData(response.data)
 
-  if (isPersistableState(response.data)) {
-    useAppStore.setState(response.data)
+  if (isPersistableState(normalized)) {
+    useAppStore.setState(normalized)
   }
 }
 
@@ -63,7 +113,8 @@ export function subscribeToPersistState(): () => void {
     if (
       next.theme === previous.theme &&
       next.angleMode === previous.angleMode &&
-      next.calculatorMode === previous.calculatorMode
+      next.calculatorMode === previous.calculatorMode &&
+      next.verlauf === previous.verlauf
     ) {
       return
     }

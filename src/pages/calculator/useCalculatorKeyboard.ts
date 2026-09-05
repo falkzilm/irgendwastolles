@@ -56,6 +56,7 @@ export function useCalculatorKeyboard({
     return () => {
       document.removeEventListener('keydown', handleKeyDown)
       clearTimeout(timeoutRef.current)
+      setActiveKeyId(null)
     }
   }, [enabled, onInput, onClear, onBackspace, onEvaluate])
 

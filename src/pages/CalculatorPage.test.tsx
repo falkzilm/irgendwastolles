@@ -123,6 +123,28 @@ describe('CalculatorPage', () => {
     )
   })
 
+  it('entfernt die Hervorhebung, wenn das Hilfe-Popover geöffnet und wieder geschlossen wird, bevor die Hervorhebung von selbst endet', () => {
+    vi.useFakeTimers()
+    render(<CalculatorPage />)
+
+    fireEvent.keyDown(document, { key: '7' })
+    expect(screen.getByRole('button', { name: '7' })).toHaveClass(
+      'calculator-keypad__button--active',
+    )
+
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Tastenkürzel anzeigen' }),
+    )
+    fireEvent.keyDown(document, { key: 'Escape' })
+
+    act(() => {
+      vi.advanceTimersByTime(200)
+    })
+    expect(screen.getByRole('button', { name: '7' })).not.toHaveClass(
+      'calculator-keypad__button--active',
+    )
+  })
+
   it('Tastatureingabe funktioniert unabhängig vom fokussierten Element', () => {
     render(<CalculatorPage />)
 
@@ -158,6 +180,51 @@ describe('CalculatorPage', () => {
     expect(screen.getByText('Ergebnis berechnen')).toBeInTheDocument()
     expect(screen.getByText('Eingabe löschen')).toBeInTheDocument()
     expect(screen.getByText('Letztes Zeichen löschen')).toBeInTheDocument()
+  })
+
+  it('zeigt einen Hinweistext, solange der Verlauf leer ist', () => {
+    render(<CalculatorPage />)
+
+    expect(
+      screen.getByText(/noch keine berechnungen vorhanden/i),
+    ).toBeInTheDocument()
+  })
+
+  it('zeigt eine abgeschlossene Berechnung mit Ausdruck und Ergebnis im Verlauf', () => {
+    render(<CalculatorPage />)
+
+    pressKeys('2', 'Plus', '3', '=')
+
+    expect(
+      screen.getByRole('button', { name: /2\+3.*= 5/ }),
+    ).toBeInTheDocument()
+  })
+
+  it('übernimmt beim Klick auf einen Verlaufseintrag dessen Ausdruck ins Display', () => {
+    render(<CalculatorPage />)
+
+    pressKeys('2', 'Plus', '3', '=')
+    pressKeys('9')
+    expect(screen.getByLabelText('Ausdruck')).toHaveTextContent('9')
+
+    fireEvent.click(screen.getByRole('button', { name: /2\+3.*= 5/ }))
+
+    expect(screen.getByLabelText('Ausdruck')).toHaveTextContent('2+3')
+    expect(screen.getByLabelText('Ergebnis')).toHaveTextContent('')
+  })
+
+  it('löscht mit "Verlauf löschen" alle Einträge, danach erscheint wieder der Hinweistext', () => {
+    render(<CalculatorPage />)
+
+    pressKeys('2', 'Plus', '3', '=')
+    pressKeys('Verlauf löschen')
+
+    expect(
+      screen.queryByRole('button', { name: /2\+3.*= 5/ }),
+    ).not.toBeInTheDocument()
+    expect(
+      screen.getByText(/noch keine berechnungen vorhanden/i),
+    ).toBeInTheDocument()
   })
 
   it('zeigt im einfachen Modus keine wissenschaftlichen Tasten oder DEG/RAD', () => {

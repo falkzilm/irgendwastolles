@@ -14,6 +14,8 @@ export interface CalculatorSlice {
   clear: () => void
   backspace: () => void
   evaluate: () => void
+  /** Übernimmt einen Ausdruck (z. B. aus dem Verlauf, IRGENDWAST-26) ins Display. */
+  loadExpression: (expression: string) => void
 }
 
 export const createCalculatorSlice: StateCreator<
@@ -21,7 +23,7 @@ export const createCalculatorSlice: StateCreator<
   [],
   [],
   CalculatorSlice
-> = (set) => ({
+> = (set, get) => ({
   expression: '',
   result: null,
   error: null,
@@ -63,24 +65,20 @@ export const createCalculatorSlice: StateCreator<
       return { expression: state.expression.slice(0, -1), error: null }
     }),
 
-  evaluate: () =>
-    set((state) => {
-      if (!state.expression) return {}
+  evaluate: () => {
+    const { expression, angleMode } = get()
+    if (!expression) return
 
-      const outcome = evaluateExpression(state.expression, {
-        angleMode: state.angleMode,
-      })
-      if (outcome.ok) {
-        return {
-          result: formatResult(outcome.value),
-          error: null,
-          justEvaluated: true,
-        }
-      }
-      return {
-        result: null,
-        error: outcome.error.message,
-        justEvaluated: false,
-      }
-    }),
+    const outcome = evaluateExpression(expression, { angleMode })
+    if (outcome.ok) {
+      const result = formatResult(outcome.value)
+      set({ result, error: null, justEvaluated: true })
+      get().addVerlaufEintrag(expression, result)
+      return
+    }
+    set({ result: null, error: outcome.error.message, justEvaluated: false })
+  },
+
+  loadExpression: (expression) =>
+    set({ expression, result: null, error: null, justEvaluated: false }),
 })
