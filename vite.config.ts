@@ -4,6 +4,9 @@ import electron from 'vite-plugin-electron/simple'
 
 // https://vite.dev/config/
 export default defineConfig(({ command, mode }) => ({
+  // Relative Basis, damit die gebauten Assets auch unter `file://`
+  // (Electron `loadFile`) statt nur über einen HTTP-Server auflösen.
+  base: command === 'build' ? './' : '/',
   plugins: [
     react(),
     // Baut electron/main.ts und electron/preload.ts nach dist-electron/.
