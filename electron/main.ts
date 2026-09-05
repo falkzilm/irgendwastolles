@@ -1,8 +1,16 @@
 import { app, BrowserWindow, ipcMain, session } from 'electron'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { IPC_CHANNELS, type PingRequest, type PingResponse } from '../shared/ipc.ts'
-import { applyContentSecurityPolicy, blockNavigation, denyWindowOpen } from './security.ts'
+import {
+  IPC_CHANNELS,
+  type PingRequest,
+  type PingResponse,
+} from '../shared/ipc.ts'
+import {
+  applyContentSecurityPolicy,
+  blockNavigation,
+  denyWindowOpen,
+} from './security.ts'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
@@ -43,12 +51,15 @@ function createWindow(): BrowserWindow {
   return win
 }
 
-ipcMain.handle(IPC_CHANNELS.PING, (_event, request: PingRequest): PingResponse => {
-  return {
-    message: `pong: ${request.message}`,
-    receivedAt: Date.now(),
-  }
-})
+ipcMain.handle(
+  IPC_CHANNELS.PING,
+  (_event, request: PingRequest): PingResponse => {
+    return {
+      message: `pong: ${request.message}`,
+      receivedAt: Date.now(),
+    }
+  },
+)
 
 app.whenReady().then(() => {
   // Restriktive CSP für den Produktions-Build (siehe docs/security.md). Im Dev-Modus

@@ -6,12 +6,18 @@ function App() {
 
   async function handlePing() {
     if (!window.api) {
-      setPingResult('Keine Electron-API verfügbar (Renderer läuft ohne Electron).')
+      setPingResult(
+        'Keine Electron-API verfügbar (Renderer läuft ohne Electron).',
+      )
       return
     }
 
-    const response = await window.api.ping({ message: 'Hallo aus dem Renderer' })
-    setPingResult(`${response.message} (${new Date(response.receivedAt).toLocaleTimeString()})`)
+    const response = await window.api.ping({
+      message: 'Hallo aus dem Renderer',
+    })
+    setPingResult(
+      `${response.message} (${new Date(response.receivedAt).toLocaleTimeString()})`,
+    )
   }
 
   return (

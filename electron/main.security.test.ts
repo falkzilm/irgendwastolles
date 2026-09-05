@@ -16,8 +16,8 @@
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
-import { test } from 'node:test'
 import { fileURLToPath } from 'node:url'
+import { test } from 'vitest'
 import {
   applyContentSecurityPolicy,
   blockNavigation,
@@ -38,14 +38,19 @@ test('BrowserWindow wird mit contextIsolation, ohne nodeIntegration und mit sand
 })
 
 test('applyContentSecurityPolicy registriert einen restriktiven Content-Security-Policy-Header', () => {
-  const captured: { onHeadersReceivedCalled: boolean; response: HeadersReceivedResponse | null } = {
+  const captured: {
+    onHeadersReceivedCalled: boolean
+    response: HeadersReceivedResponse | null
+  } = {
     onHeadersReceivedCalled: false,
     response: null,
   }
   const fakeWebRequest: WebRequestLike = {
     onHeadersReceived(listener) {
       captured.onHeadersReceivedCalled = true
-      const details: HeadersReceivedDetails = { responseHeaders: { 'X-Existing': ['keep-me'] } }
+      const details: HeadersReceivedDetails = {
+        responseHeaders: { 'X-Existing': ['keep-me'] },
+      }
       listener(details, (result) => {
         captured.response = result
       })
@@ -54,8 +59,14 @@ test('applyContentSecurityPolicy registriert einen restriktiven Content-Security
 
   applyContentSecurityPolicy(fakeWebRequest)
 
-  assert.ok(captured.onHeadersReceivedCalled, 'onHeadersReceived wurde nicht aufgerufen')
-  assert.ok(captured.response, 'der onHeadersReceived-Callback wurde nicht mit einer Antwort aufgerufen')
+  assert.ok(
+    captured.onHeadersReceivedCalled,
+    'onHeadersReceived wurde nicht aufgerufen',
+  )
+  assert.ok(
+    captured.response,
+    'der onHeadersReceived-Callback wurde nicht mit einer Antwort aufgerufen',
+  )
   const headers = captured.response.responseHeaders
   assert.deepEqual(headers['X-Existing'], ['keep-me'])
   assert.ok(Array.isArray(headers['Content-Security-Policy']))
@@ -67,8 +78,14 @@ test('applyContentSecurityPolicy registriert einen restriktiven Content-Security
 })
 
 test('main.ts wendet die CSP im Produktions-Build auf die echte Electron-Session an', () => {
-  assert.match(mainSource, /if\s*\(\s*!DEV_SERVER_URL\s*\)\s*{[\s\S]*?applyContentSecurityPolicy\(/)
-  assert.match(mainSource, /applyContentSecurityPolicy\(\s*session\.defaultSession\.webRequest\s*\)/)
+  assert.match(
+    mainSource,
+    /if\s*\(\s*!DEV_SERVER_URL\s*\)\s*{[\s\S]*?applyContentSecurityPolicy\(/,
+  )
+  assert.match(
+    mainSource,
+    /applyContentSecurityPolicy\(\s*session\.defaultSession\.webRequest\s*\)/,
+  )
 })
 
 test('neue Fenster (window.open) werden abgelehnt', () => {
@@ -80,5 +97,8 @@ test('Navigationsversuche werden abgefangen', () => {
   let prevented = false
   blockNavigation({ preventDefault: () => (prevented = true) })
   assert.equal(prevented, true)
-  assert.match(mainSource, /\.on\(\s*['"]will-navigate['"]\s*,\s*blockNavigation\s*\)/)
+  assert.match(
+    mainSource,
+    /\.on\(\s*['"]will-navigate['"]\s*,\s*blockNavigation\s*\)/,
+  )
 })

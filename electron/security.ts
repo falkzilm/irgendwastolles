@@ -28,7 +28,10 @@ export interface HeadersReceivedResponse {
 
 export interface WebRequestLike {
   onHeadersReceived(
-    listener: (details: HeadersReceivedDetails, callback: (response: HeadersReceivedResponse) => void) => void,
+    listener: (
+      details: HeadersReceivedDetails,
+      callback: (response: HeadersReceivedResponse) => void,
+    ) => void,
   ): void
 }
 
