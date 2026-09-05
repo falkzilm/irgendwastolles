@@ -21,8 +21,9 @@ Der Job `ci` führt auf `ubuntu-latest` folgende Schritte einzeln sichtbar aus:
    Electron-Build nach `dist-electron/` (siehe [`docs/packaging.md`](packaging.md)).
 5. **E2E tests** (`npx playwright test`) – Playwright-Smoke-Test gegen die im
    vorherigen Schritt gebaute App (siehe [`docs/e2e.md`](e2e.md)). Ein
-   vorgelagerter Schritt installiert die dafür nötigen Systembibliotheken
-   (`npx playwright install-deps chromium`).
+   vorgelagerter Schritt installiert den benötigten Chromium-Browser
+   inklusive Systembibliotheken (`npx playwright install --with-deps
+   chromium`).
 
 Jeder Schritt bricht den Job bei einem Fehler ab (Standardverhalten von GitHub
 Actions), sodass ein absichtlich eingebauter Lint- oder Testfehler die
