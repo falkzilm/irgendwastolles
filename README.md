@@ -31,6 +31,10 @@ Installierbare Desktop-Artefakte werden mit `npm run package` (electron-builder)
 gebaut; Details und die aktuell verbindlichen Zielplattformen sind in
 [`docs/packaging.md`](docs/packaging.md) dokumentiert.
 
+Ein Playwright-basierter E2E-Smoke-Test (`npm run test:e2e`) startet die gebaute
+App und prüft, dass sich das Hauptfenster öffnet und die Startansicht rendert;
+Details dazu in [`docs/e2e.md`](docs/e2e.md).
+
 ## npm-Scripts
 
 | Script                  | Beschreibung                                                                |
@@ -47,4 +51,5 @@ gebaut; Details und die aktuell verbindlichen Zielplattformen sind in
 | `npm run format:check`  | Prüft, ob der Code dem Prettier-Format entspricht                           |
 | `npm test`              | Führt die Vitest-Testsuite einmalig aus                                     |
 | `npm run test:coverage` | Führt die Tests aus und erzeugt einen Coverage-Bericht                      |
+| `npm run test:e2e`      | Baut die App und führt den Playwright-E2E-Smoke-Test aus                    |
 | `npm run preview`       | Startet einen lokalen Server für das gebaute `dist/`-Bundle                 |

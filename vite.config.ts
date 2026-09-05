@@ -1,7 +1,7 @@
-/// <reference types="vitest/config" />
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
 import electron from 'vite-plugin-electron/simple'
+import { configDefaults } from 'vitest/config'
 
 // https://vite.dev/config/
 export default defineConfig(({ command, mode }) => ({
@@ -29,6 +29,9 @@ export default defineConfig(({ command, mode }) => ({
   ],
   test: {
     environment: 'jsdom',
+    // `e2e/` enthält Playwright-Specs (IRGENDWAST-16), die über
+    // `npm run test:e2e` laufen, nicht über Vitest.
+    exclude: [...configDefaults.exclude, 'e2e/**'],
     setupFiles: ['./src/setupTests.ts'],
     coverage: {
       provider: 'v8',
