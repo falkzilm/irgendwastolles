@@ -15,6 +15,8 @@ src/store/
   slices/
     settingsSlice.ts         – Referenz-Slice (Theme, Winkelmodus)
     settingsSlice.test.ts
+    calculatorSlice.ts       – Rechner-Slice (Ausdruck, Ergebnis, Fehler)
+    calculatorSlice.test.ts
 ```
 
 `index.ts` kombiniert alle Slices zu einem einzigen Store:
@@ -71,6 +73,21 @@ oder die Actions im State geändert – nicht direkt mutiert.
 - `angleMode: 'deg' | 'rad'` (Winkelmodus für den Rechner), `setAngleMode`
 
 Der Store ist über den Hook `useAppStore` aus `src/store` im Renderer nutzbar.
+
+## Rechner-Slice
+
+`calculatorSlice.ts` setzt die Anforderungen aus IRGENDWAST-24 um (Display
+und Tastenfeld für Grundrechenarten):
+
+- `expression: string`, `result: string | null`, `error: string | null`
+- `input(token)` hängt ein Zeichen an den Ausdruck an; `clear()` leert
+  Ausdruck/Ergebnis/Fehler; `backspace()` entfernt das letzte Zeichen;
+  `evaluate()` ruft `evaluate()`/`formatResult()` aus `src/engine` auf und
+  befüllt `result` bzw. `error`.
+- `justEvaluated` merkt sich intern, ob `result` gerade durch `=` entstanden
+  ist: Der nächste `input()`-Aufruf beginnt dann einen neuen Ausdruck (bei
+  einem Operator wird mit dem vorigen Ergebnis weitergerechnet), statt den
+  Text einfach an das Ergebnis anzuhängen.
 
 `src/ui/theme.tsx` ist die einzige Quelle für DOM-/localStorage-Seiteneffekte
 des Themes: `ThemeProvider` spiegelt `theme` aus dem Store in das

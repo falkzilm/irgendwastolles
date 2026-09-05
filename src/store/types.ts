@@ -1,3 +1,4 @@
+import type { CalculatorSlice } from './slices/calculatorSlice'
 import type { SettingsSlice } from './slices/settingsSlice'
 
 /**
@@ -5,4 +6,4 @@ import type { SettingsSlice } from './slices/settingsSlice'
  * Neue fachliche Slices werden hier per Intersection ergänzt,
  * siehe docs/state.md.
  */
-export type AppState = SettingsSlice
+export type AppState = SettingsSlice & CalculatorSlice

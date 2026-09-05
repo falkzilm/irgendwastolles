@@ -1,36 +1,26 @@
-import { useState } from 'react'
-import { DemoPage } from '../ui/DemoPage'
+import { Display } from './calculator/Display'
+import { Keypad } from './calculator/Keypad'
+import { useAppStore } from '../store'
 
 export function CalculatorPage() {
-  const [pingResult, setPingResult] = useState<string>('')
-
-  async function handlePing() {
-    if (!window.api) {
-      setPingResult(
-        'Keine Electron-API verfügbar (Renderer läuft ohne Electron).',
-      )
-      return
-    }
-
-    const response = await window.api.ping({
-      message: 'Hallo aus dem Renderer',
-    })
-    setPingResult(
-      `${response.message} (${new Date(response.receivedAt).toLocaleTimeString()})`,
-    )
-  }
+  const expression = useAppStore((state) => state.expression)
+  const result = useAppStore((state) => state.result)
+  const error = useAppStore((state) => state.error)
+  const input = useAppStore((state) => state.input)
+  const clear = useAppStore((state) => state.clear)
+  const backspace = useAppStore((state) => state.backspace)
+  const evaluate = useAppStore((state) => state.evaluate)
 
   return (
     <div className="page">
       <h1>Rechner</h1>
-      <p>
-        Hier entsteht der Rechner. Diese Ansicht ist aktuell ein Platzhalter.
-      </p>
-      <button type="button" onClick={handlePing}>
-        IPC-Testaufruf
-      </button>
-      {pingResult && <p>{pingResult}</p>}
-      <DemoPage />
+      <Display expression={expression} result={result} error={error} />
+      <Keypad
+        onInput={input}
+        onClear={clear}
+        onBackspace={backspace}
+        onEquals={evaluate}
+      />
     </div>
   )
 }
