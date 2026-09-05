@@ -71,3 +71,11 @@ oder die Actions im State geändert – nicht direkt mutiert.
 - `angleMode: 'deg' | 'rad'` (Winkelmodus für den Rechner), `setAngleMode`
 
 Der Store ist über den Hook `useAppStore` aus `src/store` im Renderer nutzbar.
+
+`src/ui/theme.tsx` ist die einzige Quelle für DOM-/localStorage-Seiteneffekte
+des Themes: `ThemeProvider` liest beim Mount die gespeicherte bzw. bevorzugte
+Einstellung und schreibt sie in den Store, und spiegelt `theme` aus dem Store
+in das `data-theme`-Attribut sowie `localStorage`. Der Theme-Wert selbst lebt
+ausschließlich im `settingsSlice`; `useTheme()` ist ein dünner Wrapper um
+`useAppStore`-Selektoren, es gibt keinen separaten React-Context mehr für das
+Theme.
