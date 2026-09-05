@@ -1,5 +1,10 @@
+import { useState } from 'react'
+import './CalculatorPage.css'
 import { Display } from './calculator/Display'
+import { HelpPopover } from './calculator/HelpPopover'
 import { Keypad } from './calculator/Keypad'
+import { useCalculatorKeyboard } from './calculator/useCalculatorKeyboard'
+import { Button } from '../ui/Button'
 import { useAppStore } from '../store'
 
 export function CalculatorPage() {
@@ -11,16 +16,37 @@ export function CalculatorPage() {
   const backspace = useAppStore((state) => state.backspace)
   const evaluate = useAppStore((state) => state.evaluate)
 
+  const [helpOpen, setHelpOpen] = useState(false)
+
+  const activeKeyId = useCalculatorKeyboard({
+    enabled: !helpOpen,
+    onInput: input,
+    onClear: clear,
+    onBackspace: backspace,
+    onEvaluate: evaluate,
+  })
+
   return (
     <div className="page">
-      <h1>Rechner</h1>
+      <div className="calculator-page__header">
+        <h1>Rechner</h1>
+        <Button
+          variant="secondary"
+          aria-label="Tastenkürzel anzeigen"
+          onClick={() => setHelpOpen(true)}
+        >
+          ?
+        </Button>
+      </div>
       <Display expression={expression} result={result} error={error} />
       <Keypad
         onInput={input}
         onClear={clear}
         onBackspace={backspace}
         onEquals={evaluate}
+        activeKeyId={activeKeyId}
       />
+      <HelpPopover open={helpOpen} onClose={() => setHelpOpen(false)} />
     </div>
   )
 }

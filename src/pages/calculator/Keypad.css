@@ -8,3 +8,8 @@
   font-size: var(--font-size-lg);
   padding: var(--space-3);
 }
+
+.calculator-keypad__button--active {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 2px;
+}

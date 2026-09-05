@@ -1,5 +1,5 @@
-import { fireEvent, render, screen } from '@testing-library/react'
-import { beforeEach, describe, expect, it } from 'vitest'
+import { act, fireEvent, render, screen } from '@testing-library/react'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { CalculatorPage } from './CalculatorPage'
 import { useAppStore } from '../store'
 
@@ -14,6 +14,10 @@ function pressKeys(...labels: string[]) {
 describe('CalculatorPage', () => {
   beforeEach(() => {
     useAppStore.setState(initialState, true)
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
   })
 
   it('zeigt Ziffern und Operatoren im Display, "=" zeigt das Ergebnis', () => {
@@ -72,5 +76,87 @@ describe('CalculatorPage', () => {
     pressKeys('7')
 
     expect(screen.getByLabelText('Ausdruck')).toHaveTextContent('7')
+  })
+
+  it('Ziffern und Operatoren der physischen Tastatur landen im Display', () => {
+    render(<CalculatorPage />)
+
+    fireEvent.keyDown(document, { key: '2' })
+    fireEvent.keyDown(document, { key: '+' })
+    fireEvent.keyDown(document, { key: '3' })
+
+    expect(screen.getByLabelText('Ausdruck')).toHaveTextContent('2+3')
+  })
+
+  it('Enter berechnet, Escape löscht, Backspace entfernt ein Zeichen', () => {
+    render(<CalculatorPage />)
+
+    fireEvent.keyDown(document, { key: '2' })
+    fireEvent.keyDown(document, { key: '+' })
+    fireEvent.keyDown(document, { key: '3' })
+    fireEvent.keyDown(document, { key: 'Enter' })
+    expect(screen.getByLabelText('Ergebnis')).toHaveTextContent('5')
+
+    fireEvent.keyDown(document, { key: 'Escape' })
+    expect(screen.getByLabelText('Ausdruck')).toHaveTextContent('0')
+
+    fireEvent.keyDown(document, { key: '1' })
+    fireEvent.keyDown(document, { key: '2' })
+    fireEvent.keyDown(document, { key: 'Backspace' })
+    expect(screen.getByLabelText('Ausdruck')).toHaveTextContent('1')
+  })
+
+  it('hebt die gedrückte Taste kurz als aktive Taste in der UI hervor', () => {
+    vi.useFakeTimers()
+    render(<CalculatorPage />)
+
+    fireEvent.keyDown(document, { key: '7' })
+    expect(screen.getByRole('button', { name: '7' })).toHaveClass(
+      'calculator-keypad__button--active',
+    )
+
+    act(() => {
+      vi.advanceTimersByTime(200)
+    })
+    expect(screen.getByRole('button', { name: '7' })).not.toHaveClass(
+      'calculator-keypad__button--active',
+    )
+  })
+
+  it('Tastatureingabe funktioniert unabhängig vom fokussierten Element', () => {
+    render(<CalculatorPage />)
+
+    screen.getByRole('button', { name: 'Tastenkürzel anzeigen' }).focus()
+    fireEvent.keyDown(document, { key: '9' })
+
+    expect(screen.getByLabelText('Ausdruck')).toHaveTextContent('9')
+  })
+
+  it('deaktiviert die Tastatureingabe, während das Hilfe-Popover offen ist', () => {
+    render(<CalculatorPage />)
+
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Tastenkürzel anzeigen' }),
+    )
+    fireEvent.keyDown(document, { key: '5' })
+    expect(screen.getByLabelText('Ausdruck')).toHaveTextContent('0')
+
+    fireEvent.keyDown(document, { key: 'Escape' })
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+  })
+
+  it('dokumentiert die Tastenkürzel im Hilfe-Popover', () => {
+    render(<CalculatorPage />)
+
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Tastenkürzel anzeigen' }),
+    )
+
+    expect(
+      screen.getByRole('dialog', { name: 'Tastenkürzel' }),
+    ).toBeInTheDocument()
+    expect(screen.getByText('Ergebnis berechnen')).toBeInTheDocument()
+    expect(screen.getByText('Eingabe löschen')).toBeInTheDocument()
+    expect(screen.getByText('Letztes Zeichen löschen')).toBeInTheDocument()
   })
 })

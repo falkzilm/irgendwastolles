@@ -1,4 +1,5 @@
 import { Button } from '../../ui/Button'
+import { keyId } from './keyboard'
 import './Keypad.css'
 
 interface KeypadProps {
@@ -6,6 +7,8 @@ interface KeypadProps {
   onClear: () => void
   onBackspace: () => void
   onEquals: () => void
+  /** Kennung der aktuell hervorzuhebenden Taste, siehe `useCalculatorKeyboard`. */
+  activeKeyId?: string | null
 }
 
 type KeyDef =
@@ -41,21 +44,30 @@ const KEYS: KeyDef[] = [
  * Tastenfeld für die Grundrechenarten (IRGENDWAST-24): Ziffern, Komma,
  * Operatoren, Klammern, AC, Backspace und =. Weitere Engine-Items (z. B.
  * wissenschaftliche Funktionen) bauen auf diesem Layout auf.
+ *
+ * `activeKeyId` (IRGENDWAST-27) hebt die Taste hervor, die gerade über die
+ * physische Tastatur ausgelöst wurde, siehe `useCalculatorKeyboard`.
  */
 export function Keypad({
   onInput,
   onClear,
   onBackspace,
   onEquals,
+  activeKeyId = null,
 }: KeypadProps) {
   return (
     <div className="calculator-keypad" role="group" aria-label="Tastenfeld">
       {KEYS.map((key) => {
+        const id = keyId(key.kind, key.kind === 'input' ? key.value : undefined)
+        const className =
+          id === activeKeyId ? 'calculator-keypad__button--active' : undefined
+
         if (key.kind === 'clear') {
           return (
             <Button
               key={key.label}
               variant="danger"
+              className={className}
               aria-label={key.ariaLabel}
               onClick={onClear}
             >
@@ -68,6 +80,7 @@ export function Keypad({
             <Button
               key={key.label}
               variant="secondary"
+              className={className}
               aria-label={key.ariaLabel}
               onClick={onBackspace}
             >
@@ -77,7 +90,12 @@ export function Keypad({
         }
         if (key.kind === 'equals') {
           return (
-            <Button key={key.label} variant="primary" onClick={onEquals}>
+            <Button
+              key={key.label}
+              variant="primary"
+              className={className}
+              onClick={onEquals}
+            >
               {key.label}
             </Button>
           )
@@ -86,6 +104,7 @@ export function Keypad({
           <Button
             key={key.label}
             variant="secondary"
+            className={className}
             aria-label={key.ariaLabel}
             onClick={() => onInput(key.value)}
           >
