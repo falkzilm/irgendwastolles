@@ -7,7 +7,6 @@
 
 export const IPC_CHANNELS = {
   PING: 'app:ping',
-  // Platzhalter für zukünftige Persistenz-Kanäle
   STORE_GET: 'persistence:get',
   STORE_SET: 'persistence:set',
 } as const
@@ -21,20 +20,31 @@ export interface PingResponse {
   receivedAt: number
 }
 
-// Platzhalter-Typen für zukünftige Persistenz-Kanäle
-export interface StoreGetRequest {
-  key: string
+/**
+ * `defaults` wird mitgeschickt, damit der Main-Prozess eine beschädigte
+ * Datei direkt durch die Renderer-Defaults ersetzen kann, ohne deren Form
+ * kennen zu müssen (siehe `electron/persistence.ts`).
+ */
+export interface PersistenceLoadRequest {
+  defaults: unknown
 }
 
-export type StoreGetResponse = unknown
-
-export interface StoreSetRequest {
-  key: string
-  value: unknown
+export interface PersistenceLoadResponse {
+  data: unknown
 }
 
-export type StoreSetResponse = void
+export interface PersistenceSaveRequest {
+  data: unknown
+}
+
+export type PersistenceSaveResponse = void
 
 export interface ElectronApi {
   ping(request: PingRequest): Promise<PingResponse>
+  loadPersistedState(
+    request: PersistenceLoadRequest,
+  ): Promise<PersistenceLoadResponse>
+  savePersistedState(
+    request: PersistenceSaveRequest,
+  ): Promise<PersistenceSaveResponse>
 }
