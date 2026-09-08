@@ -96,11 +96,36 @@ JSON eingelesene) Katalogdaten, ohne eine Exception zu werfen:
 errors }` und **keine** teilweise befüllte `formulas`-Liste - erst ein
   vollständig valider Katalog liefert `{ ok: true, formulas }`.
 
+## Rendering (`FormulaLatex`)
+
+`FormulaLatex` (`src/formulas/FormulaLatex.tsx`) rendert das `latex`-Feld
+einer Formel per [KaTeX](https://katex.org/):
+
+```tsx
+import { FormulaLatex } from '../formulas'
+
+;<FormulaLatex latex="A = \pi r^2" />
+```
+
+- **Gültiges LaTeX** wird per `katex.renderToString` (`throwOnError: true`,
+  `trust: false`) zu HTML/MathML gerendert.
+- **Ungültiges LaTeX** (z. B. unvollständige Befehle) lässt `katex.renderToString`
+  werfen; die Komponente fängt jeden Fehler ab und zeigt stattdessen den
+  rohen LaTeX-Quelltext als Klartext (Klasse `formula-latex--fallback`) an,
+  statt abzustürzen.
+- **Offline/CSP:** KaTeX wird als npm-Paket (`katex`) importiert, nicht per
+  CDN eingebunden. `katex/dist/katex.min.css` referenziert die benötigten
+  Schriftarten relativ; Vite bündelt sie beim Build als lokale, gehashte
+  Assets unter `dist/assets/`. Formeln rendern damit ohne Internetverbindung,
+  und die in [`docs/security.md`](security.md) beschriebene CSP
+  (`script-src 'self'`, `font-src 'self'`) muss dafür nicht gelockert werden.
+
 ## Aufbau
 
 ```
 src/formulas/
-  index.ts   – öffentliche API: loadCatalog(), Re-Export der Typen
-  types.ts   – Formula, FormulaCategory, FormulaVariable, FormulaVariableRange
-  loader.ts  – loadCatalog(), CatalogError, CatalogLoadResult
+  index.ts         – öffentliche API: loadCatalog(), FormulaLatex, Re-Export der Typen
+  types.ts         – Formula, FormulaCategory, FormulaVariable, FormulaVariableRange
+  loader.ts        – loadCatalog(), CatalogError, CatalogLoadResult
+  FormulaLatex.tsx – KaTeX-Rendering mit Klartext-Fallback
 ```
