@@ -15,14 +15,18 @@ export function evaluateAst(
     case 'number':
       return node.value
     case 'identifier': {
-      const value = CONSTANTS[node.name]
-      if (value === undefined) {
-        throw new EngineSyntaxError(
-          `Unbekannte Konstante "${node.name}" an Position ${node.position}`,
-          node.position,
-        )
+      const constant = CONSTANTS[node.name]
+      if (constant !== undefined) {
+        return constant
       }
-      return value
+      const variable = context.variables?.[node.name]
+      if (variable !== undefined) {
+        return variable
+      }
+      throw new EngineSyntaxError(
+        `Unbekannte Konstante "${node.name}" an Position ${node.position}`,
+        node.position,
+      )
     }
     case 'call': {
       const fn = FUNCTIONS[node.name]

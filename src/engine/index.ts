@@ -35,8 +35,8 @@ export { tokenize } from './tokenizer'
  *
  * `context.angleMode` (Standard `'rad'`) steuert die Winkeleinheit der
  * trigonometrischen Funktionen und wird pro Aufruf übergeben statt global
- * gesetzt. `context.variables` ist weiterhin ein Platzhalter ohne Einfluss
- * auf das Ergebnis.
+ * gesetzt. `context.variables` bindet Bezeichner im Ausdruck an konkrete
+ * Werte (siehe `EngineContext` in `types.ts`).
  */
 export function evaluate(
   expression: string,

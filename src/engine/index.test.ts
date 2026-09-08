@@ -66,12 +66,41 @@ describe('evaluate', () => {
     })
   })
 
-  it('lässt den context-Parameter optional und ohne Einfluss auf das Ergebnis', () => {
+  it('lässt den context-Parameter optional', () => {
     expect(evaluate('2+2')).toEqual(evaluate('2+2', {}))
+  })
+
+  it('context.variables ohne Bezug zum Ausdruck bleibt ohne Einfluss auf das Ergebnis', () => {
     expect(evaluate('2+2', { variables: { x: 5 } })).toEqual({
       ok: true,
       value: 4,
     })
+  })
+
+  it('bindet Bezeichner im Ausdruck an context.variables', () => {
+    expect(evaluate('2*x', { variables: { x: 5 } })).toEqual({
+      ok: true,
+      value: 10,
+    })
+    expect(evaluate('pi*r^2', { variables: { r: 2 } })).toEqual({
+      ok: true,
+      value: Math.PI * 4,
+    })
+  })
+
+  it('konstanten haben Vorrang vor gleichnamigen Variablen', () => {
+    expect(evaluate('pi', { variables: { pi: 1 } })).toEqual({
+      ok: true,
+      value: Math.PI,
+    })
+  })
+
+  it('meldet einen unbekannten Bezeichner weiterhin als syntax-error, wenn er auch nicht in context.variables enthalten ist', () => {
+    const result = evaluate('2+x')
+    expect(result.ok).toBe(false)
+    if (!result.ok) {
+      expect(result.error.type).toBe('syntax-error')
+    }
   })
 
   it('meldet Division durch Null als evaluation-error', () => {
