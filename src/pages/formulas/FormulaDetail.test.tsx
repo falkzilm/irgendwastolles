@@ -35,6 +35,20 @@ const rechteckflaeche: Formula = {
   example: { a: 4, b: 5 },
 }
 
+const grossesProdukt: Formula = {
+  id: 'grosses-produkt',
+  title: 'Großes Produkt',
+  category: 'algebra',
+  description: 'Produkt zweier Zahlen',
+  latex: 'p = a \\cdot b',
+  expression: 'a*b',
+  variables: [
+    { name: 'a', unit: '' },
+    { name: 'b', unit: '' },
+  ],
+  source: 'Schulbuch Mathematik Sek I',
+}
+
 function renderDetail(formula: Formula, onClose = vi.fn()) {
   render(
     <ToastProvider>
@@ -130,6 +144,24 @@ describe('FormulaDetail', () => {
 
     expect(useAppStore.getState().expression).toBe('20')
     expect(onClose).toHaveBeenCalled()
+  })
+
+  it('übernimmt ein Ergebnis in Exponentialschreibweise als vom Rechner auswertbaren Ausdruck', () => {
+    renderDetail(grossesProdukt)
+
+    fireEvent.change(screen.getByLabelText('a'), {
+      target: { value: '1000000' },
+    })
+    fireEvent.change(screen.getByLabelText('b'), {
+      target: { value: '10000000' },
+    })
+    expect(screen.getByText('1e13')).toBeInTheDocument()
+
+    fireEvent.click(
+      screen.getByRole('button', { name: 'In den Rechner übernehmen' }),
+    )
+
+    expect(useAppStore.getState().expression).toBe('1*10^13')
   })
 
   it('hat keine kritischen axe-Verstöße', async () => {

@@ -4,7 +4,7 @@ import { Modal } from '../../ui/Modal'
 import { Button } from '../../ui/Button'
 import { useToast } from '../../ui/Toast'
 import { useAppStore } from '../../store'
-import { formatResult } from '../../engine'
+import { formatResult, toCalculatorExpression } from '../../engine'
 import { evaluateFormula } from '../../formulas'
 import type { Formula, FormulaVariable } from '../../formulas'
 
@@ -116,7 +116,7 @@ export function FormulaDetail({ formula, onClose }: FormulaDetailProps) {
 
   function handleTransfer() {
     if (!resultText) return
-    loadExpression(resultText)
+    loadExpression(toCalculatorExpression(resultText))
     showToast(`Ergebnis ${resultText} in den Rechner übernommen`, 'success')
     onClose()
   }

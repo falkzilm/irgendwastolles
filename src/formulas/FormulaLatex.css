@@ -1,0 +1,12 @@
+.formula-latex {
+  color: var(--color-fg);
+}
+
+.formula-latex--fallback {
+  display: inline-block;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  color: var(--color-danger);
+  border: 1px dashed var(--color-danger);
+  border-radius: var(--radius-sm);
+  padding: var(--space-1) var(--space-2);
+}

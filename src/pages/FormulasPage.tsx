@@ -6,6 +6,7 @@ import { FormulaDetail } from './formulas/FormulaDetail'
 import {
   FORMULA_CATALOG,
   FORMULA_CATEGORIES,
+  FormulaLatex,
   filterFormulas,
 } from '../formulas'
 import type { Formula, FormulaCategory } from '../formulas'
@@ -117,7 +118,9 @@ export function FormulasPage() {
                     <p className="formulas-page__card-description">
                       {formula.description}
                     </p>
-                    <p className="formulas-page__card-latex">{formula.latex}</p>
+                    <p className="formulas-page__card-latex">
+                      <FormulaLatex latex={formula.latex} />
+                    </p>
                     <button
                       type="button"
                       className="formulas-page__details-button"
