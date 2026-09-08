@@ -29,9 +29,11 @@ export type AngleMode = 'deg' | 'rad'
  * global gesetzt, damit `evaluate()` unabhängig von einem UI-/App-State bleibt.
  * Fehlt er, wird Radiant (`'rad'`) angenommen.
  *
- * `variables` ist weiterhin ein Platzhalter ohne Einfluss auf das Ergebnis,
- * damit künftige Engine-Items (z. B. Variablen aus der Formelbibliothek) die
- * öffentliche Signatur von `evaluate()` nicht mehr ändern müssen.
+ * `variables` bindet Bezeichner im Ausdruck an konkrete Werte (z. B. `r` an
+ * `2` für `pi*r^2`) - ein Bezeichner wird zuerst gegen `CONSTANTS` (`pi`/`e`)
+ * und, falls dort nicht gefunden, gegen `variables` aufgelöst. Ist er in
+ * keinem von beiden enthalten, liefert `evaluate()` weiterhin einen
+ * `syntax-error`.
  */
 export interface EngineContext {
   variables?: Record<string, number>
