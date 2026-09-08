@@ -35,6 +35,10 @@ Ein Playwright-basierter E2E-Smoke-Test (`npm run test:e2e`) startet die gebaute
 App und prüft, dass sich das Hauptfenster öffnet und die Startansicht rendert;
 Details dazu in [`docs/e2e.md`](docs/e2e.md).
 
+Bei jedem Push und Pull Request führt eine GitHub-Actions-Pipeline Lint,
+Typecheck, Unit-Tests, Build und E2E-Tests aus und lädt bei Erfolg das
+Build-Artefakt hoch; Details dazu in [`docs/ci.md`](docs/ci.md).
+
 ## npm-Scripts
 
 | Script                  | Beschreibung                                                                |
