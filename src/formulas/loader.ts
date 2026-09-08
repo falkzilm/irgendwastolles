@@ -206,10 +206,14 @@ export function loadCatalog(data: unknown): CatalogLoadResult {
     const entryErrors: CatalogError[] = []
     const formula = validateFormula(entry, `#${index}`, entryErrors)
 
-    if (formula && (idCounts.get(formula.id) ?? 0) > 1) {
+    const rawId =
+      typeof entry === 'object' && entry !== null
+        ? (entry as Record<string, unknown>).id
+        : undefined
+    if (isNonEmptyString(rawId) && (idCounts.get(rawId) ?? 0) > 1) {
       entryErrors.push({
-        id: formula.id,
-        message: `Doppelte Formel-id "${formula.id}"`,
+        id: rawId,
+        message: `Doppelte Formel-id "${rawId}"`,
       })
     }
 

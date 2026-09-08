@@ -121,4 +121,21 @@ describe('loadCatalog', () => {
       ).toBe(true)
     }
   })
+
+  it('erkennt eine doppelte Formel-id auch, wenn der Eintrag sonst ungültig ist', () => {
+    const result = loadCatalog([
+      kreisflaeche,
+      { id: 'kreisflaeche', title: 'Kaputter Duplikat-Eintrag' },
+    ])
+
+    expect(result.ok).toBe(false)
+    if (!result.ok) {
+      const duplicateErrorsForBrokenEntry = result.errors.filter(
+        (error) =>
+          error.id === 'kreisflaeche' &&
+          error.message.includes('Doppelte Formel-id'),
+      )
+      expect(duplicateErrorsForBrokenEntry).toHaveLength(2)
+    }
+  })
 })
