@@ -9,3 +9,9 @@ export type {
   FormulaVariable,
   FormulaVariableRange,
 } from './types'
+export type {
+  FormulaEvaluationError,
+  FormulaEvaluationErrorType,
+  FormulaEvaluationResult,
+} from './evaluate'
+export { evaluateFormula } from './evaluate'

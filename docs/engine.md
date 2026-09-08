@@ -21,10 +21,12 @@ weitere Engine-Items (z. B. Variablen, Winkelmodus, Funktionen) aufbauen:
   - `angleMode?: 'deg' | 'rad'` – Winkelmodus für `sin`/`cos`/`tan`/`asin`/
     `acos`/`atan`. Wird pro Aufruf übergeben statt global gesetzt (fehlt er,
     wird `'rad'` angenommen).
-  - `variables?: Record<string, number>` – weiterhin ein Platzhalter ohne
-    Einfluss auf das Ergebnis, Teil der Signatur, damit künftige Engine-Items
-    (z. B. Variablen aus der Formelbibliothek) die öffentliche API nicht mehr
-    ändern müssen.
+  - `variables?: Record<string, number>` – bindet Bezeichner im Ausdruck an
+    konkrete Werte. Ein Bezeichner wird zuerst gegen die Konstanten `pi`/`e`
+    aufgelöst, danach gegen `variables`; ist er in keinem von beiden
+    enthalten, liefert `evaluate()` weiterhin einen `syntax-error`. Wird von
+    IRGENDWAST-32 (siehe `docs/formula-evaluation.md`) genutzt, um Formeln aus
+    der Formelbibliothek mit konkreten Variablenwerten auszuwerten.
 - Rückgabewert `EngineResult`:
   ```ts
   type EngineResult =
