@@ -5,6 +5,7 @@ import { useAppStore } from '../store'
 import {
   FORMULA_CATALOG,
   FORMULA_CATEGORIES,
+  FormulaLatex,
   filterFormulas,
 } from '../formulas'
 import type { FormulaCategory } from '../formulas'
@@ -115,7 +116,9 @@ export function FormulasPage() {
                     <p className="formulas-page__card-description">
                       {formula.description}
                     </p>
-                    <p className="formulas-page__card-latex">{formula.latex}</p>
+                    <p className="formulas-page__card-latex">
+                      <FormulaLatex latex={formula.latex} />
+                    </p>
                   </Card>
                 )
               })}

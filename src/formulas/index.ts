@@ -3,6 +3,8 @@ export { loadCatalog } from './loader'
 export { FORMULA_CATALOG } from './catalog'
 export { filterFormulas, matchesQuery } from './search'
 export { FORMULA_CATEGORIES } from './types'
+export { FormulaLatex } from './FormulaLatex'
+export type { FormulaLatexProps } from './FormulaLatex'
 export type {
   Formula,
   FormulaCategory,
