@@ -1,5 +1,10 @@
 import { FORMULA_CATEGORIES } from './types'
-import type { Formula, FormulaCategory, FormulaVariable } from './types'
+import type {
+  Formula,
+  FormulaCategory,
+  FormulaExample,
+  FormulaVariable,
+} from './types'
 
 export interface CatalogError {
   /** Formel-id des fehlerhaften Eintrags, oder `#<index>`, falls die id selbst fehlt/ungültig ist. */
@@ -97,6 +102,82 @@ function validateVariable(
   return { name: v.name as string, unit: v.unit as string, range }
 }
 
+function validateExample(
+  entry: unknown,
+  formulaId: string,
+  index: number,
+  errors: CatalogError[],
+  variableNames: string[],
+): FormulaExample | undefined {
+  if (typeof entry !== 'object' || entry === null) {
+    errors.push({
+      id: formulaId,
+      message: `Beispiel #${index} ist kein Objekt`,
+    })
+    return undefined
+  }
+
+  const e = entry as Record<string, unknown>
+  let valid = true
+  let values: Record<string, number> | undefined
+
+  if (
+    typeof e.values !== 'object' ||
+    e.values === null ||
+    Array.isArray(e.values)
+  ) {
+    errors.push({
+      id: formulaId,
+      message: `Beispiel #${index}: Feld "values" fehlt oder ist ungültig`,
+    })
+    valid = false
+  } else {
+    const rawValues = e.values as Record<string, unknown>
+    const rawKeys = Object.keys(rawValues)
+    const missing = variableNames.filter((name) => !(name in rawValues))
+    const extra = rawKeys.filter((name) => !variableNames.includes(name))
+    const nonNumeric = rawKeys.filter(
+      (name) => typeof rawValues[name] !== 'number',
+    )
+
+    if (missing.length > 0) {
+      errors.push({
+        id: formulaId,
+        message: `Beispiel #${index}: "values" fehlt Wert für Variable(n) ${missing.join(', ')}`,
+      })
+      valid = false
+    }
+    if (extra.length > 0) {
+      errors.push({
+        id: formulaId,
+        message: `Beispiel #${index}: "values" enthält unbekannte Variable(n) ${extra.join(', ')}`,
+      })
+      valid = false
+    }
+    if (nonNumeric.length > 0) {
+      errors.push({
+        id: formulaId,
+        message: `Beispiel #${index}: "values" muss für jede Variable eine Zahl enthalten (betrifft ${nonNumeric.join(', ')})`,
+      })
+      valid = false
+    }
+    if (missing.length === 0 && extra.length === 0 && nonNumeric.length === 0) {
+      values = rawValues as Record<string, number>
+    }
+  }
+
+  if (typeof e.expected !== 'number' || !Number.isFinite(e.expected)) {
+    errors.push({
+      id: formulaId,
+      message: `Beispiel #${index}: Feld "expected" fehlt oder ist ungültig`,
+    })
+    valid = false
+  }
+
+  if (!valid || values === undefined) return undefined
+  return { values, expected: e.expected as number }
+}
+
 function validateFormula(
   entry: unknown,
   fallbackId: string,
@@ -158,6 +239,25 @@ function validateFormula(
     })
   }
 
+  const examples: FormulaExample[] = []
+  if (!Array.isArray(f.examples) || f.examples.length === 0) {
+    errors.push({
+      id,
+      message: 'Feld "examples" fehlt, ist kein Array oder ist leer',
+    })
+    valid = false
+  } else {
+    const variableNames = variables.map((variable) => variable.name)
+    f.examples.forEach((example, i) => {
+      const validated = validateExample(example, id, i, errors, variableNames)
+      if (validated) {
+        examples.push(validated)
+      } else {
+        valid = false
+      }
+    })
+  }
+
   if (!valid) return undefined
   return {
     id,
@@ -168,6 +268,7 @@ function validateFormula(
     expression: f.expression as string,
     source: f.source as string,
     variables,
+    examples,
   }
 }
 

@@ -17,6 +17,7 @@ interface Formula {
   latex: string // LaTeX-Darstellung, z. B. "A = \\pi r^2"
   expression: string // Ausdruck in der Syntax der Rechen-Engine, siehe docs/engine.md
   variables: FormulaVariable[]
+  examples: FormulaExample[] // mindestens ein Rechenbeispiel mit erwartetem Ergebnis
   source: string // Quelle/Herkunft der Formel
 }
 
@@ -24,6 +25,11 @@ interface FormulaVariable {
   name: string // Bezeichner im expression, z. B. "r"
   unit: string // Einheit, z. B. "m"; Leerstring für einheitenlose Größen
   range?: { min?: number; max?: number } // optional, beide Grenzen inklusiv
+}
+
+interface FormulaExample {
+  values: Record<string, number> // Wert je Variable aus `variables`, indiziert nach Name
+  expected: number // erwartetes Ergebnis von `expression` bei dieser Belegung
 }
 ```
 
@@ -57,6 +63,7 @@ optionales Feld ändert die bestehende API nicht.
   "latex": "A = \\pi r^2",
   "expression": "pi*r^2",
   "variables": [{ "name": "r", "unit": "m", "range": { "min": 0 } }],
+  "examples": [{ "values": { "r": 2 }, "expected": 12.566370614359172 }],
   "source": "Schulbuch Mathematik Sek I"
 }
 ```
@@ -79,6 +86,9 @@ JSON eingelesene) Katalogdaten, ohne eine Exception zu werfen:
   `expression`/`source`, `category` aus `FORMULA_CATEGORIES`, `variables` als
   Array gültiger Variablen mit nicht-leerem `name`, String-`unit` und
   optionalem `range` mit `min <= max`).
+- `examples` muss ein nicht-leeres Array sein. Jedes Beispiel braucht ein
+  `values`-Objekt mit genau einem Zahlenwert pro Variable aus `variables`
+  (weder fehlend noch überzählig) sowie ein numerisches `expected`-Feld.
 - Fehlende oder ungültige Felder werden als `CatalogError` gesammelt:
   ```ts
   interface CatalogError {
@@ -95,6 +105,22 @@ JSON eingelesene) Katalogdaten, ohne eine Exception zu werfen:
 - Gibt es mindestens einen Fehler, liefert `loadCatalog()` `{ ok: false,
 errors }` und **keine** teilweise befüllte `formulas`-Liste - erst ein
   vollständig valider Katalog liefert `{ ok: true, formulas }`.
+
+## Startkatalog
+
+`src/formulas/catalog.json` enthält den kuratierten Startkatalog (IRGENDWAST-31):
+mindestens 30 Formeln in den Kategorien `algebra`, `geometrie`,
+`trigonometrie`, `analysis`, `physik` und `stochastik`, mit deutschen
+Erklärtexten und je mindestens einem Rechenbeispiel. `src/formulas/catalog.ts`
+lädt diese Daten beim Modulstart über `loadCatalog()` und exportiert das
+Ergebnis als `FORMULA_CATALOG: Formula[]` – bei ungültigen Katalogdaten wirft
+das Modul beim Import eine Exception, damit ein fehlerhafter Katalog nicht
+unbemerkt in die Anwendung gelangt.
+
+`src/formulas/catalog.test.ts` validiert `catalog.json` mit `loadCatalog()`
+und wertet für jede Formel jedes Beispiel über die Rechen-Engine
+(`evaluate()`, siehe `docs/engine.md`) aus: die Variablennamen aus `values`
+werden im `expression` ersetzt, das Ergebnis wird gegen `expected` geprüft.
 
 ## Rendering (`FormulaLatex`)
 
@@ -124,19 +150,14 @@ import { FormulaLatex } from '../formulas'
 
 ```
 src/formulas/
-  index.ts         – öffentliche API: loadCatalog(), FormulaLatex, Re-Export der Typen
-  types.ts         – Formula, FormulaCategory, FormulaVariable, FormulaVariableRange
+  index.ts         – öffentliche API: loadCatalog(), FORMULA_CATALOG, FormulaLatex, Re-Export der Typen
+  types.ts         – Formula, FormulaCategory, FormulaVariable, FormulaVariableRange, FormulaExample
   loader.ts        – loadCatalog(), CatalogError, CatalogLoadResult
-  catalog.ts       – FORMULA_CATALOG: statischer Beispielkatalog (IRGENDWAST-33)
+  catalog.json     – kuratierter Startkatalog (Rohdaten)
+  catalog.ts       – lädt catalog.json über loadCatalog() und exportiert FORMULA_CATALOG
   search.ts        – matchesQuery(), filterFormulas() für den Formelbrowser
   FormulaLatex.tsx – KaTeX-Rendering mit Klartext-Fallback
 ```
-
-`catalog.ts` bindet den Katalog als typgeprüftes `Formula[]`-Array direkt im
-Quellcode ein statt ihn über `loadCatalog()` aus Rohdaten zu laden - der
-Loader bleibt für künftige extern geladene/nutzerdefinierte Kataloge
-reserviert, die eingebetteten Beispieldaten werden bereits vom
-TypeScript-Compiler gegen das Schema geprüft.
 
 ## Formelbrowser (IRGENDWAST-33)
 

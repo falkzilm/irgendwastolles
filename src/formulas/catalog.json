@@ -1,0 +1,512 @@
+[
+  {
+    "id": "lineare-gleichung",
+    "title": "Lineare Gleichung",
+    "category": "algebra",
+    "description": "Wert einer linearen Funktion y = mx + b an der Stelle x.",
+    "latex": "y = mx + b",
+    "expression": "m*x+b",
+    "variables": [
+      { "name": "m", "unit": "" },
+      { "name": "x", "unit": "" },
+      { "name": "b", "unit": "" }
+    ],
+    "examples": [{ "values": { "m": 2, "x": 3, "b": 1 }, "expected": 7 }],
+    "source": "Schulbuch Mathematik Sek I"
+  },
+  {
+    "id": "quadratische-diskriminante",
+    "title": "Diskriminante der quadratischen Gleichung",
+    "category": "algebra",
+    "description": "Diskriminante D der quadratischen Gleichung ax^2 + bx + c = 0, bestimmt die Anzahl reeller Lösungen.",
+    "latex": "D = b^2 - 4ac",
+    "expression": "b^2-4*a*c",
+    "variables": [
+      { "name": "a", "unit": "" },
+      { "name": "b", "unit": "" },
+      { "name": "c", "unit": "" }
+    ],
+    "examples": [{ "values": { "a": 1, "b": -3, "c": 2 }, "expected": 1 }],
+    "source": "Schulbuch Mathematik Sek I"
+  },
+  {
+    "id": "pq-formel-x1",
+    "title": "pq-Formel (erste Lösung)",
+    "category": "algebra",
+    "description": "Erste Lösung x1 der Normalform x^2 + px + q = 0 mittels pq-Formel.",
+    "latex": "x_1 = -\\frac{p}{2} + \\sqrt{\\left(\\frac{p}{2}\\right)^2 - q}",
+    "expression": "-p/2+sqrt((p/2)^2-q)",
+    "variables": [
+      { "name": "p", "unit": "" },
+      { "name": "q", "unit": "" }
+    ],
+    "examples": [{ "values": { "p": -3, "q": 2 }, "expected": 2 }],
+    "source": "Schulbuch Mathematik Sek I"
+  },
+  {
+    "id": "binomische-formel-plus",
+    "title": "Erste binomische Formel",
+    "category": "algebra",
+    "description": "Ausmultiplizierter Wert von (a + b)^2.",
+    "latex": "(a+b)^2 = a^2 + 2ab + b^2",
+    "expression": "a^2+2*a*b+b^2",
+    "variables": [
+      { "name": "a", "unit": "" },
+      { "name": "b", "unit": "" }
+    ],
+    "examples": [{ "values": { "a": 2, "b": 3 }, "expected": 25 }],
+    "source": "Schulbuch Mathematik Sek I"
+  },
+  {
+    "id": "geometrische-summe",
+    "title": "Endliche geometrische Summe",
+    "category": "algebra",
+    "description": "Summe der ersten n Glieder einer geometrischen Folge mit Anfangsglied a und Quotient q.",
+    "latex": "s_n = a_1 \\cdot \\frac{1-q^n}{1-q}",
+    "expression": "a*(1-q^n)/(1-q)",
+    "variables": [
+      { "name": "a", "unit": "" },
+      { "name": "q", "unit": "" },
+      { "name": "n", "unit": "", "range": { "min": 0 } }
+    ],
+    "examples": [{ "values": { "a": 1, "q": 2, "n": 4 }, "expected": 15 }],
+    "source": "Schulbuch Mathematik Sek II"
+  },
+  {
+    "id": "prozentwert",
+    "title": "Prozentwert",
+    "category": "algebra",
+    "description": "Prozentwert W aus Grundwert G und Prozentsatz p.",
+    "latex": "W = \\frac{G \\cdot p}{100}",
+    "expression": "G*p/100",
+    "variables": [
+      { "name": "G", "unit": "" },
+      { "name": "p", "unit": "%" }
+    ],
+    "examples": [{ "values": { "G": 200, "p": 15 }, "expected": 30 }],
+    "source": "Schulbuch Mathematik Sek I"
+  },
+  {
+    "id": "zinsrechnung-einfach",
+    "title": "Einfache Zinsen",
+    "category": "algebra",
+    "description": "Zinsertrag Z aus Kapital K, Zinssatz p pro Jahr und Laufzeit t in Jahren (einfache, unverzinste Zinsrechnung).",
+    "latex": "Z = \\frac{K \\cdot p \\cdot t}{100}",
+    "expression": "K*p*t/100",
+    "variables": [
+      { "name": "K", "unit": "€" },
+      { "name": "p", "unit": "%" },
+      { "name": "t", "unit": "Jahre", "range": { "min": 0 } }
+    ],
+    "examples": [{ "values": { "K": 1000, "p": 5, "t": 2 }, "expected": 100 }],
+    "source": "Schulbuch Mathematik Sek I"
+  },
+  {
+    "id": "kreisflaeche",
+    "title": "Kreisfläche",
+    "category": "geometrie",
+    "description": "Fläche eines Kreises aus dem Radius.",
+    "latex": "A = \\pi r^2",
+    "expression": "pi*r^2",
+    "variables": [{ "name": "r", "unit": "m", "range": { "min": 0 } }],
+    "examples": [{ "values": { "r": 2 }, "expected": 12.566370614359172 }],
+    "source": "Schulbuch Mathematik Sek I"
+  },
+  {
+    "id": "kreisumfang",
+    "title": "Kreisumfang",
+    "category": "geometrie",
+    "description": "Umfang eines Kreises aus dem Radius.",
+    "latex": "U = 2\\pi r",
+    "expression": "2*pi*r",
+    "variables": [{ "name": "r", "unit": "m", "range": { "min": 0 } }],
+    "examples": [{ "values": { "r": 3 }, "expected": 18.84955592153876 }],
+    "source": "Schulbuch Mathematik Sek I"
+  },
+  {
+    "id": "rechteckflaeche",
+    "title": "Rechteckfläche",
+    "category": "geometrie",
+    "description": "Fläche eines Rechtecks aus den beiden Seitenlängen.",
+    "latex": "A = a \\cdot b",
+    "expression": "a*b",
+    "variables": [
+      { "name": "a", "unit": "m", "range": { "min": 0 } },
+      { "name": "b", "unit": "m", "range": { "min": 0 } }
+    ],
+    "examples": [{ "values": { "a": 5, "b": 4 }, "expected": 20 }],
+    "source": "Schulbuch Mathematik Sek I"
+  },
+  {
+    "id": "dreiecksflaeche",
+    "title": "Dreiecksfläche",
+    "category": "geometrie",
+    "description": "Fläche eines Dreiecks aus Grundseite und zugehöriger Höhe.",
+    "latex": "A = \\frac{g \\cdot h}{2}",
+    "expression": "(g*h)/2",
+    "variables": [
+      { "name": "g", "unit": "m", "range": { "min": 0 } },
+      { "name": "h", "unit": "m", "range": { "min": 0 } }
+    ],
+    "examples": [{ "values": { "g": 6, "h": 4 }, "expected": 12 }],
+    "source": "Schulbuch Mathematik Sek I"
+  },
+  {
+    "id": "quadervolumen",
+    "title": "Quadervolumen",
+    "category": "geometrie",
+    "description": "Volumen eines Quaders aus den drei Kantenlängen.",
+    "latex": "V = a \\cdot b \\cdot c",
+    "expression": "a*b*c",
+    "variables": [
+      { "name": "a", "unit": "m", "range": { "min": 0 } },
+      { "name": "b", "unit": "m", "range": { "min": 0 } },
+      { "name": "c", "unit": "m", "range": { "min": 0 } }
+    ],
+    "examples": [{ "values": { "a": 2, "b": 3, "c": 4 }, "expected": 24 }],
+    "source": "Schulbuch Mathematik Sek I"
+  },
+  {
+    "id": "kugelvolumen",
+    "title": "Kugelvolumen",
+    "category": "geometrie",
+    "description": "Volumen einer Kugel aus dem Radius.",
+    "latex": "V = \\frac{4}{3}\\pi r^3",
+    "expression": "(4/3)*pi*r^3",
+    "variables": [{ "name": "r", "unit": "m", "range": { "min": 0 } }],
+    "examples": [{ "values": { "r": 3 }, "expected": 113.09733552923254 }],
+    "source": "Schulbuch Mathematik Sek II"
+  },
+  {
+    "id": "satz-des-pythagoras",
+    "title": "Satz des Pythagoras",
+    "category": "geometrie",
+    "description": "Länge der Hypotenuse c eines rechtwinkligen Dreiecks aus den Kathetenlängen a und b.",
+    "latex": "c = \\sqrt{a^2 + b^2}",
+    "expression": "sqrt(a^2+b^2)",
+    "variables": [
+      { "name": "a", "unit": "m", "range": { "min": 0 } },
+      { "name": "b", "unit": "m", "range": { "min": 0 } }
+    ],
+    "examples": [{ "values": { "a": 3, "b": 4 }, "expected": 5 }],
+    "source": "Schulbuch Mathematik Sek I"
+  },
+  {
+    "id": "sinus",
+    "title": "Sinus",
+    "category": "trigonometrie",
+    "description": "Sinuswert eines im Bogenmaß gegebenen Winkels x.",
+    "latex": "y = \\sin(x)",
+    "expression": "sin(x)",
+    "variables": [{ "name": "x", "unit": "rad" }],
+    "examples": [{ "values": { "x": 1 }, "expected": 0.8414709848078965 }],
+    "source": "Schulbuch Mathematik Sek II"
+  },
+  {
+    "id": "kosinus",
+    "title": "Kosinus",
+    "category": "trigonometrie",
+    "description": "Kosinuswert eines im Bogenmaß gegebenen Winkels x.",
+    "latex": "y = \\cos(x)",
+    "expression": "cos(x)",
+    "variables": [{ "name": "x", "unit": "rad" }],
+    "examples": [{ "values": { "x": 1 }, "expected": 0.5403023058681398 }],
+    "source": "Schulbuch Mathematik Sek II"
+  },
+  {
+    "id": "tangens",
+    "title": "Tangens",
+    "category": "trigonometrie",
+    "description": "Tangenswert eines im Bogenmaß gegebenen Winkels x.",
+    "latex": "y = \\tan(x)",
+    "expression": "tan(x)",
+    "variables": [{ "name": "x", "unit": "rad" }],
+    "examples": [{ "values": { "x": 0.5 }, "expected": 0.5463024898437905 }],
+    "source": "Schulbuch Mathematik Sek II"
+  },
+  {
+    "id": "arkussinus",
+    "title": "Arkussinus",
+    "category": "trigonometrie",
+    "description": "Winkel im Bogenmaß, dessen Sinus gleich x ist.",
+    "latex": "y = \\arcsin(x)",
+    "expression": "asin(x)",
+    "variables": [
+      { "name": "x", "unit": "", "range": { "min": -1, "max": 1 } }
+    ],
+    "examples": [{ "values": { "x": 0.5 }, "expected": 0.5235987755982989 }],
+    "source": "Schulbuch Mathematik Sek II"
+  },
+  {
+    "id": "arkuskosinus",
+    "title": "Arkuskosinus",
+    "category": "trigonometrie",
+    "description": "Winkel im Bogenmaß, dessen Kosinus gleich x ist.",
+    "latex": "y = \\arccos(x)",
+    "expression": "acos(x)",
+    "variables": [
+      { "name": "x", "unit": "", "range": { "min": -1, "max": 1 } }
+    ],
+    "examples": [{ "values": { "x": 0.5 }, "expected": 1.0471975511965979 }],
+    "source": "Schulbuch Mathematik Sek II"
+  },
+  {
+    "id": "arkustangens",
+    "title": "Arkustangens",
+    "category": "trigonometrie",
+    "description": "Winkel im Bogenmaß, dessen Tangens gleich x ist.",
+    "latex": "y = \\arctan(x)",
+    "expression": "atan(x)",
+    "variables": [{ "name": "x", "unit": "" }],
+    "examples": [{ "values": { "x": 1 }, "expected": 0.7853981633974483 }],
+    "source": "Schulbuch Mathematik Sek II"
+  },
+  {
+    "id": "ableitung-potenzfunktion",
+    "title": "Ableitung einer Potenzfunktion an einer Stelle",
+    "category": "analysis",
+    "description": "Wert der Ableitung f'(x) = n * x^(n-1) einer Potenzfunktion f(x) = x^n an der Stelle x.",
+    "latex": "f'(x_0) = n \\cdot x_0^{n-1}",
+    "expression": "n*x^(n-1)",
+    "variables": [
+      { "name": "n", "unit": "" },
+      { "name": "x", "unit": "" }
+    ],
+    "examples": [{ "values": { "n": 3, "x": 2 }, "expected": 12 }],
+    "source": "Schulbuch Mathematik Sek II"
+  },
+  {
+    "id": "quadratische-funktion-wert",
+    "title": "Funktionswert einer quadratischen Funktion",
+    "category": "analysis",
+    "description": "Funktionswert f(x) = ax^2 + bx + c an der Stelle x.",
+    "latex": "f(x) = ax^2 + bx + c",
+    "expression": "a*x^2+b*x+c",
+    "variables": [
+      { "name": "a", "unit": "" },
+      { "name": "b", "unit": "" },
+      { "name": "c", "unit": "" },
+      { "name": "x", "unit": "" }
+    ],
+    "examples": [
+      { "values": { "a": 1, "b": -2, "c": 1, "x": 3 }, "expected": 4 }
+    ],
+    "source": "Schulbuch Mathematik Sek II"
+  },
+  {
+    "id": "exponentialfunktion-wert",
+    "title": "Funktionswert einer Exponentialfunktion",
+    "category": "analysis",
+    "description": "Funktionswert f(x) = a * e^(kx) einer Exponentialfunktion mit Anfangswert a und Wachstumsrate k an der Stelle x.",
+    "latex": "f(x) = a \\cdot e^{kx}",
+    "expression": "a*exp(k*x)",
+    "variables": [
+      { "name": "a", "unit": "" },
+      { "name": "k", "unit": "" },
+      { "name": "x", "unit": "" }
+    ],
+    "examples": [
+      { "values": { "a": 2, "k": 0.5, "x": 2 }, "expected": 5.43656365691809 }
+    ],
+    "source": "Schulbuch Mathematik Sek II"
+  },
+  {
+    "id": "natuerlicher-logarithmus",
+    "title": "Natürlicher Logarithmus",
+    "category": "analysis",
+    "description": "Natürlicher Logarithmus von x.",
+    "latex": "y = \\ln(x)",
+    "expression": "ln(x)",
+    "variables": [{ "name": "x", "unit": "", "range": { "min": 0 } }],
+    "examples": [{ "values": { "x": 7.38905609893065 }, "expected": 2 }],
+    "source": "Schulbuch Mathematik Sek II"
+  },
+  {
+    "id": "dekadischer-logarithmus",
+    "title": "Dekadischer Logarithmus",
+    "category": "analysis",
+    "description": "Logarithmus von x zur Basis 10.",
+    "latex": "y = \\log_{10}(x)",
+    "expression": "log(x)",
+    "variables": [{ "name": "x", "unit": "", "range": { "min": 0 } }],
+    "examples": [{ "values": { "x": 1000 }, "expected": 3 }],
+    "source": "Schulbuch Mathematik Sek II"
+  },
+  {
+    "id": "geometrische-reihe-grenzwert",
+    "title": "Grenzwert der unendlichen geometrischen Reihe",
+    "category": "analysis",
+    "description": "Grenzwert s = a / (1 - q) einer unendlichen geometrischen Reihe mit |q| < 1.",
+    "latex": "s = \\frac{a_1}{1-q}",
+    "expression": "a/(1-q)",
+    "variables": [
+      { "name": "a", "unit": "" },
+      { "name": "q", "unit": "", "range": { "min": -1, "max": 1 } }
+    ],
+    "examples": [{ "values": { "a": 1, "q": 0.5 }, "expected": 2 }],
+    "source": "Schulbuch Mathematik Sek II"
+  },
+  {
+    "id": "geschwindigkeit",
+    "title": "Geschwindigkeit",
+    "category": "physik",
+    "description": "Durchschnittsgeschwindigkeit v aus zurückgelegter Strecke s und benötigter Zeit t.",
+    "latex": "v = \\frac{s}{t}",
+    "expression": "s/t",
+    "variables": [
+      { "name": "s", "unit": "m", "range": { "min": 0 } },
+      { "name": "t", "unit": "s", "range": { "min": 0 } }
+    ],
+    "examples": [{ "values": { "s": 150, "t": 3 }, "expected": 50 }],
+    "source": "Schulbuch Physik Sek I"
+  },
+  {
+    "id": "kinetische-energie",
+    "title": "Kinetische Energie",
+    "category": "physik",
+    "description": "Kinetische Energie E eines Körpers aus Masse m und Geschwindigkeit v.",
+    "latex": "E = \\frac{1}{2}mv^2",
+    "expression": "(m*v^2)/2",
+    "variables": [
+      { "name": "m", "unit": "kg", "range": { "min": 0 } },
+      { "name": "v", "unit": "m/s" }
+    ],
+    "examples": [{ "values": { "m": 2, "v": 3 }, "expected": 9 }],
+    "source": "Schulbuch Physik Sek I"
+  },
+  {
+    "id": "newtons-zweites-gesetz",
+    "title": "Newtons zweites Gesetz",
+    "category": "physik",
+    "description": "Kraft F aus Masse m und Beschleunigung a.",
+    "latex": "F = m \\cdot a",
+    "expression": "m*a",
+    "variables": [
+      { "name": "m", "unit": "kg", "range": { "min": 0 } },
+      { "name": "a", "unit": "m/s^2" }
+    ],
+    "examples": [{ "values": { "m": 5, "a": 2 }, "expected": 10 }],
+    "source": "Schulbuch Physik Sek I"
+  },
+  {
+    "id": "dichte",
+    "title": "Dichte",
+    "category": "physik",
+    "description": "Dichte rho eines Körpers aus Masse m und Volumen V.",
+    "latex": "\\rho = \\frac{m}{V}",
+    "expression": "m/V",
+    "variables": [
+      { "name": "m", "unit": "kg", "range": { "min": 0 } },
+      { "name": "V", "unit": "m^3", "range": { "min": 0 } }
+    ],
+    "examples": [{ "values": { "m": 10, "V": 2 }, "expected": 5 }],
+    "source": "Schulbuch Physik Sek I"
+  },
+  {
+    "id": "fallzeit-hoehe",
+    "title": "Fallhöhe beim freien Fall",
+    "category": "physik",
+    "description": "Fallhöhe h beim freien Fall aus der Fallzeit t und der Fallbeschleunigung g.",
+    "latex": "h = \\frac{1}{2}gt^2",
+    "expression": "(g*t^2)/2",
+    "variables": [
+      { "name": "g", "unit": "m/s^2", "range": { "min": 0 } },
+      { "name": "t", "unit": "s", "range": { "min": 0 } }
+    ],
+    "examples": [{ "values": { "g": 9.81, "t": 2 }, "expected": 19.62 }],
+    "source": "Schulbuch Physik Sek I"
+  },
+  {
+    "id": "ohmsches-gesetz",
+    "title": "Ohmsches Gesetz",
+    "category": "physik",
+    "description": "Elektrische Spannung U aus Widerstand R und Stromstärke I.",
+    "latex": "U = R \\cdot I",
+    "expression": "R*I",
+    "variables": [
+      { "name": "R", "unit": "Ω", "range": { "min": 0 } },
+      { "name": "I", "unit": "A" }
+    ],
+    "examples": [{ "values": { "R": 10, "I": 2 }, "expected": 20 }],
+    "source": "Schulbuch Physik Sek I"
+  },
+  {
+    "id": "arithmetisches-mittel-drei-werte",
+    "title": "Arithmetisches Mittel dreier Werte",
+    "category": "stochastik",
+    "description": "Arithmetisches Mittel dreier Messwerte a, b und c.",
+    "latex": "\\bar{x} = \\frac{a+b+c}{3}",
+    "expression": "(a+b+c)/3",
+    "variables": [
+      { "name": "a", "unit": "" },
+      { "name": "b", "unit": "" },
+      { "name": "c", "unit": "" }
+    ],
+    "examples": [{ "values": { "a": 2, "b": 4, "c": 6 }, "expected": 4 }],
+    "source": "Schulbuch Mathematik Sek I"
+  },
+  {
+    "id": "kombinationen-ohne-wiederholung",
+    "title": "Binomialkoeffizient",
+    "category": "stochastik",
+    "description": "Anzahl der Möglichkeiten, aus n Elementen k ohne Beachtung der Reihenfolge und ohne Wiederholung auszuwählen.",
+    "latex": "\\binom{n}{k} = \\frac{n!}{k!(n-k)!}",
+    "expression": "fact(n)/(fact(k)*fact(n-k))",
+    "variables": [
+      { "name": "n", "unit": "", "range": { "min": 0 } },
+      { "name": "k", "unit": "", "range": { "min": 0 } }
+    ],
+    "examples": [{ "values": { "n": 5, "k": 2 }, "expected": 10 }],
+    "source": "Schulbuch Mathematik Sek II"
+  },
+  {
+    "id": "laplace-wahrscheinlichkeit",
+    "title": "Laplace-Wahrscheinlichkeit",
+    "category": "stochastik",
+    "description": "Wahrscheinlichkeit P eines Ereignisses bei Laplace-Experimenten aus der Anzahl günstiger Ergebnisse m und der Anzahl möglicher Ergebnisse n.",
+    "latex": "P = \\frac{m}{n}",
+    "expression": "m/n",
+    "variables": [
+      { "name": "m", "unit": "", "range": { "min": 0 } },
+      { "name": "n", "unit": "", "range": { "min": 0 } }
+    ],
+    "examples": [{ "values": { "m": 3, "n": 12 }, "expected": 0.25 }],
+    "source": "Schulbuch Mathematik Sek I"
+  },
+  {
+    "id": "standardabweichung-aus-varianz",
+    "title": "Standardabweichung aus der Varianz",
+    "category": "stochastik",
+    "description": "Standardabweichung sigma als Quadratwurzel der Varianz.",
+    "latex": "\\sigma = \\sqrt{\\text{Var}}",
+    "expression": "sqrt(varianz)",
+    "variables": [{ "name": "varianz", "unit": "", "range": { "min": 0 } }],
+    "examples": [{ "values": { "varianz": 16 }, "expected": 4 }],
+    "source": "Schulbuch Mathematik Sek II"
+  },
+  {
+    "id": "erwartungswert-binomialverteilung",
+    "title": "Erwartungswert der Binomialverteilung",
+    "category": "stochastik",
+    "description": "Erwartungswert E einer binomialverteilten Zufallsgröße aus Anzahl der Versuche n und Erfolgswahrscheinlichkeit p.",
+    "latex": "E = n \\cdot p",
+    "expression": "n*p",
+    "variables": [
+      { "name": "n", "unit": "", "range": { "min": 0 } },
+      { "name": "p", "unit": "", "range": { "min": 0, "max": 1 } }
+    ],
+    "examples": [{ "values": { "n": 20, "p": 0.3 }, "expected": 6 }],
+    "source": "Schulbuch Mathematik Sek II"
+  },
+  {
+    "id": "permutationen",
+    "title": "Permutationen",
+    "category": "stochastik",
+    "description": "Anzahl der Möglichkeiten, n unterscheidbare Elemente anzuordnen.",
+    "latex": "P = n!",
+    "expression": "fact(n)",
+    "variables": [{ "name": "n", "unit": "", "range": { "min": 0 } }],
+    "examples": [{ "values": { "n": 5 }, "expected": 120 }],
+    "source": "Schulbuch Mathematik Sek II"
+  }
+]

@@ -10,6 +10,7 @@ const kreisflaeche: Formula = {
   latex: 'A = \\pi r^2',
   expression: 'pi*r^2',
   variables: [{ name: 'r', unit: 'm', range: { min: 0 } }],
+  examples: [{ values: { r: 2 }, expected: 12.566370614359172 }],
   source: 'Schulbuch Mathematik Sek I',
 }
 
@@ -24,6 +25,7 @@ const satzDesPythagoras: Formula = {
     { name: 'a', unit: 'm' },
     { name: 'b', unit: 'm' },
   ],
+  examples: [{ values: { a: 3, b: 4 }, expected: 5 }],
   source: 'Schulbuch Mathematik Sek I',
 }
 

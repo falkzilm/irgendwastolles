@@ -34,6 +34,18 @@ export interface FormulaVariable {
 }
 
 /**
+ * Ein Rechenbeispiel für eine Formel: eine konkrete Variablenbelegung mit dem
+ * dabei erwarteten Ergebnis von `expression`. Dient sowohl der Dokumentation
+ * als auch als Testfall im Katalog-Test (siehe `docs/formulas.md`).
+ */
+export interface FormulaExample {
+  /** Werte für jede Variable aus `variables`, indiziert nach Variablenname. */
+  values: Record<string, number>
+  /** Erwartetes Ergebnis von `expression` bei dieser Variablenbelegung. */
+  expected: number
+}
+
+/**
  * Eine einzelne Formel im Katalog.
  *
  * `expression` folgt der Syntax der Rechen-Engine (siehe `docs/engine.md`)
@@ -50,6 +62,8 @@ export interface Formula {
   latex: string
   expression: string
   variables: FormulaVariable[]
+  /** Mindestens ein Rechenbeispiel mit erwartetem Ergebnis. */
+  examples: FormulaExample[]
   /** Quelle/Herkunft der Formel, z. B. Lehrbuch oder Normenreferenz. */
   source: string
 }
