@@ -61,15 +61,15 @@
     "id": "geometrische-summe",
     "title": "Endliche geometrische Summe",
     "category": "algebra",
-    "description": "Summe der ersten n Glieder einer geometrischen Folge mit Anfangsglied a1 und Quotient q.",
+    "description": "Summe der ersten n Glieder einer geometrischen Folge mit Anfangsglied a und Quotient q.",
     "latex": "s_n = a_1 \\cdot \\frac{1-q^n}{1-q}",
-    "expression": "a1*(1-q^n)/(1-q)",
+    "expression": "a*(1-q^n)/(1-q)",
     "variables": [
-      { "name": "a1", "unit": "" },
+      { "name": "a", "unit": "" },
       { "name": "q", "unit": "" },
       { "name": "n", "unit": "", "range": { "min": 0 } }
     ],
-    "examples": [{ "values": { "a1": 1, "q": 2, "n": 4 }, "expected": 15 }],
+    "examples": [{ "values": { "a": 1, "q": 2, "n": 4 }, "expected": 15 }],
     "source": "Schulbuch Mathematik Sek II"
   },
   {
@@ -265,14 +265,14 @@
     "id": "ableitung-potenzfunktion",
     "title": "Ableitung einer Potenzfunktion an einer Stelle",
     "category": "analysis",
-    "description": "Wert der Ableitung f'(x0) = n * x0^(n-1) einer Potenzfunktion f(x) = x^n an der Stelle x0.",
+    "description": "Wert der Ableitung f'(x) = n * x^(n-1) einer Potenzfunktion f(x) = x^n an der Stelle x.",
     "latex": "f'(x_0) = n \\cdot x_0^{n-1}",
-    "expression": "n*x0^(n-1)",
+    "expression": "n*x^(n-1)",
     "variables": [
       { "name": "n", "unit": "" },
-      { "name": "x0", "unit": "" }
+      { "name": "x", "unit": "" }
     ],
-    "examples": [{ "values": { "n": 3, "x0": 2 }, "expected": 12 }],
+    "examples": [{ "values": { "n": 3, "x": 2 }, "expected": 12 }],
     "source": "Schulbuch Mathematik Sek II"
   },
   {
@@ -336,14 +336,14 @@
     "id": "geometrische-reihe-grenzwert",
     "title": "Grenzwert der unendlichen geometrischen Reihe",
     "category": "analysis",
-    "description": "Grenzwert s = a1 / (1 - q) einer unendlichen geometrischen Reihe mit |q| < 1.",
+    "description": "Grenzwert s = a / (1 - q) einer unendlichen geometrischen Reihe mit |q| < 1.",
     "latex": "s = \\frac{a_1}{1-q}",
-    "expression": "a1/(1-q)",
+    "expression": "a/(1-q)",
     "variables": [
-      { "name": "a1", "unit": "" },
+      { "name": "a", "unit": "" },
       { "name": "q", "unit": "", "range": { "min": -1, "max": 1 } }
     ],
-    "examples": [{ "values": { "a1": 1, "q": 0.5 }, "expected": 2 }],
+    "examples": [{ "values": { "a": 1, "q": 0.5 }, "expected": 2 }],
     "source": "Schulbuch Mathematik Sek II"
   },
   {
