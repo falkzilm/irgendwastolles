@@ -122,13 +122,55 @@ und wertet für jede Formel jedes Beispiel über die Rechen-Engine
 (`evaluate()`, siehe `docs/engine.md`) aus: die Variablennamen aus `values`
 werden im `expression` ersetzt, das Ergebnis wird gegen `expected` geprüft.
 
+## Rendering (`FormulaLatex`)
+
+`FormulaLatex` (`src/formulas/FormulaLatex.tsx`) rendert das `latex`-Feld
+einer Formel per [KaTeX](https://katex.org/):
+
+```tsx
+import { FormulaLatex } from '../formulas'
+
+;<FormulaLatex latex="A = \pi r^2" />
+```
+
+- **Gültiges LaTeX** wird per `katex.renderToString` (`throwOnError: true`,
+  `trust: false`) zu HTML/MathML gerendert.
+- **Ungültiges LaTeX** (z. B. unvollständige Befehle) lässt `katex.renderToString`
+  werfen; die Komponente fängt jeden Fehler ab und zeigt stattdessen den
+  rohen LaTeX-Quelltext als Klartext (Klasse `formula-latex--fallback`) an,
+  statt abzustürzen.
+- **Offline/CSP:** KaTeX wird als npm-Paket (`katex`) importiert, nicht per
+  CDN eingebunden. `katex/dist/katex.min.css` referenziert die benötigten
+  Schriftarten relativ; Vite bündelt sie beim Build als lokale, gehashte
+  Assets unter `dist/assets/`. Formeln rendern damit ohne Internetverbindung,
+  und die in [`docs/security.md`](security.md) beschriebene CSP
+  (`script-src 'self'`, `font-src 'self'`) muss dafür nicht gelockert werden.
+
 ## Aufbau
 
 ```
 src/formulas/
-  index.ts        – öffentliche API: loadCatalog(), FORMULA_CATALOG, Re-Export der Typen
-  types.ts        – Formula, FormulaCategory, FormulaVariable, FormulaVariableRange, FormulaExample
-  loader.ts       – loadCatalog(), CatalogError, CatalogLoadResult
-  catalog.json    – kuratierter Startkatalog (Rohdaten)
-  catalog.ts      – lädt catalog.json über loadCatalog() und exportiert FORMULA_CATALOG
+  index.ts         – öffentliche API: loadCatalog(), FORMULA_CATALOG, FormulaLatex, Re-Export der Typen
+  types.ts         – Formula, FormulaCategory, FormulaVariable, FormulaVariableRange, FormulaExample
+  loader.ts        – loadCatalog(), CatalogError, CatalogLoadResult
+  catalog.json     – kuratierter Startkatalog (Rohdaten)
+  catalog.ts       – lädt catalog.json über loadCatalog() und exportiert FORMULA_CATALOG
+  search.ts        – matchesQuery(), filterFormulas() für den Formelbrowser
+  FormulaLatex.tsx – KaTeX-Rendering mit Klartext-Fallback
 ```
+
+## Formelbrowser (IRGENDWAST-33)
+
+`src/pages/FormulasPage.tsx` zeigt `FORMULA_CATALOG`, nach
+`FORMULA_CATEGORIES` gruppiert:
+
+- Die Textsuche (`matchesQuery()`/`filterFormulas()` aus `search.ts`)
+  filtert nach Titel und Beschreibung (Groß-/Kleinschreibung wird
+  ignoriert) und läuft synchron ohne Debounce, da ein reiner
+  Array-`filter()` über den Katalog auch bei 30 Einträgen deutlich unter
+  200 ms bleibt (siehe `search.test.ts`).
+- Ein Stern-Button pro Formel markiert sie als Favorit bzw. entfernt sie
+  wieder (`favoritenSlice`, siehe [state.md](./state.md)); "Nur Favoriten"
+  filtert die Ansicht zusätzlich auf markierte Formeln.
+- Ergibt die Suche bzw. der Favoriten-Filter keine Treffer, erscheint statt
+  leerer Kategorien ein erklärender Hinweistext.

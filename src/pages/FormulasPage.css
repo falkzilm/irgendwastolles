@@ -1,0 +1,105 @@
+.formulas-page__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+}
+
+.formulas-page__search {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  flex: 1;
+  min-width: 12rem;
+}
+
+.formulas-page__search-label {
+  font-size: var(--font-size-sm);
+  color: var(--color-fg-muted);
+}
+
+.formulas-page__search input {
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-bg-elevated);
+  color: var(--color-fg);
+  font-family: inherit;
+  font-size: var(--font-size-md);
+}
+
+.formulas-page__search input:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 1px;
+}
+
+.formulas-page__favorites-filter {
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-bg-elevated);
+  color: var(--color-fg);
+  font-family: inherit;
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+}
+
+.formulas-page__favorites-filter[aria-pressed='true'] {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.formulas-page__empty {
+  color: var(--color-fg-muted);
+  margin-top: var(--space-5);
+}
+
+.formulas-page__group {
+  margin-top: var(--space-6);
+}
+
+.formulas-page__group-title {
+  font-size: var(--font-size-lg);
+  margin: 0 0 var(--space-3);
+}
+
+.formulas-page__cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+  gap: var(--space-4);
+}
+
+.formulas-page__card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.formulas-page__card-title {
+  font-size: var(--font-size-md);
+  margin: 0;
+}
+
+.formulas-page__favorite-toggle {
+  border: none;
+  background: none;
+  color: var(--color-primary);
+  font-size: var(--font-size-lg);
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+}
+
+.formulas-page__card-description {
+  color: var(--color-fg-muted);
+  font-size: var(--font-size-sm);
+}
+
+.formulas-page__card-latex {
+  font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  font-size: var(--font-size-sm);
+  overflow-wrap: anywhere;
+  margin-bottom: 0;
+}
