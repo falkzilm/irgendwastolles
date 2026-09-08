@@ -125,3 +125,18 @@ Electron-IPC ist stattdessen der bereits vor dem ersten Render hydrierte Wert
 maßgeblich. Der Theme-Wert selbst lebt ausschließlich im `settingsSlice`;
 `useTheme()` ist ein dünner Wrapper um `useAppStore`-Selektoren, es gibt
 keinen separaten React-Context mehr für das Theme.
+
+## Favoriten-Slice
+
+`favoritenSlice.ts` setzt den Favoriten-Teil aus IRGENDWAST-33 um (Formeln
+als Favorit markieren):
+
+- `favoritenIds: string[]` - die `id`s der als Favorit markierten Formeln
+  aus `FORMULA_CATALOG` (siehe [formulas.md](./formulas.md)).
+- `toggleFavorit(formulaId)` fügt die id hinzu bzw. entfernt sie, je
+  nachdem, ob sie bereits enthalten ist.
+
+`src/pages/FormulasPage.tsx` zeigt pro Formel einen Stern-Button, der
+`toggleFavorit()` aufruft, sowie einen "Nur Favoriten"-Filter. `favoritenIds`
+wird wie `verlauf` über `src/store/persistence.ts` persistiert, siehe
+[persistence.md](./persistence.md).
