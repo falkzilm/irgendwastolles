@@ -127,5 +127,29 @@ src/formulas/
   index.ts         – öffentliche API: loadCatalog(), FormulaLatex, Re-Export der Typen
   types.ts         – Formula, FormulaCategory, FormulaVariable, FormulaVariableRange
   loader.ts        – loadCatalog(), CatalogError, CatalogLoadResult
+  catalog.ts       – FORMULA_CATALOG: statischer Beispielkatalog (IRGENDWAST-33)
+  search.ts        – matchesQuery(), filterFormulas() für den Formelbrowser
   FormulaLatex.tsx – KaTeX-Rendering mit Klartext-Fallback
 ```
+
+`catalog.ts` bindet den Katalog als typgeprüftes `Formula[]`-Array direkt im
+Quellcode ein statt ihn über `loadCatalog()` aus Rohdaten zu laden - der
+Loader bleibt für künftige extern geladene/nutzerdefinierte Kataloge
+reserviert, die eingebetteten Beispieldaten werden bereits vom
+TypeScript-Compiler gegen das Schema geprüft.
+
+## Formelbrowser (IRGENDWAST-33)
+
+`src/pages/FormulasPage.tsx` zeigt `FORMULA_CATALOG`, nach
+`FORMULA_CATEGORIES` gruppiert:
+
+- Die Textsuche (`matchesQuery()`/`filterFormulas()` aus `search.ts`)
+  filtert nach Titel und Beschreibung (Groß-/Kleinschreibung wird
+  ignoriert) und läuft synchron ohne Debounce, da ein reiner
+  Array-`filter()` über den Katalog auch bei 30 Einträgen deutlich unter
+  200 ms bleibt (siehe `search.test.ts`).
+- Ein Stern-Button pro Formel markiert sie als Favorit bzw. entfernt sie
+  wieder (`favoritenSlice`, siehe [state.md](./state.md)); "Nur Favoriten"
+  filtert die Ansicht zusätzlich auf markierte Formeln.
+- Ergibt die Suche bzw. der Favoriten-Filter keine Treffer, erscheint statt
+  leerer Kategorien ein erklärender Hinweistext.

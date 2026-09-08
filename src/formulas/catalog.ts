@@ -1,0 +1,207 @@
+import type { Formula } from './types'
+
+/**
+ * Beispiel-Formelkatalog (IRGENDWAST-33). Als statisches, typgeprüftes
+ * `Formula[]`-Array eingebettet - `loadCatalog()` aus `loader.ts` bleibt für
+ * extern geladene Kataloge reserviert, für diese fest im Quellcode
+ * gepflegten Daten übernimmt der TypeScript-Compiler die Validierung.
+ */
+export const FORMULA_CATALOG: Formula[] = [
+  {
+    id: 'kreisflaeche',
+    title: 'Kreisfläche',
+    category: 'geometrie',
+    description: 'Fläche eines Kreises aus dem Radius',
+    latex: 'A = \\pi r^2',
+    expression: 'pi*r^2',
+    variables: [{ name: 'r', unit: 'm', range: { min: 0 } }],
+    source: 'Schulbuch Mathematik Sek I',
+  },
+  {
+    id: 'kreisumfang',
+    title: 'Kreisumfang',
+    category: 'geometrie',
+    description: 'Umfang eines Kreises aus dem Radius',
+    latex: 'U = 2 \\pi r',
+    expression: '2*pi*r',
+    variables: [{ name: 'r', unit: 'm', range: { min: 0 } }],
+    source: 'Schulbuch Mathematik Sek I',
+  },
+  {
+    id: 'quadratische-gleichung',
+    title: 'Quadratische Gleichung (Mitternachtsformel)',
+    category: 'algebra',
+    description:
+      'Lösungsformel für quadratische Gleichungen der Form ax² + bx + c = 0',
+    latex: 'x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}',
+    expression: '(-b+sqrt(b^2-4*a*c))/(2*a)',
+    variables: [
+      { name: 'a', unit: '' },
+      { name: 'b', unit: '' },
+      { name: 'c', unit: '' },
+    ],
+    source: 'Schulbuch Mathematik Sek I',
+  },
+  {
+    id: 'binomische-formel',
+    title: 'Erste binomische Formel',
+    category: 'algebra',
+    description: 'Ausmultiplizierte Form von (a + b)²',
+    latex: '(a + b)^2 = a^2 + 2ab + b^2',
+    expression: 'a^2+2*a*b+b^2',
+    variables: [
+      { name: 'a', unit: '' },
+      { name: 'b', unit: '' },
+    ],
+    source: 'Schulbuch Mathematik Sek I',
+  },
+  {
+    id: 'satz-des-pythagoras',
+    title: 'Satz des Pythagoras',
+    category: 'trigonometrie',
+    description: 'Zusammenhang der Seitenlängen im rechtwinkligen Dreieck',
+    latex: 'c = \\sqrt{a^2 + b^2}',
+    expression: 'sqrt(a^2+b^2)',
+    variables: [
+      { name: 'a', unit: 'm', range: { min: 0 } },
+      { name: 'b', unit: 'm', range: { min: 0 } },
+    ],
+    source: 'Schulbuch Mathematik Sek I',
+  },
+  {
+    id: 'sinussatz',
+    title: 'Sinussatz',
+    category: 'trigonometrie',
+    description: 'Verhältnis von Seiten und Gegenwinkeln im Dreieck',
+    latex: '\\frac{a}{\\sin(\\alpha)} = \\frac{b}{\\sin(\\beta)}',
+    expression: 'a/sin(alpha)',
+    variables: [
+      { name: 'a', unit: 'm', range: { min: 0 } },
+      { name: 'alpha', unit: '°', range: { min: 0, max: 180 } },
+    ],
+    source: 'Schulbuch Mathematik Sek II',
+  },
+  {
+    id: 'ableitung-potenzfunktion',
+    title: 'Ableitung einer Potenzfunktion',
+    category: 'analysis',
+    description: 'Ableitungsregel für f(x) = xⁿ',
+    latex: "f'(x) = n \\cdot x^{n-1}",
+    expression: 'n*x^(n-1)',
+    variables: [
+      { name: 'n', unit: '' },
+      { name: 'x', unit: '' },
+    ],
+    source: 'Schulbuch Mathematik Sek II',
+  },
+  {
+    id: 'mittelwertsatz-integral',
+    title: 'Mittelwert einer Funktion',
+    category: 'analysis',
+    description: 'Mittelwert einer Funktion über ein Intervall',
+    latex: 'f_m = \\frac{1}{b-a} \\int_a^b f(x)\\,dx',
+    expression: '1/(b-a)',
+    variables: [
+      { name: 'a', unit: '' },
+      { name: 'b', unit: '' },
+    ],
+    source: 'Schulbuch Mathematik Sek II',
+  },
+  {
+    id: 'newtonsches-grundgesetz',
+    title: 'Newtonsches Grundgesetz',
+    category: 'physik',
+    description: 'Zusammenhang zwischen Kraft, Masse und Beschleunigung',
+    latex: 'F = m \\cdot a',
+    expression: 'm*a',
+    variables: [
+      { name: 'm', unit: 'kg', range: { min: 0 } },
+      { name: 'a', unit: 'm/s^2' },
+    ],
+    source: 'Schulbuch Physik Sek I',
+  },
+  {
+    id: 'kinetische-energie',
+    title: 'Kinetische Energie',
+    category: 'physik',
+    description: 'Bewegungsenergie eines Körpers aus Masse und Geschwindigkeit',
+    latex: 'E_{kin} = \\frac{1}{2} m v^2',
+    expression: '0.5*m*v^2',
+    variables: [
+      { name: 'm', unit: 'kg', range: { min: 0 } },
+      { name: 'v', unit: 'm/s' },
+    ],
+    source: 'Schulbuch Physik Sek I',
+  },
+  {
+    id: 'ohmsches-gesetz',
+    title: "Ohm'sches Gesetz",
+    category: 'physik',
+    description: 'Zusammenhang zwischen Spannung, Stromstärke und Widerstand',
+    latex: 'U = R \\cdot I',
+    expression: 'R*I',
+    variables: [
+      { name: 'R', unit: 'Ω', range: { min: 0 } },
+      { name: 'I', unit: 'A' },
+    ],
+    source: 'Schulbuch Physik Sek I',
+  },
+  {
+    id: 'erwartungswert-diskret',
+    title: 'Erwartungswert (diskret)',
+    category: 'stochastik',
+    description:
+      'Erwartungswert einer diskreten Zufallsvariable mit zwei Werten',
+    latex: 'E(X) = x_1 \\cdot p_1 + x_2 \\cdot p_2',
+    expression: 'x1*p1+x2*p2',
+    variables: [
+      { name: 'x1', unit: '' },
+      { name: 'p1', unit: '', range: { min: 0, max: 1 } },
+      { name: 'x2', unit: '' },
+      { name: 'p2', unit: '', range: { min: 0, max: 1 } },
+    ],
+    source: 'Schulbuch Mathematik Sek II',
+  },
+  {
+    id: 'binomialkoeffizient',
+    title: 'Binomialkoeffizient',
+    category: 'stochastik',
+    description:
+      'Anzahl der k-elementigen Teilmengen einer n-elementigen Menge',
+    latex: '\\binom{n}{k} = \\frac{n!}{k!(n-k)!}',
+    expression: 'n!/(k!*(n-k)!)',
+    variables: [
+      { name: 'n', unit: '', range: { min: 0 } },
+      { name: 'k', unit: '', range: { min: 0 } },
+    ],
+    source: 'Schulbuch Mathematik Sek II',
+  },
+  {
+    id: 'prozentwert',
+    title: 'Prozentwert',
+    category: 'sonstiges',
+    description: 'Prozentwert aus Grundwert und Prozentsatz berechnen',
+    latex: 'W = \\frac{G \\cdot p}{100}',
+    expression: 'G*p/100',
+    variables: [
+      { name: 'G', unit: '' },
+      { name: 'p', unit: '%' },
+    ],
+    source: 'Schulbuch Mathematik Sek I',
+  },
+  {
+    id: 'dreisatz',
+    title: 'Dreisatz (proportional)',
+    category: 'sonstiges',
+    description:
+      'Vierte Größe aus drei bekannten proportionalen Größen berechnen',
+    latex: 'x = \\frac{b \\cdot c}{a}',
+    expression: 'b*c/a',
+    variables: [
+      { name: 'a', unit: '' },
+      { name: 'b', unit: '' },
+      { name: 'c', unit: '' },
+    ],
+    source: 'Schulbuch Mathematik Sek I',
+  },
+]

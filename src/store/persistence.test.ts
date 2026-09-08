@@ -25,6 +25,7 @@ describe('store persistence', () => {
     expect(useAppStore.getState().angleMode).toBe('deg')
     expect(useAppStore.getState().calculatorMode).toBe('simple')
     expect(useAppStore.getState().verlauf).toEqual([])
+    expect(useAppStore.getState().favoritenIds).toEqual([])
   })
 
   it('übernimmt gültige, über IPC geladene Daten in den Store', async () => {
@@ -36,6 +37,7 @@ describe('store persistence', () => {
           angleMode: 'rad',
           calculatorMode: 'scientific',
           verlauf,
+          favoritenIds: ['kreisflaeche'],
         },
       }),
       savePersistedState: vi.fn(),
@@ -48,6 +50,7 @@ describe('store persistence', () => {
     expect(useAppStore.getState().angleMode).toBe('rad')
     expect(useAppStore.getState().calculatorMode).toBe('scientific')
     expect(useAppStore.getState().verlauf).toEqual(verlauf)
+    expect(useAppStore.getState().favoritenIds).toEqual(['kreisflaeche'])
   })
 
   it('ignoriert ungültige geladene Daten und behält die Defaults', async () => {
@@ -115,6 +118,27 @@ describe('store persistence', () => {
     expect(useAppStore.getState().angleMode).toBe('rad')
     expect(useAppStore.getState().calculatorMode).toBe('simple')
     expect(useAppStore.getState().verlauf).toEqual([])
+  })
+
+  it('ergänzt bei alten, vor IRGENDWAST-33 persistierten Daten ohne favoritenIds eine leere Favoritenliste, statt die restlichen Werte zu verwerfen', async () => {
+    window.api = {
+      loadPersistedState: vi.fn().mockResolvedValue({
+        data: {
+          theme: 'dark',
+          angleMode: 'rad',
+          calculatorMode: 'scientific',
+          verlauf: [],
+        },
+      }),
+      savePersistedState: vi.fn(),
+      ping: vi.fn(),
+    }
+
+    await hydratePersistedState()
+
+    expect(useAppStore.getState().theme).toBe('dark')
+    expect(useAppStore.getState().calculatorMode).toBe('scientific')
+    expect(useAppStore.getState().favoritenIds).toEqual([])
   })
 
   it('kappt einen zu langen geladenen Verlauf auf MAX_VERLAUF_EINTRAEGE Einträge', async () => {

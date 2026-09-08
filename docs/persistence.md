@@ -46,10 +46,10 @@ Fehlers:
 ## Was wird persistiert?
 
 `src/store/persistence.ts` wählt bewusst nur einzelne Felder aus (aktuell
-`theme`, `angleMode` aus `settingsSlice` sowie `verlauf` aus `verlaufSlice`,
-siehe [state.md](./state.md)), keine Actions. Neue fachliche Slices, die
-persistiert werden sollen, ergänzen ihre Felder in
-`PersistableState`/`selectPersistableState` sowie in der
+`theme`, `angleMode` aus `settingsSlice`, `verlauf` aus `verlaufSlice` sowie
+`favoritenIds` aus `favoritenSlice`, siehe [state.md](./state.md)), keine
+Actions. Neue fachliche Slices, die persistiert werden sollen, ergänzen ihre
+Felder in `PersistableState`/`selectPersistableState` sowie in der
 Validierung `isPersistableState`.
 
 `theme` wird zusätzlich weiterhin über `localStorage` durch `ThemeProvider`

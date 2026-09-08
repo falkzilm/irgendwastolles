@@ -14,6 +14,7 @@ export interface PersistableState {
   angleMode: AppState['angleMode']
   calculatorMode: AppState['calculatorMode']
   verlauf: AppState['verlauf']
+  favoritenIds: AppState['favoritenIds']
 }
 
 export function selectPersistableState(state: AppState): PersistableState {
@@ -22,6 +23,7 @@ export function selectPersistableState(state: AppState): PersistableState {
     angleMode: state.angleMode,
     calculatorMode: state.calculatorMode,
     verlauf: state.verlauf,
+    favoritenIds: state.favoritenIds,
   }
 }
 
@@ -45,16 +47,19 @@ function isPersistableState(value: unknown): value is PersistableState {
     (candidate.calculatorMode === 'simple' ||
       candidate.calculatorMode === 'scientific') &&
     Array.isArray(candidate.verlauf) &&
-    candidate.verlauf.every(isVerlaufEintrag)
+    candidate.verlauf.every(isVerlaufEintrag) &&
+    Array.isArray(candidate.favoritenIds) &&
+    candidate.favoritenIds.every((id) => typeof id === 'string')
   )
 }
 
 /**
  * Normalisiert geladene Rohdaten vor der Validierung, damit ältere,
  * schema-kompatible Dateien ohne `verlauf` (z. B. vor IRGENDWAST-26) oder
- * ohne `calculatorMode` (z. B. vor IRGENDWAST-25) nicht komplett verworfen
- * werden, und ein zu langer Verlauf (über `MAX_VERLAUF_EINTRAEGE`) auf die
- * neuesten Einträge gekappt wird, statt die Slice-Begrenzung zu umgehen.
+ * ohne `calculatorMode` (z. B. vor IRGENDWAST-25) oder ohne `favoritenIds`
+ * (z. B. vor IRGENDWAST-33) nicht komplett verworfen werden, und ein zu
+ * langer Verlauf (über `MAX_VERLAUF_EINTRAEGE`) auf die neuesten Einträge
+ * gekappt wird, statt die Slice-Begrenzung zu umgehen.
  */
 function normalizePersistedData(value: unknown): unknown {
   if (typeof value !== 'object' || value === null) return value
@@ -66,6 +71,10 @@ function normalizePersistedData(value: unknown): unknown {
 
   if (!('calculatorMode' in candidate)) {
     candidate = { ...candidate, calculatorMode: 'simple' }
+  }
+
+  if (!('favoritenIds' in candidate)) {
+    candidate = { ...candidate, favoritenIds: [] }
   }
 
   if (
@@ -114,7 +123,8 @@ export function subscribeToPersistState(): () => void {
       next.theme === previous.theme &&
       next.angleMode === previous.angleMode &&
       next.calculatorMode === previous.calculatorMode &&
-      next.verlauf === previous.verlauf
+      next.verlauf === previous.verlauf &&
+      next.favoritenIds === previous.favoritenIds
     ) {
       return
     }
