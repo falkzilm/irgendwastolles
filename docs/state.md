@@ -140,3 +140,34 @@ als Favorit markieren):
 `toggleFavorit()` aufruft, sowie einen "Nur Favoriten"-Filter. `favoritenIds`
 wird wie `verlauf` über `src/store/persistence.ts` persistiert, siehe
 [persistence.md](./persistence.md).
+
+## Gamification-Slice
+
+`gamificationSlice.ts` setzt die Anforderungen aus IRGENDWAST-41 um
+(Datenmodell und Store-Slice für das Spielerprofil, Grundlage für die
+weiteren Gamification-Items):
+
+- `gamification: GamificationProfile` mit `xp`, `level`, `streak`,
+  `letzterAktivitaetsTag` (ISO-Datum `YYYY-MM-DD` oder `null` vor dem ersten
+  Event), `freigeschalteteAchievements` (IDs künftiger Achievements),
+  `anzahlBerechnungen` und `anzahlQuizRunden`. Ein neues Profil startet mit
+  den Defaults `level: 1`, `xp: 0`, `streak: 0`.
+- `recordEvent(event: GamificationEvent)` ist der **einzige** Weg, das
+  Profil zu verändern - es gibt keine weiteren `set...`-Actions auf dem
+  Gamification-State. Aktuell unterstützte Events:
+  - `{ type: 'calculation_done' }` - eine erfolgreiche Berechnung im Rechner
+    (vergibt XP, erhöht `anzahlBerechnungen`).
+  - `{ type: 'quiz_round_finished' }` - eine abgeschlossene Quizrunde
+    (vergibt XP, erhöht `anzahlQuizRunden`).
+
+  Jedes Event vergibt eine feste XP-Menge (siehe `XP_BELOHNUNG` in
+  `gamificationSlice.ts`); `level` ergibt sich aus `xp` über `XP_PRO_LEVEL`
+  (100 XP/Level). `streak` wird anhand von `letzterAktivitaetsTag`
+  fortgeschrieben: ein Event am selben Tag lässt ihn unverändert, eines am
+  Folgetag erhöht ihn um eins, ein größerer Abstand (oder das erste Event
+  überhaupt) setzt ihn auf 1 zurück. Weitere Events (z. B. für zukünftige
+  Formel-/Quiz-Typen) ergänzen `GamificationEvent` um eine weitere Variante,
+  statt den State direkt zu setzen.
+
+`gamification` wird wie `verlauf` und `favoritenIds` über
+`src/store/persistence.ts` persistiert, siehe [persistence.md](./persistence.md).

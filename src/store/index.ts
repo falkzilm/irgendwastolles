@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { createCalculatorSlice } from './slices/calculatorSlice'
 import { createFavoritenSlice } from './slices/favoritenSlice'
+import { createGamificationSlice } from './slices/gamificationSlice'
 import { createSettingsSlice } from './slices/settingsSlice'
 import { createVerlaufSlice } from './slices/verlaufSlice'
 import type { AppState } from './types'
@@ -15,11 +16,17 @@ export const useAppStore = create<AppState>()((...args) => ({
   ...createCalculatorSlice(...args),
   ...createVerlaufSlice(...args),
   ...createFavoritenSlice(...args),
+  ...createGamificationSlice(...args),
 }))
 
 export type { AppState } from './types'
 export type { CalculatorSlice } from './slices/calculatorSlice'
 export type { FavoritenSlice } from './slices/favoritenSlice'
+export type {
+  GamificationEvent,
+  GamificationProfile,
+  GamificationSlice,
+} from './slices/gamificationSlice'
 export type {
   AngleMode,
   CalculatorMode,

@@ -14,7 +14,7 @@ import {
 } from 'node:fs'
 import { dirname } from 'node:path'
 
-export const CURRENT_SCHEMA_VERSION = 1
+export const CURRENT_SCHEMA_VERSION = 2
 
 export interface PersistedFile {
   version: number
@@ -29,7 +29,34 @@ export interface PersistedFile {
  */
 export type Migration = (data: unknown) => unknown
 
-export const MIGRATIONS: Record<number, Migration> = {}
+/**
+ * Version 1 -> 2 (IRGENDWAST-41): ergänzt das Gamification-Profil mit
+ * definierten Defaults bei Dateien, die vor dessen Einführung geschrieben
+ * wurden. Der Main-Prozess kennt sonst die Form von `data` nicht (siehe
+ * docs/persistence.md) - hier wird bewusst nur additiv ein fehlendes Feld
+ * ergänzt, ohne bestehende Felder zu interpretieren.
+ */
+function migrateAufGamificationProfil(data: unknown): unknown {
+  if (typeof data !== 'object' || data === null) return data
+  if ('gamification' in data) return data
+
+  return {
+    ...data,
+    gamification: {
+      xp: 0,
+      level: 1,
+      streak: 0,
+      letzterAktivitaetsTag: null,
+      freigeschalteteAchievements: [],
+      anzahlBerechnungen: 0,
+      anzahlQuizRunden: 0,
+    },
+  }
+}
+
+export const MIGRATIONS: Record<number, Migration> = {
+  1: migrateAufGamificationProfil,
+}
 
 export type MigrationResult =
   { migrated: true; data: unknown } | { migrated: false }

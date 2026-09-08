@@ -46,11 +46,21 @@ Fehlers:
 ## Was wird persistiert?
 
 `src/store/persistence.ts` wählt bewusst nur einzelne Felder aus (aktuell
-`theme`, `angleMode` aus `settingsSlice`, `verlauf` aus `verlaufSlice` sowie
-`favoritenIds` aus `favoritenSlice`, siehe [state.md](./state.md)), keine
-Actions. Neue fachliche Slices, die persistiert werden sollen, ergänzen ihre
-Felder in `PersistableState`/`selectPersistableState` sowie in der
-Validierung `isPersistableState`.
+`theme`, `angleMode` aus `settingsSlice`, `verlauf` aus `verlaufSlice`,
+`favoritenIds` aus `favoritenSlice` sowie `gamification` aus
+`gamificationSlice`, siehe [state.md](./state.md)), keine Actions. Neue
+fachliche Slices, die persistiert werden sollen, ergänzen ihre Felder in
+`PersistableState`/`selectPersistableState` sowie in der Validierung
+`isPersistableState`.
+
+Mit `gamification` (IRGENDWAST-41) wurde `CURRENT_SCHEMA_VERSION` in
+`electron/persistence.ts` erstmals von 1 auf 2 angehoben: `MIGRATIONS[1]`
+ergänzt bei Dateien ohne `gamification` (also vor IRGENDWAST-41 gespeichert)
+das Default-Profil, statt die restlichen Daten zu verwerfen. Das ist die
+Referenz dafür, wie künftige, tatsächlich schema-relevante Änderungen über
+die `MIGRATIONS`-Map abgebildet werden - rein additive, optionale Felder wie
+`verlauf`/`calculatorMode`/`favoritenIds` davor wurden dagegen bewusst ohne
+Versionssprung direkt in `normalizePersistedData` nachgezogen.
 
 `theme` wird zusätzlich weiterhin über `localStorage` durch `ThemeProvider`
 (siehe state.md) gespiegelt. Da `hydratePersistedState()` bereits vor dem
