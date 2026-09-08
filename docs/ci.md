@@ -19,11 +19,14 @@ Der Job `ci` führt auf `ubuntu-latest` folgende Schritte einzeln sichtbar aus:
 3. **Unit tests** (`npm test`) – Vitest-Suite (`src/**/*.test.ts(x)`).
 4. **Build** (`npm run build`) – Renderer-Build nach `dist/` und
    Electron-Build nach `dist-electron/` (siehe [`docs/packaging.md`](packaging.md)).
-5. **E2E tests** (`npx playwright test`) – Playwright-Smoke-Test gegen die im
-   vorherigen Schritt gebaute App (siehe [`docs/e2e.md`](e2e.md)). Ein
-   vorgelagerter Schritt installiert den benötigten Chromium-Browser
-   inklusive Systembibliotheken (`npx playwright install --with-deps
-   chromium`).
+5. **E2E tests** (`xvfb-run --auto-servernum -- npx playwright test`) –
+   Playwright-Smoke-Test gegen die im vorherigen Schritt gebaute App (siehe
+   [`docs/e2e.md`](e2e.md)). Zwei vorgelagerte Schritte installieren den
+   benötigten Chromium-Browser inklusive Systembibliotheken (`npx playwright
+   install --with-deps chromium`) sowie `xvfb`: Electrons native
+   Fenstererzeugung braucht auch mit Chromiums Headless-Flag einen X-Server,
+   den `xvfb-run` für den Testprozess bereitstellt (siehe
+   [`docs/e2e.md`](e2e.md#headlessci-fähigkeit)).
 
 Jeder Schritt bricht den Job bei einem Fehler ab (Standardverhalten von GitHub
 Actions), sodass ein absichtlich eingebauter Lint- oder Testfehler die

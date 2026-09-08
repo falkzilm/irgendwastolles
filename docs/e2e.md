@@ -31,9 +31,8 @@ Repo-Root als Argument (Electron liest `main` aus `package.json`, aktuell
 ## Headless/CI-Fähigkeit
 
 Electron benötigt zum Rendern eines `BrowserWindow` normalerweise ein Display.
-Damit der Test auch auf Runnern ohne X-Server (kein Xvfb) läuft, setzt
-`electron/main.ts` beim Start mit `E2E_HEADLESS=1` (so gesetzt von
-`e2e/app.spec.ts`) Chromiums neuen Headless-Modus:
+`electron/main.ts` setzt beim Start mit `E2E_HEADLESS=1` (so gesetzt von
+`e2e/app.spec.ts`) zwar Chromiums neuen Headless-Modus:
 
 ```ts
 if (process.env.E2E_HEADLESS === '1') {
@@ -42,11 +41,20 @@ if (process.env.E2E_HEADLESS === '1') {
 }
 ```
 
-Das betrifft ausschließlich Läufe mit dieser Umgebungsvariable; das reguläre
-Start- und Sicherheitsverhalten der App (`npm run start`, `npm run dev:electron`,
-gepackte Artefakte) bleibt unverändert. Playwright startet den Prozess davon
-unabhängig bereits mit `--no-sandbox`, wie es auch andere Electron-E2E-Setups
-in Containern/CI benötigen.
+Dieser Flag betrifft aber nur das Rendering innerhalb des Fensters. Die
+native Fenstererzeugung von Electron (GTK unter Linux) initialisiert weiterhin
+einen X-Server und benötigt deshalb auch mit gesetztem Headless-Flag ein
+Display – ohne X-Server hängt `electronApp.firstWindow()` im Test, bis der
+Timeout greift (siehe [`.github/workflows/ci.yml`](../.github/workflows/ci.yml):
+der E2E-Schritt läuft daher unter `xvfb-run`, das einen virtuellen X-Server
+für den Testprozess bereitstellt).
+
+Das `E2E_HEADLESS`-Flag betrifft ausschließlich Läufe mit dieser
+Umgebungsvariable; das reguläre Start- und Sicherheitsverhalten der App
+(`npm run start`, `npm run dev:electron`, gepackte Artefakte) bleibt
+unverändert. Playwright startet den Prozess davon unabhängig bereits mit
+`--no-sandbox`, wie es auch andere Electron-E2E-Setups in Containern/CI
+benötigen.
 
 Chromium selbst benötigt zur Laufzeit weiterhin die üblichen
 Betriebssystem-Bibliotheken (u. a. `glib`, `nss`, `gtk`), die auf gängigen
