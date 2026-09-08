@@ -18,7 +18,7 @@ export type {
 } from './types'
 export { evaluateAst } from './evaluator'
 export { EngineEvaluationError, EngineSyntaxError } from './errors'
-export { formatResult } from './format'
+export { formatResult, toCalculatorExpression } from './format'
 export { CONSTANTS, FUNCTIONS } from './functions'
 export { parse } from './parser'
 export { tokenize } from './tokenizer'

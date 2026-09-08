@@ -197,4 +197,13 @@ describe('evaluateFormula', () => {
       error: { type: 'evaluation-error', message: 'Division durch Null' },
     })
   })
+
+  it('lehnt ein Ergebnis ab, das durch Überlauf zu Infinity wird', () => {
+    const result = evaluateFormula(kreisflaeche, { r: 1e308 })
+
+    expect(result.ok).toBe(false)
+    if (!result.ok) {
+      expect(result.error.type).toBe('evaluation-error')
+    }
+  })
 })

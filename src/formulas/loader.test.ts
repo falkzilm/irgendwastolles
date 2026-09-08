@@ -108,6 +108,42 @@ describe('loadCatalog', () => {
     }
   })
 
+  it('akzeptiert einen gültigen Beispielwertsatz', () => {
+    const formula: Formula = {
+      ...kreisflaeche,
+      id: 'mit-beispiel',
+      example: { r: 3 },
+    }
+
+    const result = loadCatalog([formula])
+
+    expect(result).toEqual({ ok: true, formulas: [formula] })
+  })
+
+  it('meldet einen Beispielwertsatz mit unbekannter Variable', () => {
+    const result = loadCatalog([
+      { ...kreisflaeche, example: { unbekannt: 1 } },
+    ])
+
+    expect(result.ok).toBe(false)
+    if (!result.ok) {
+      expect(
+        result.errors.some((error) => error.message.includes('unbekannt')),
+      ).toBe(true)
+    }
+  })
+
+  it('meldet einen Beispielwertsatz mit nicht-numerischem Wert', () => {
+    const result = loadCatalog([{ ...kreisflaeche, example: { r: '3' } }])
+
+    expect(result.ok).toBe(false)
+    if (!result.ok) {
+      expect(
+        result.errors.some((error) => error.message.includes('example.r')),
+      ).toBe(true)
+    }
+  })
+
   it('erkennt doppelte Formel-ids als Fehler', () => {
     const result = loadCatalog([kreisflaeche, kreisflaeche])
 

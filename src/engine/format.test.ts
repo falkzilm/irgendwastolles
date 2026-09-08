@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { formatResult } from './format'
+import { formatResult, toCalculatorExpression } from './format'
 
 describe('formatResult', () => {
   it('gibt 0 für 0 und -0 aus', () => {
@@ -48,5 +48,23 @@ describe('formatResult', () => {
   it('gibt sehr kleine Ergebnisse (< 1e-6) in Exponentialschreibweise aus', () => {
     expect(formatResult(0.0000001234)).toBe('1.234e-7')
     expect(formatResult(-0.0000001234)).toBe('-1.234e-7')
+  })
+})
+
+describe('toCalculatorExpression', () => {
+  it('lässt Zahlen ohne Exponent unverändert', () => {
+    expect(toCalculatorExpression('42')).toBe('42')
+    expect(toCalculatorExpression('-5')).toBe('-5')
+    expect(toCalculatorExpression('0.333333333333')).toBe('0.333333333333')
+  })
+
+  it('wandelt Exponentialschreibweise in einen vom Parser unterstützten Ausdruck um', () => {
+    expect(toCalculatorExpression('1e12')).toBe('1*10^12')
+    expect(toCalculatorExpression('-1e12')).toBe('-1*10^12')
+    expect(toCalculatorExpression('1.23456789012e14')).toBe(
+      '1.23456789012*10^14',
+    )
+    expect(toCalculatorExpression('1.234e-7')).toBe('1.234*10^-7')
+    expect(toCalculatorExpression('-1.234e-7')).toBe('-1.234*10^-7')
   })
 })

@@ -66,4 +66,11 @@ export interface Formula {
   examples: FormulaExample[]
   /** Quelle/Herkunft der Formel, z. B. Lehrbuch oder Normenreferenz. */
   source: string
+  /**
+   * Beispielwertsatz für die Detailansicht (IRGENDWAST-34): ordnet jedem
+   * Variablennamen aus `variables` einen sinnvollen Beispielwert zu, der
+   * sich per Klick in die Eingabefelder übernehmen lässt. Optional, damit
+   * bestehende `Formula`-Werte ohne dieses Feld gültig bleiben.
+   */
+  example?: Record<string, number>
 }

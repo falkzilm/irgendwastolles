@@ -102,6 +102,44 @@ function validateVariable(
   return { name: v.name as string, unit: v.unit as string, range }
 }
 
+function validateExampleValues(
+  entry: unknown,
+  formulaId: string,
+  variableNames: Set<string>,
+  errors: CatalogError[],
+): Record<string, number> | undefined {
+  if (typeof entry !== 'object' || entry === null || Array.isArray(entry)) {
+    errors.push({ id: formulaId, message: 'Feld "example" ist ungültig' })
+    return undefined
+  }
+
+  let valid = true
+  const example: Record<string, number> = {}
+  for (const [name, value] of Object.entries(
+    entry as Record<string, unknown>,
+  )) {
+    if (!variableNames.has(name)) {
+      errors.push({
+        id: formulaId,
+        message: `"example" referenziert unbekannte Variable "${name}"`,
+      })
+      valid = false
+      continue
+    }
+    if (typeof value !== 'number') {
+      errors.push({
+        id: formulaId,
+        message: `"example.${name}" muss eine Zahl sein`,
+      })
+      valid = false
+      continue
+    }
+    example[name] = value
+  }
+
+  return valid ? example : undefined
+}
+
 function validateExample(
   entry: unknown,
   formulaId: string,
@@ -258,6 +296,15 @@ function validateFormula(
     })
   }
 
+  let example: Record<string, number> | undefined
+  if (f.example !== undefined) {
+    const variableNames = new Set(variables.map((variable) => variable.name))
+    example = validateExampleValues(f.example, id, variableNames, errors)
+    if (!example) {
+      valid = false
+    }
+  }
+
   if (!valid) return undefined
   return {
     id,
@@ -269,6 +316,7 @@ function validateFormula(
     source: f.source as string,
     variables,
     examples,
+    example,
   }
 }
 

@@ -43,3 +43,14 @@ export function formatResult(value: number): string {
   const exponent = precise.slice(exponentIndex + 1).replace(/^\+/, '')
   return `${mantissa}e${exponent}`
 }
+
+/**
+ * Wandelt einen von `formatResult` erzeugten Ergebnistext in einen Ausdruck
+ * um, den der Rechner-Parser auswerten kann. Dessen Tokenizer kennt nur
+ * Ziffern und einen Dezimalpunkt, keine Exponentialschreibweise (`1e12`) -
+ * daher wird das `e<exponent>`-Suffix in `*10^<exponent>` übersetzt, was der
+ * Parser über den `^`-Operator (inkl. negativem Exponenten) versteht.
+ */
+export function toCalculatorExpression(resultText: string): string {
+  return resultText.replace(/e(-?\d+)$/, '*10^$1')
+}

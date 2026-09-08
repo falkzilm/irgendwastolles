@@ -19,6 +19,7 @@ interface Formula {
   variables: FormulaVariable[]
   examples: FormulaExample[] // mindestens ein Rechenbeispiel mit erwartetem Ergebnis
   source: string // Quelle/Herkunft der Formel
+  example?: Record<string, number> // Beispielwerte je Variablenname, für die Detailansicht (IRGENDWAST-34)
 }
 
 interface FormulaVariable {
@@ -89,6 +90,9 @@ JSON eingelesene) Katalogdaten, ohne eine Exception zu werfen:
 - `examples` muss ein nicht-leeres Array sein. Jedes Beispiel braucht ein
   `values`-Objekt mit genau einem Zahlenwert pro Variable aus `variables`
   (weder fehlend noch überzählig) sowie ein numerisches `expected`-Feld.
+- Das optionale Feld `example` darf nur Variablennamen aus `variables` als
+  Schlüssel und Zahlen als Werte enthalten, sonst meldet der Loader einen
+  Fehler.
 - Fehlende oder ungültige Felder werden als `CatalogError` gesammelt:
   ```ts
   interface CatalogError {
@@ -174,3 +178,28 @@ src/formulas/
   filtert die Ansicht zusätzlich auf markierte Formeln.
 - Ergibt die Suche bzw. der Favoriten-Filter keine Treffer, erscheint statt
   leerer Kategorien ein erklärender Hinweistext.
+- Ein "Details anzeigen"-Button pro Formel öffnet die Detailansicht (siehe
+  unten).
+
+## Formel-Detailansicht (IRGENDWAST-34)
+
+`src/pages/formulas/FormulaDetail.tsx` zeigt eine einzelne Formel in einem
+`Modal` (`src/ui/Modal.tsx`): Titel, Beschreibung, LaTeX-Darstellung und ein
+Eingabefeld je Eintrag aus `formula.variables`.
+
+- Eingaben werden pro Feld validiert (`validateField()`): eine leere Eingabe
+  erzeugt noch keinen Fehler, eine nicht-numerische Eingabe oder ein Wert
+  außerhalb von `variable.range` zeigt eine feldbezogene Fehlermeldung.
+  Dezimalzahlen akzeptieren sowohl `,` als auch `.` als Trennzeichen.
+- Erst wenn alle Variablen ausgefüllt und gültig sind, wertet
+  `evaluateFormula()` (siehe oben) die Formel aus und das Ergebnis wird
+  angezeigt.
+- "Beispielwerte einsetzen" übernimmt `formula.example` in die Eingabefelder,
+  sofern die Formel einen Beispielwertsatz definiert.
+- "In den Rechner übernehmen" ruft `loadExpression()` aus dem
+  `calculatorSlice` (siehe [state.md](./state.md)) mit dem formatierten
+  Ergebnis auf und schließt die Detailansicht. `formatResult()` gibt sehr
+  große/kleine Ergebnisse in Exponentialschreibweise aus (z. B. `1e12`), die
+  der Rechner-Tokenizer nicht versteht; `toCalculatorExpression()`
+  (`src/engine/format.ts`) übersetzt das `e<exponent>`-Suffix daher in
+  `*10^<exponent>`, bevor der Ausdruck an `loadExpression()` geht.

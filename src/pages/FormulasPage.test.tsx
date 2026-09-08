@@ -1,8 +1,9 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
 import { axe } from 'jest-axe'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { FormulasPage } from './FormulasPage'
 import { useAppStore } from '../store'
+import { ToastProvider } from '../ui/Toast'
 
 const initialState = useAppStore.getState()
 
@@ -90,6 +91,29 @@ describe('FormulasPage', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Nur Favoriten' }))
 
     expect(screen.getByText(/keine favoriten vorhanden/i)).toBeInTheDocument()
+  })
+
+  it('öffnet die Detailansicht einer Formel und schließt sie wieder', () => {
+    render(
+      <ToastProvider>
+        <FormulasPage />
+      </ToastProvider>,
+    )
+
+    fireEvent.click(
+      screen.getByRole('button', {
+        name: 'Details zu Kreisfläche anzeigen',
+      }),
+    )
+
+    const dialog = screen.getByRole('dialog')
+    expect(
+      within(dialog).getByRole('heading', { name: 'Kreisfläche' }),
+    ).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Schließen' }))
+
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
   })
 
   it('hat keine kritischen axe-Verstöße', async () => {

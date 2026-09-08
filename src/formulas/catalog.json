@@ -12,7 +12,8 @@
       { "name": "b", "unit": "" }
     ],
     "examples": [{ "values": { "m": 2, "x": 3, "b": 1 }, "expected": 7 }],
-    "source": "Schulbuch Mathematik Sek I"
+    "source": "Schulbuch Mathematik Sek I",
+    "example": { "m": 2, "x": 3, "b": 1 }
   },
   {
     "id": "quadratische-diskriminante",
@@ -27,7 +28,8 @@
       { "name": "c", "unit": "" }
     ],
     "examples": [{ "values": { "a": 1, "b": -3, "c": 2 }, "expected": 1 }],
-    "source": "Schulbuch Mathematik Sek I"
+    "source": "Schulbuch Mathematik Sek I",
+    "example": { "a": 1, "b": -3, "c": 2 }
   },
   {
     "id": "pq-formel-x1",
@@ -41,7 +43,8 @@
       { "name": "q", "unit": "" }
     ],
     "examples": [{ "values": { "p": -3, "q": 2 }, "expected": 2 }],
-    "source": "Schulbuch Mathematik Sek I"
+    "source": "Schulbuch Mathematik Sek I",
+    "example": { "p": -3, "q": 2 }
   },
   {
     "id": "binomische-formel-plus",
@@ -55,7 +58,8 @@
       { "name": "b", "unit": "" }
     ],
     "examples": [{ "values": { "a": 2, "b": 3 }, "expected": 25 }],
-    "source": "Schulbuch Mathematik Sek I"
+    "source": "Schulbuch Mathematik Sek I",
+    "example": { "a": 2, "b": 3 }
   },
   {
     "id": "geometrische-summe",
@@ -70,7 +74,8 @@
       { "name": "n", "unit": "", "range": { "min": 0 } }
     ],
     "examples": [{ "values": { "a": 1, "q": 2, "n": 4 }, "expected": 15 }],
-    "source": "Schulbuch Mathematik Sek II"
+    "source": "Schulbuch Mathematik Sek II",
+    "example": { "a": 1, "q": 2, "n": 4 }
   },
   {
     "id": "prozentwert",
@@ -84,7 +89,8 @@
       { "name": "p", "unit": "%" }
     ],
     "examples": [{ "values": { "G": 200, "p": 15 }, "expected": 30 }],
-    "source": "Schulbuch Mathematik Sek I"
+    "source": "Schulbuch Mathematik Sek I",
+    "example": { "G": 200, "p": 15 }
   },
   {
     "id": "zinsrechnung-einfach",
@@ -99,7 +105,8 @@
       { "name": "t", "unit": "Jahre", "range": { "min": 0 } }
     ],
     "examples": [{ "values": { "K": 1000, "p": 5, "t": 2 }, "expected": 100 }],
-    "source": "Schulbuch Mathematik Sek I"
+    "source": "Schulbuch Mathematik Sek I",
+    "example": { "K": 1000, "p": 5, "t": 2 }
   },
   {
     "id": "kreisflaeche",
@@ -110,7 +117,8 @@
     "expression": "pi*r^2",
     "variables": [{ "name": "r", "unit": "m", "range": { "min": 0 } }],
     "examples": [{ "values": { "r": 2 }, "expected": 12.566370614359172 }],
-    "source": "Schulbuch Mathematik Sek I"
+    "source": "Schulbuch Mathematik Sek I",
+    "example": { "r": 2 }
   },
   {
     "id": "kreisumfang",
@@ -121,7 +129,8 @@
     "expression": "2*pi*r",
     "variables": [{ "name": "r", "unit": "m", "range": { "min": 0 } }],
     "examples": [{ "values": { "r": 3 }, "expected": 18.84955592153876 }],
-    "source": "Schulbuch Mathematik Sek I"
+    "source": "Schulbuch Mathematik Sek I",
+    "example": { "r": 3 }
   },
   {
     "id": "rechteckflaeche",
@@ -135,7 +144,8 @@
       { "name": "b", "unit": "m", "range": { "min": 0 } }
     ],
     "examples": [{ "values": { "a": 5, "b": 4 }, "expected": 20 }],
-    "source": "Schulbuch Mathematik Sek I"
+    "source": "Schulbuch Mathematik Sek I",
+    "example": { "a": 5, "b": 4 }
   },
   {
     "id": "dreiecksflaeche",
@@ -149,7 +159,8 @@
       { "name": "h", "unit": "m", "range": { "min": 0 } }
     ],
     "examples": [{ "values": { "g": 6, "h": 4 }, "expected": 12 }],
-    "source": "Schulbuch Mathematik Sek I"
+    "source": "Schulbuch Mathematik Sek I",
+    "example": { "g": 6, "h": 4 }
   },
   {
     "id": "quadervolumen",
@@ -164,7 +175,8 @@
       { "name": "c", "unit": "m", "range": { "min": 0 } }
     ],
     "examples": [{ "values": { "a": 2, "b": 3, "c": 4 }, "expected": 24 }],
-    "source": "Schulbuch Mathematik Sek I"
+    "source": "Schulbuch Mathematik Sek I",
+    "example": { "a": 2, "b": 3, "c": 4 }
   },
   {
     "id": "kugelvolumen",
@@ -175,7 +187,8 @@
     "expression": "(4/3)*pi*r^3",
     "variables": [{ "name": "r", "unit": "m", "range": { "min": 0 } }],
     "examples": [{ "values": { "r": 3 }, "expected": 113.09733552923254 }],
-    "source": "Schulbuch Mathematik Sek II"
+    "source": "Schulbuch Mathematik Sek II",
+    "example": { "r": 3 }
   },
   {
     "id": "satz-des-pythagoras",
@@ -189,7 +202,8 @@
       { "name": "b", "unit": "m", "range": { "min": 0 } }
     ],
     "examples": [{ "values": { "a": 3, "b": 4 }, "expected": 5 }],
-    "source": "Schulbuch Mathematik Sek I"
+    "source": "Schulbuch Mathematik Sek I",
+    "example": { "a": 3, "b": 4 }
   },
   {
     "id": "sinus",
@@ -200,7 +214,8 @@
     "expression": "sin(x)",
     "variables": [{ "name": "x", "unit": "rad" }],
     "examples": [{ "values": { "x": 1 }, "expected": 0.8414709848078965 }],
-    "source": "Schulbuch Mathematik Sek II"
+    "source": "Schulbuch Mathematik Sek II",
+    "example": { "x": 1 }
   },
   {
     "id": "kosinus",
@@ -211,7 +226,8 @@
     "expression": "cos(x)",
     "variables": [{ "name": "x", "unit": "rad" }],
     "examples": [{ "values": { "x": 1 }, "expected": 0.5403023058681398 }],
-    "source": "Schulbuch Mathematik Sek II"
+    "source": "Schulbuch Mathematik Sek II",
+    "example": { "x": 1 }
   },
   {
     "id": "tangens",
@@ -222,7 +238,8 @@
     "expression": "tan(x)",
     "variables": [{ "name": "x", "unit": "rad" }],
     "examples": [{ "values": { "x": 0.5 }, "expected": 0.5463024898437905 }],
-    "source": "Schulbuch Mathematik Sek II"
+    "source": "Schulbuch Mathematik Sek II",
+    "example": { "x": 0.5 }
   },
   {
     "id": "arkussinus",
@@ -235,7 +252,8 @@
       { "name": "x", "unit": "", "range": { "min": -1, "max": 1 } }
     ],
     "examples": [{ "values": { "x": 0.5 }, "expected": 0.5235987755982989 }],
-    "source": "Schulbuch Mathematik Sek II"
+    "source": "Schulbuch Mathematik Sek II",
+    "example": { "x": 0.5 }
   },
   {
     "id": "arkuskosinus",
@@ -248,7 +266,8 @@
       { "name": "x", "unit": "", "range": { "min": -1, "max": 1 } }
     ],
     "examples": [{ "values": { "x": 0.5 }, "expected": 1.0471975511965979 }],
-    "source": "Schulbuch Mathematik Sek II"
+    "source": "Schulbuch Mathematik Sek II",
+    "example": { "x": 0.5 }
   },
   {
     "id": "arkustangens",
@@ -259,7 +278,8 @@
     "expression": "atan(x)",
     "variables": [{ "name": "x", "unit": "" }],
     "examples": [{ "values": { "x": 1 }, "expected": 0.7853981633974483 }],
-    "source": "Schulbuch Mathematik Sek II"
+    "source": "Schulbuch Mathematik Sek II",
+    "example": { "x": 1 }
   },
   {
     "id": "ableitung-potenzfunktion",
@@ -273,7 +293,8 @@
       { "name": "x", "unit": "" }
     ],
     "examples": [{ "values": { "n": 3, "x": 2 }, "expected": 12 }],
-    "source": "Schulbuch Mathematik Sek II"
+    "source": "Schulbuch Mathematik Sek II",
+    "example": { "n": 3, "x": 2 }
   },
   {
     "id": "quadratische-funktion-wert",
@@ -291,7 +312,8 @@
     "examples": [
       { "values": { "a": 1, "b": -2, "c": 1, "x": 3 }, "expected": 4 }
     ],
-    "source": "Schulbuch Mathematik Sek II"
+    "source": "Schulbuch Mathematik Sek II",
+    "example": { "a": 1, "b": -2, "c": 1, "x": 3 }
   },
   {
     "id": "exponentialfunktion-wert",
@@ -308,7 +330,8 @@
     "examples": [
       { "values": { "a": 2, "k": 0.5, "x": 2 }, "expected": 5.43656365691809 }
     ],
-    "source": "Schulbuch Mathematik Sek II"
+    "source": "Schulbuch Mathematik Sek II",
+    "example": { "a": 2, "k": 0.5, "x": 2 }
   },
   {
     "id": "natuerlicher-logarithmus",
@@ -319,7 +342,8 @@
     "expression": "ln(x)",
     "variables": [{ "name": "x", "unit": "", "range": { "min": 0 } }],
     "examples": [{ "values": { "x": 7.38905609893065 }, "expected": 2 }],
-    "source": "Schulbuch Mathematik Sek II"
+    "source": "Schulbuch Mathematik Sek II",
+    "example": { "x": 7.38905609893065 }
   },
   {
     "id": "dekadischer-logarithmus",
@@ -330,7 +354,8 @@
     "expression": "log(x)",
     "variables": [{ "name": "x", "unit": "", "range": { "min": 0 } }],
     "examples": [{ "values": { "x": 1000 }, "expected": 3 }],
-    "source": "Schulbuch Mathematik Sek II"
+    "source": "Schulbuch Mathematik Sek II",
+    "example": { "x": 1000 }
   },
   {
     "id": "geometrische-reihe-grenzwert",
@@ -344,7 +369,8 @@
       { "name": "q", "unit": "", "range": { "min": -1, "max": 1 } }
     ],
     "examples": [{ "values": { "a": 1, "q": 0.5 }, "expected": 2 }],
-    "source": "Schulbuch Mathematik Sek II"
+    "source": "Schulbuch Mathematik Sek II",
+    "example": { "a": 1, "q": 0.5 }
   },
   {
     "id": "geschwindigkeit",
@@ -358,7 +384,8 @@
       { "name": "t", "unit": "s", "range": { "min": 0 } }
     ],
     "examples": [{ "values": { "s": 150, "t": 3 }, "expected": 50 }],
-    "source": "Schulbuch Physik Sek I"
+    "source": "Schulbuch Physik Sek I",
+    "example": { "s": 150, "t": 3 }
   },
   {
     "id": "kinetische-energie",
@@ -372,7 +399,8 @@
       { "name": "v", "unit": "m/s" }
     ],
     "examples": [{ "values": { "m": 2, "v": 3 }, "expected": 9 }],
-    "source": "Schulbuch Physik Sek I"
+    "source": "Schulbuch Physik Sek I",
+    "example": { "m": 2, "v": 3 }
   },
   {
     "id": "newtons-zweites-gesetz",
@@ -386,7 +414,8 @@
       { "name": "a", "unit": "m/s^2" }
     ],
     "examples": [{ "values": { "m": 5, "a": 2 }, "expected": 10 }],
-    "source": "Schulbuch Physik Sek I"
+    "source": "Schulbuch Physik Sek I",
+    "example": { "m": 5, "a": 2 }
   },
   {
     "id": "dichte",
@@ -400,7 +429,8 @@
       { "name": "V", "unit": "m^3", "range": { "min": 0 } }
     ],
     "examples": [{ "values": { "m": 10, "V": 2 }, "expected": 5 }],
-    "source": "Schulbuch Physik Sek I"
+    "source": "Schulbuch Physik Sek I",
+    "example": { "m": 10, "V": 2 }
   },
   {
     "id": "fallzeit-hoehe",
@@ -414,7 +444,8 @@
       { "name": "t", "unit": "s", "range": { "min": 0 } }
     ],
     "examples": [{ "values": { "g": 9.81, "t": 2 }, "expected": 19.62 }],
-    "source": "Schulbuch Physik Sek I"
+    "source": "Schulbuch Physik Sek I",
+    "example": { "g": 9.81, "t": 2 }
   },
   {
     "id": "ohmsches-gesetz",
@@ -428,7 +459,8 @@
       { "name": "I", "unit": "A" }
     ],
     "examples": [{ "values": { "R": 10, "I": 2 }, "expected": 20 }],
-    "source": "Schulbuch Physik Sek I"
+    "source": "Schulbuch Physik Sek I",
+    "example": { "R": 10, "I": 2 }
   },
   {
     "id": "arithmetisches-mittel-drei-werte",
@@ -443,7 +475,8 @@
       { "name": "c", "unit": "" }
     ],
     "examples": [{ "values": { "a": 2, "b": 4, "c": 6 }, "expected": 4 }],
-    "source": "Schulbuch Mathematik Sek I"
+    "source": "Schulbuch Mathematik Sek I",
+    "example": { "a": 2, "b": 4, "c": 6 }
   },
   {
     "id": "kombinationen-ohne-wiederholung",
@@ -457,7 +490,8 @@
       { "name": "k", "unit": "", "range": { "min": 0 } }
     ],
     "examples": [{ "values": { "n": 5, "k": 2 }, "expected": 10 }],
-    "source": "Schulbuch Mathematik Sek II"
+    "source": "Schulbuch Mathematik Sek II",
+    "example": { "n": 5, "k": 2 }
   },
   {
     "id": "laplace-wahrscheinlichkeit",
@@ -471,7 +505,8 @@
       { "name": "n", "unit": "", "range": { "min": 0 } }
     ],
     "examples": [{ "values": { "m": 3, "n": 12 }, "expected": 0.25 }],
-    "source": "Schulbuch Mathematik Sek I"
+    "source": "Schulbuch Mathematik Sek I",
+    "example": { "m": 3, "n": 12 }
   },
   {
     "id": "standardabweichung-aus-varianz",
@@ -482,7 +517,8 @@
     "expression": "sqrt(varianz)",
     "variables": [{ "name": "varianz", "unit": "", "range": { "min": 0 } }],
     "examples": [{ "values": { "varianz": 16 }, "expected": 4 }],
-    "source": "Schulbuch Mathematik Sek II"
+    "source": "Schulbuch Mathematik Sek II",
+    "example": { "varianz": 16 }
   },
   {
     "id": "erwartungswert-binomialverteilung",
@@ -496,7 +532,8 @@
       { "name": "p", "unit": "", "range": { "min": 0, "max": 1 } }
     ],
     "examples": [{ "values": { "n": 20, "p": 0.3 }, "expected": 6 }],
-    "source": "Schulbuch Mathematik Sek II"
+    "source": "Schulbuch Mathematik Sek II",
+    "example": { "n": 20, "p": 0.3 }
   },
   {
     "id": "permutationen",
@@ -507,6 +544,7 @@
     "expression": "fact(n)",
     "variables": [{ "name": "n", "unit": "", "range": { "min": 0 } }],
     "examples": [{ "values": { "n": 5 }, "expected": 120 }],
-    "source": "Schulbuch Mathematik Sek II"
+    "source": "Schulbuch Mathematik Sek II",
+    "example": { "n": 5 }
   }
 ]
