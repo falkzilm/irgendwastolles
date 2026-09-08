@@ -1,5 +1,7 @@
 import { useAppStore } from './index'
 import type { AppState } from './types'
+import { erstelleDefaultGamificationProfil } from './slices/gamificationSlice'
+import type { GamificationProfile } from './slices/gamificationSlice'
 import { MAX_VERLAUF_EINTRAEGE } from './slices/verlaufSlice'
 import type { VerlaufEintrag } from './slices/verlaufSlice'
 
@@ -15,6 +17,7 @@ export interface PersistableState {
   calculatorMode: AppState['calculatorMode']
   verlauf: AppState['verlauf']
   favoritenIds: AppState['favoritenIds']
+  gamification: AppState['gamification']
 }
 
 export function selectPersistableState(state: AppState): PersistableState {
@@ -24,6 +27,7 @@ export function selectPersistableState(state: AppState): PersistableState {
     calculatorMode: state.calculatorMode,
     verlauf: state.verlauf,
     favoritenIds: state.favoritenIds,
+    gamification: state.gamification,
   }
 }
 
@@ -38,6 +42,24 @@ function isVerlaufEintrag(value: unknown): value is VerlaufEintrag {
   )
 }
 
+function isGamificationProfile(value: unknown): value is GamificationProfile {
+  if (typeof value !== 'object' || value === null) return false
+  const candidate = value as Partial<GamificationProfile>
+  return (
+    typeof candidate.xp === 'number' &&
+    typeof candidate.level === 'number' &&
+    typeof candidate.streak === 'number' &&
+    (candidate.letzterAktivitaetsTag === null ||
+      typeof candidate.letzterAktivitaetsTag === 'string') &&
+    Array.isArray(candidate.freigeschalteteAchievements) &&
+    candidate.freigeschalteteAchievements.every(
+      (id) => typeof id === 'string',
+    ) &&
+    typeof candidate.anzahlBerechnungen === 'number' &&
+    typeof candidate.anzahlQuizRunden === 'number'
+  )
+}
+
 function isPersistableState(value: unknown): value is PersistableState {
   if (typeof value !== 'object' || value === null) return false
   const candidate = value as Partial<PersistableState>
@@ -49,7 +71,8 @@ function isPersistableState(value: unknown): value is PersistableState {
     Array.isArray(candidate.verlauf) &&
     candidate.verlauf.every(isVerlaufEintrag) &&
     Array.isArray(candidate.favoritenIds) &&
-    candidate.favoritenIds.every((id) => typeof id === 'string')
+    candidate.favoritenIds.every((id) => typeof id === 'string') &&
+    isGamificationProfile(candidate.gamification)
   )
 }
 
@@ -57,9 +80,10 @@ function isPersistableState(value: unknown): value is PersistableState {
  * Normalisiert geladene Rohdaten vor der Validierung, damit ältere,
  * schema-kompatible Dateien ohne `verlauf` (z. B. vor IRGENDWAST-26) oder
  * ohne `calculatorMode` (z. B. vor IRGENDWAST-25) oder ohne `favoritenIds`
- * (z. B. vor IRGENDWAST-33) nicht komplett verworfen werden, und ein zu
- * langer Verlauf (über `MAX_VERLAUF_EINTRAEGE`) auf die neuesten Einträge
- * gekappt wird, statt die Slice-Begrenzung zu umgehen.
+ * (z. B. vor IRGENDWAST-33) oder ohne `gamification` (z. B. vor
+ * IRGENDWAST-41) nicht komplett verworfen werden, und ein zu langer Verlauf
+ * (über `MAX_VERLAUF_EINTRAEGE`) auf die neuesten Einträge gekappt wird,
+ * statt die Slice-Begrenzung zu umgehen.
  */
 function normalizePersistedData(value: unknown): unknown {
   if (typeof value !== 'object' || value === null) return value
@@ -75,6 +99,13 @@ function normalizePersistedData(value: unknown): unknown {
 
   if (!('favoritenIds' in candidate)) {
     candidate = { ...candidate, favoritenIds: [] }
+  }
+
+  if (!('gamification' in candidate)) {
+    candidate = {
+      ...candidate,
+      gamification: erstelleDefaultGamificationProfil(),
+    }
   }
 
   if (
@@ -124,7 +155,8 @@ export function subscribeToPersistState(): () => void {
       next.angleMode === previous.angleMode &&
       next.calculatorMode === previous.calculatorMode &&
       next.verlauf === previous.verlauf &&
-      next.favoritenIds === previous.favoritenIds
+      next.favoritenIds === previous.favoritenIds &&
+      next.gamification === previous.gamification
     ) {
       return
     }

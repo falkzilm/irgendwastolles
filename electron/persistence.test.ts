@@ -80,6 +80,7 @@ test('loadPersistedState wendet registrierte Migrationen automatisch bis zur akt
   )
   const migrations: Record<number, Migration> = {
     0: (data) => ({ ...(data as object), angleMode: 'deg' }),
+    1: (data) => data,
   }
 
   const result = loadPersistedState(
@@ -89,6 +90,50 @@ test('loadPersistedState wendet registrierte Migrationen automatisch bis zur akt
   )
 
   assert.deepEqual(result, { theme: 'dark', angleMode: 'deg' })
+})
+
+test('registrierte MIGRATIONS heben eine Datei ohne Gamification-Profil (Version 1) auf die aktuelle Version an', () => {
+  writeFileSync(
+    storeFilePath,
+    JSON.stringify({ version: 1, data: { theme: 'dark' } }),
+    'utf8',
+  )
+
+  const result = loadPersistedState(storeFilePath, { theme: 'light' })
+
+  assert.deepEqual(result, {
+    theme: 'dark',
+    gamification: {
+      xp: 0,
+      level: 1,
+      streak: 0,
+      letzterAktivitaetsTag: null,
+      freigeschalteteAchievements: [],
+      anzahlBerechnungen: 0,
+      anzahlQuizRunden: 0,
+    },
+  })
+})
+
+test('registrierte MIGRATIONS lassen ein bereits vorhandenes Gamification-Profil unangetastet', () => {
+  const gamification = {
+    xp: 45,
+    level: 1,
+    streak: 3,
+    letzterAktivitaetsTag: '2026-03-05',
+    freigeschalteteAchievements: [],
+    anzahlBerechnungen: 4,
+    anzahlQuizRunden: 1,
+  }
+  writeFileSync(
+    storeFilePath,
+    JSON.stringify({ version: 1, data: { theme: 'dark', gamification } }),
+    'utf8',
+  )
+
+  const result = loadPersistedState(storeFilePath, { theme: 'light' })
+
+  assert.deepEqual(result, { theme: 'dark', gamification })
 })
 
 test('unbekannte (neuere) Schema-Version führt zum Fallback auf Defaults statt zum Absturz', () => {

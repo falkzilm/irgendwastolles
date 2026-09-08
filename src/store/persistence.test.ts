@@ -141,6 +141,65 @@ describe('store persistence', () => {
     expect(useAppStore.getState().favoritenIds).toEqual([])
   })
 
+  it('übernimmt ein gültiges, über IPC geladenes Gamification-Profil', async () => {
+    const gamification = {
+      xp: 45,
+      level: 1,
+      streak: 3,
+      letzterAktivitaetsTag: '2026-03-05',
+      freigeschalteteAchievements: ['erste-berechnung'],
+      anzahlBerechnungen: 4,
+      anzahlQuizRunden: 1,
+    }
+    window.api = {
+      loadPersistedState: vi.fn().mockResolvedValue({
+        data: {
+          theme: 'dark',
+          angleMode: 'rad',
+          calculatorMode: 'scientific',
+          verlauf: [],
+          favoritenIds: [],
+          gamification,
+        },
+      }),
+      savePersistedState: vi.fn(),
+      ping: vi.fn(),
+    }
+
+    await hydratePersistedState()
+
+    expect(useAppStore.getState().gamification).toEqual(gamification)
+  })
+
+  it('ergänzt bei alten, vor IRGENDWAST-41 persistierten Daten ohne gamification das Default-Profil, statt die restlichen Werte zu verwerfen', async () => {
+    window.api = {
+      loadPersistedState: vi.fn().mockResolvedValue({
+        data: {
+          theme: 'dark',
+          angleMode: 'rad',
+          calculatorMode: 'scientific',
+          verlauf: [],
+          favoritenIds: [],
+        },
+      }),
+      savePersistedState: vi.fn(),
+      ping: vi.fn(),
+    }
+
+    await hydratePersistedState()
+
+    expect(useAppStore.getState().theme).toBe('dark')
+    expect(useAppStore.getState().gamification).toEqual({
+      xp: 0,
+      level: 1,
+      streak: 0,
+      letzterAktivitaetsTag: null,
+      freigeschalteteAchievements: [],
+      anzahlBerechnungen: 0,
+      anzahlQuizRunden: 0,
+    })
+  })
+
   it('kappt einen zu langen geladenen Verlauf auf MAX_VERLAUF_EINTRAEGE Einträge', async () => {
     const verlauf = Array.from({ length: 110 }, (_, i) => ({
       id: `${i}`,
