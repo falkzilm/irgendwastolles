@@ -11,6 +11,7 @@ const kreisflaeche: Formula = {
   latex: 'A = \\pi r^2',
   expression: 'pi*r^2',
   variables: [{ name: 'r', unit: 'm', range: { min: 0 } }],
+  examples: [{ values: { r: 2 }, expected: Math.PI * 4 }],
   source: 'Schulbuch Mathematik Sek I',
 }
 
@@ -22,6 +23,7 @@ const kreisumfang: Formula = {
   latex: 'U = 2 \\pi r',
   expression: '2*pi*r',
   variables: [{ name: 'r', unit: 'm', range: { min: 0 } }],
+  examples: [{ values: { r: 3 }, expected: 2 * Math.PI * 3 }],
   source: 'Schulbuch Mathematik Sek I',
 }
 
@@ -36,6 +38,7 @@ const rechteckflaeche: Formula = {
     { name: 'a', unit: 'm', range: { min: 0 } },
     { name: 'b', unit: 'm', range: { min: 0 } },
   ],
+  examples: [{ values: { a: 4, b: 5 }, expected: 20 }],
   source: 'Schulbuch Mathematik Sek I',
 }
 
@@ -50,6 +53,7 @@ const pythagoras: Formula = {
     { name: 'a', unit: 'm', range: { min: 0 } },
     { name: 'b', unit: 'm', range: { min: 0 } },
   ],
+  examples: [{ values: { a: 3, b: 4 }, expected: 5 }],
   source: 'Schulbuch Mathematik Sek I',
 }
 
@@ -64,6 +68,7 @@ const ohmschesGesetz: Formula = {
     { name: 'I', unit: 'A' },
     { name: 'R', unit: 'Ω', range: { min: 0 } },
   ],
+  examples: [{ values: { I: 2, R: 10 }, expected: 20 }],
   source: 'Schulbuch Physik Sek I',
 }
 
@@ -75,6 +80,7 @@ const wuerfelvolumen: Formula = {
   latex: 'V = a^3',
   expression: 'a^3',
   variables: [{ name: 'a', unit: 'm', range: { min: 0, max: 100 } }],
+  examples: [{ values: { a: 3 }, expected: 27 }],
   source: 'Schulbuch Mathematik Sek I',
 }
 
@@ -190,5 +196,14 @@ describe('evaluateFormula', () => {
       ok: false,
       error: { type: 'evaluation-error', message: 'Division durch Null' },
     })
+  })
+
+  it('lehnt ein Ergebnis ab, das durch Überlauf zu Infinity wird', () => {
+    const result = evaluateFormula(kreisflaeche, { r: 1e308 })
+
+    expect(result.ok).toBe(false)
+    if (!result.ok) {
+      expect(result.error.type).toBe('evaluation-error')
+    }
   })
 })

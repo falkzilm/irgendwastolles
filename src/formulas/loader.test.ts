@@ -10,6 +10,7 @@ const kreisflaeche: Formula = {
   latex: 'A = \\pi r^2',
   expression: 'pi*r^2',
   variables: [{ name: 'r', unit: 'm', range: { min: 0 } }],
+  examples: [{ values: { r: 2 }, expected: 12.566370614359172 }],
   source: 'Schulbuch Mathematik Sek I',
 }
 
@@ -172,6 +173,63 @@ describe('loadCatalog', () => {
           error.message.includes('Doppelte Formel-id'),
       )
       expect(duplicateErrorsForBrokenEntry).toHaveLength(2)
+    }
+  })
+
+  it('lehnt eine Formel ohne Beispiele ab', () => {
+    const result = loadCatalog([{ ...kreisflaeche, examples: [] }])
+
+    expect(result.ok).toBe(false)
+    if (!result.ok) {
+      expect(
+        result.errors.some((error) => error.message.includes('examples')),
+      ).toBe(true)
+    }
+  })
+
+  it('meldet ein Beispiel mit fehlendem Variablenwert', () => {
+    const result = loadCatalog([
+      { ...kreisflaeche, examples: [{ values: {}, expected: 12.57 }] },
+    ])
+
+    expect(result.ok).toBe(false)
+    if (!result.ok) {
+      expect(
+        result.errors.some((error) =>
+          error.message.includes('fehlt Wert für Variable'),
+        ),
+      ).toBe(true)
+    }
+  })
+
+  it('meldet ein Beispiel mit unbekannter Variable in "values"', () => {
+    const result = loadCatalog([
+      {
+        ...kreisflaeche,
+        examples: [{ values: { r: 2, unbekannt: 1 }, expected: 12.57 }],
+      },
+    ])
+
+    expect(result.ok).toBe(false)
+    if (!result.ok) {
+      expect(
+        result.errors.some((error) =>
+          error.message.includes('unbekannte Variable'),
+        ),
+      ).toBe(true)
+    }
+  })
+
+  it('meldet ein Beispiel mit ungültigem "expected"', () => {
+    const result = loadCatalog([
+      { ...kreisflaeche, examples: [{ values: { r: 2 }, expected: 'zwölf' }] },
+    ])
+
+    expect(result.ok).toBe(false)
+    if (!result.ok) {
+      expect(
+        result.errors.some((error) => error.message.includes('expected')),
+      ).toBe(true)
     }
   })
 })

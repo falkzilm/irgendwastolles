@@ -16,6 +16,7 @@ const kreisflaeche: Formula = {
   latex: 'A = \\pi r^2',
   expression: 'pi*r^2',
   variables: [{ name: 'r', unit: 'm', range: { min: 0 } }],
+  examples: [{ values: { r: 2 }, expected: Math.PI * 4 }],
   source: 'Schulbuch Mathematik Sek I',
   example: { r: 3 },
 }
@@ -31,6 +32,7 @@ const rechteckflaeche: Formula = {
     { name: 'a', unit: 'm', range: { min: 0 } },
     { name: 'b', unit: 'm', range: { min: 0 } },
   ],
+  examples: [{ values: { a: 4, b: 5 }, expected: 20 }],
   source: 'Schulbuch Mathematik Sek I',
   example: { a: 4, b: 5 },
 }
@@ -46,6 +48,7 @@ const grossesProdukt: Formula = {
     { name: 'a', unit: '' },
     { name: 'b', unit: '' },
   ],
+  examples: [{ values: { a: 2, b: 3 }, expected: 6 }],
   source: 'Schulbuch Mathematik Sek I',
 }
 
@@ -127,6 +130,19 @@ describe('FormulaDetail', () => {
 
     expect(screen.getByLabelText('r (m)')).toHaveValue('3')
     expect(screen.getByText('28.2743338823')).toBeInTheDocument()
+  })
+
+  it('zeigt bei einem Überlauf (Ergebnis wird unendlich) einen Fehler statt eines Ergebnisses', () => {
+    renderDetail(kreisflaeche)
+
+    fireEvent.change(screen.getByLabelText('r (m)'), {
+      target: { value: '1e308' },
+    })
+
+    expect(screen.queryByText(/Ergebnis:/)).not.toBeInTheDocument()
+    expect(
+      screen.getByText('Ergebnis ist keine endliche Zahl.'),
+    ).toBeInTheDocument()
   })
 
   it('übernimmt das Ergebnis per Klick in den Rechner und schließt die Detailansicht', () => {
