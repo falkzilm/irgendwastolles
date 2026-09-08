@@ -2,12 +2,13 @@ import { useMemo, useState } from 'react'
 import './FormulasPage.css'
 import { Card } from '../ui/Card'
 import { useAppStore } from '../store'
+import { FormulaDetail } from './formulas/FormulaDetail'
 import {
   FORMULA_CATALOG,
   FORMULA_CATEGORIES,
   filterFormulas,
 } from '../formulas'
-import type { FormulaCategory } from '../formulas'
+import type { Formula, FormulaCategory } from '../formulas'
 
 const CATEGORY_LABELS: Record<FormulaCategory, string> = {
   algebra: 'Algebra',
@@ -29,6 +30,7 @@ const CATEGORY_LABELS: Record<FormulaCategory, string> = {
 export function FormulasPage() {
   const [query, setQuery] = useState('')
   const [favoritesOnly, setFavoritesOnly] = useState(false)
+  const [selectedFormula, setSelectedFormula] = useState<Formula | null>(null)
   const favoritenIds = useAppStore((state) => state.favoritenIds)
   const toggleFavorit = useAppStore((state) => state.toggleFavorit)
 
@@ -116,12 +118,27 @@ export function FormulasPage() {
                       {formula.description}
                     </p>
                     <p className="formulas-page__card-latex">{formula.latex}</p>
+                    <button
+                      type="button"
+                      className="formulas-page__details-button"
+                      aria-label={`Details zu ${formula.title} anzeigen`}
+                      onClick={() => setSelectedFormula(formula)}
+                    >
+                      Details anzeigen
+                    </button>
                   </Card>
                 )
               })}
             </div>
           </section>
         ))
+      )}
+
+      {selectedFormula && (
+        <FormulaDetail
+          formula={selectedFormula}
+          onClose={() => setSelectedFormula(null)}
+        />
       )}
     </div>
   )

@@ -16,6 +16,7 @@ export const FORMULA_CATALOG: Formula[] = [
     expression: 'pi*r^2',
     variables: [{ name: 'r', unit: 'm', range: { min: 0 } }],
     source: 'Schulbuch Mathematik Sek I',
+    example: { r: 3 },
   },
   {
     id: 'kreisumfang',
@@ -26,6 +27,7 @@ export const FORMULA_CATALOG: Formula[] = [
     expression: '2*pi*r',
     variables: [{ name: 'r', unit: 'm', range: { min: 0 } }],
     source: 'Schulbuch Mathematik Sek I',
+    example: { r: 4 },
   },
   {
     id: 'quadratische-gleichung',
@@ -41,6 +43,7 @@ export const FORMULA_CATALOG: Formula[] = [
       { name: 'c', unit: '' },
     ],
     source: 'Schulbuch Mathematik Sek I',
+    example: { a: 1, b: -3, c: 2 },
   },
   {
     id: 'binomische-formel',
@@ -54,6 +57,7 @@ export const FORMULA_CATALOG: Formula[] = [
       { name: 'b', unit: '' },
     ],
     source: 'Schulbuch Mathematik Sek I',
+    example: { a: 2, b: 3 },
   },
   {
     id: 'satz-des-pythagoras',
@@ -67,6 +71,7 @@ export const FORMULA_CATALOG: Formula[] = [
       { name: 'b', unit: 'm', range: { min: 0 } },
     ],
     source: 'Schulbuch Mathematik Sek I',
+    example: { a: 3, b: 4 },
   },
   {
     id: 'sinussatz',
@@ -80,6 +85,7 @@ export const FORMULA_CATALOG: Formula[] = [
       { name: 'alpha', unit: '°', range: { min: 0, max: 180 } },
     ],
     source: 'Schulbuch Mathematik Sek II',
+    example: { a: 5, alpha: 30 },
   },
   {
     id: 'ableitung-potenzfunktion',
@@ -93,6 +99,7 @@ export const FORMULA_CATALOG: Formula[] = [
       { name: 'x', unit: '' },
     ],
     source: 'Schulbuch Mathematik Sek II',
+    example: { n: 3, x: 2 },
   },
   {
     id: 'mittelwertsatz-integral',
@@ -106,6 +113,7 @@ export const FORMULA_CATALOG: Formula[] = [
       { name: 'b', unit: '' },
     ],
     source: 'Schulbuch Mathematik Sek II',
+    example: { a: 0, b: 4 },
   },
   {
     id: 'newtonsches-grundgesetz',
@@ -119,6 +127,7 @@ export const FORMULA_CATALOG: Formula[] = [
       { name: 'a', unit: 'm/s^2' },
     ],
     source: 'Schulbuch Physik Sek I',
+    example: { m: 2, a: 5 },
   },
   {
     id: 'kinetische-energie',
@@ -132,6 +141,7 @@ export const FORMULA_CATALOG: Formula[] = [
       { name: 'v', unit: 'm/s' },
     ],
     source: 'Schulbuch Physik Sek I',
+    example: { m: 2, v: 3 },
   },
   {
     id: 'ohmsches-gesetz',
@@ -145,6 +155,7 @@ export const FORMULA_CATALOG: Formula[] = [
       { name: 'I', unit: 'A' },
     ],
     source: 'Schulbuch Physik Sek I',
+    example: { R: 10, I: 2 },
   },
   {
     id: 'erwartungswert-diskret',
@@ -161,6 +172,7 @@ export const FORMULA_CATALOG: Formula[] = [
       { name: 'p2', unit: '', range: { min: 0, max: 1 } },
     ],
     source: 'Schulbuch Mathematik Sek II',
+    example: { x1: 2, p1: 0.5, x2: 5, p2: 0.5 },
   },
   {
     id: 'binomialkoeffizient',
@@ -175,6 +187,7 @@ export const FORMULA_CATALOG: Formula[] = [
       { name: 'k', unit: '', range: { min: 0 } },
     ],
     source: 'Schulbuch Mathematik Sek II',
+    example: { n: 5, k: 2 },
   },
   {
     id: 'prozentwert',
@@ -188,6 +201,7 @@ export const FORMULA_CATALOG: Formula[] = [
       { name: 'p', unit: '%' },
     ],
     source: 'Schulbuch Mathematik Sek I',
+    example: { G: 200, p: 15 },
   },
   {
     id: 'dreisatz',
@@ -203,5 +217,6 @@ export const FORMULA_CATALOG: Formula[] = [
       { name: 'c', unit: '' },
     ],
     source: 'Schulbuch Mathematik Sek I',
+    example: { a: 2, b: 4, c: 6 },
   },
 ]
