@@ -143,18 +143,23 @@ wird wie `verlauf` über `src/store/persistence.ts` persistiert, siehe
 
 ## Gamification-Slice
 
-`gamificationSlice.ts` setzt die Anforderungen aus IRGENDWAST-41 um
-(Datenmodell und Store-Slice für das Spielerprofil, Grundlage für die
-weiteren Gamification-Items):
+`gamificationSlice.ts` setzt die Anforderungen aus IRGENDWAST-41 und
+IRGENDWAST-43 um (Datenmodell und Store-Slice für das Spielerprofil
+inklusive Tages-Streak, Grundlage für die weiteren Gamification-Items):
 
 - `gamification: GamificationProfile` mit `xp`, `level`, `streak`,
-  `letzterAktivitaetsTag` (ISO-Datum `YYYY-MM-DD` oder `null` vor dem ersten
-  Event), `freigeschalteteAchievements` (IDs künftiger Achievements),
-  `anzahlBerechnungen` und `anzahlQuizRunden`. Ein neues Profil startet mit
-  den Defaults `level: 1`, `xp: 0`, `streak: 0`.
-- `recordEvent(event: GamificationEvent)` ist der **einzige** Weg, das
-  Profil zu verändern - es gibt keine weiteren `set...`-Actions auf dem
-  Gamification-State. Aktuell unterstützte Events:
+  `laengsterStreak` (der höchste je erreichte Streak, siehe unten),
+  `letzterAktivitaetsTag` (lokales Kalenderdatum `YYYY-MM-DD` oder `null`
+  vor dem ersten Event), `freigeschalteteAchievements` (IDs künftiger
+  Achievements), `anzahlBerechnungen` und `anzahlQuizRunden`. Ein neues
+  Profil startet mit den Defaults `level: 1`, `xp: 0`, `streak: 0`,
+  `laengsterStreak: 0`.
+- `recordEvent(event: GamificationEvent, jetzt?: Date)` ist der
+  **einzige** Weg, das Profil zu verändern - es gibt keine weiteren
+  `set...`-Actions auf dem Gamification-State. `jetzt` ist die injizierbare
+  Zeitquelle für den Streak (Default: `new Date()`); Tests übergeben hier
+  gezielte Zeitpunkte, statt die Systemzeit global zu mocken. Aktuell
+  unterstützte Events:
   - `{ type: 'calculation_done' }` - eine erfolgreiche Berechnung im Rechner
     (vergibt XP, erhöht `anzahlBerechnungen`).
   - `{ type: 'quiz_round_finished' }` - eine abgeschlossene Quizrunde
@@ -163,11 +168,21 @@ weiteren Gamification-Items):
   Jedes Event vergibt eine feste XP-Menge (siehe `XP_BELOHNUNG` in
   `gamificationSlice.ts`); `level` ergibt sich aus `xp` über `XP_PRO_LEVEL`
   (100 XP/Level). `streak` wird anhand von `letzterAktivitaetsTag`
-  fortgeschrieben: ein Event am selben Tag lässt ihn unverändert, eines am
-  Folgetag erhöht ihn um eins, ein größerer Abstand (oder das erste Event
-  überhaupt) setzt ihn auf 1 zurück. Weitere Events (z. B. für zukünftige
-  Formel-/Quiz-Typen) ergänzen `GamificationEvent` um eine weitere Variante,
-  statt den State direkt zu setzen.
+  fortgeschrieben, wobei Kalendertage über die lokalen `Date`-Komponenten
+  von `jetzt` bestimmt werden (nicht über `toISOString()`/UTC), damit der
+  Streak den tatsächlichen Kalendertag am Aufenthaltsort abbildet und auch
+  bei einem Zeitzonen- oder Uhrumstellung (z. B. Sommer-/Winterzeit) robust
+  bleibt: ein Event am selben lokalen Tag lässt ihn unverändert, eines am
+  lokalen Folgetag erhöht ihn um eins, ein größerer Abstand (oder das erste
+  Event überhaupt) setzt ihn auf 1 zurück. Liegt der lokale Tag von `jetzt`
+  dagegen _vor_ `letzterAktivitaetsTag` (z. B. Reise nach Westen über die
+  Datumsgrenze oder eine manuelle Uhrkorrektur rückwärts), bleiben `streak`
+  und `letzterAktivitaetsTag` unverändert - der bereits gezählte spätere Tag
+  wird weder überschrieben noch entwertet. `laengsterStreak` wird bei jedem
+  Event auf `Math.max(laengsterStreak, streak)` aktualisiert und damit
+  unabhängig vom aktuellen `streak` gespeichert. Weitere Events (z. B. für
+  zukünftige Formel-/Quiz-Typen) ergänzen `GamificationEvent` um eine
+  weitere Variante, statt den State direkt zu setzen.
 
 `gamification` wird wie `verlauf` und `favoritenIds` über
 `src/store/persistence.ts` persistiert, siehe [persistence.md](./persistence.md).
