@@ -1,0 +1,66 @@
+.quiz-frage {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+}
+
+.quiz-frage__fortschritt {
+  color: var(--color-fg-muted);
+  font-size: var(--font-size-sm);
+  margin: 0;
+}
+
+.quiz-frage__prompt {
+  font-size: var(--font-size-lg);
+  margin: 0;
+}
+
+.quiz-frage__form {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.quiz-frage__label {
+  font-size: var(--font-size-sm);
+  color: var(--color-fg-muted);
+}
+
+.quiz-frage__form input {
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-bg-elevated);
+  color: var(--color-fg);
+  font-family: inherit;
+  font-size: var(--font-size-md);
+  width: 8rem;
+}
+
+.quiz-frage__form input:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 1px;
+}
+
+.quiz-frage__feedback {
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  font-weight: var(--font-weight-bold);
+}
+
+.quiz-frage__feedback--richtig {
+  background-color: color-mix(in srgb, var(--color-primary) 15%, transparent);
+  color: var(--color-primary);
+}
+
+.quiz-frage__feedback--falsch {
+  background-color: color-mix(in srgb, var(--color-danger) 15%, transparent);
+  color: var(--color-danger);
+}
+
+.quiz-frage__aktionen {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+}

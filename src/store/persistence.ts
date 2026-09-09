@@ -5,8 +5,11 @@ import {
   erstelleDefaultGamificationProfil,
 } from './slices/gamificationSlice'
 import type { GamificationProfile } from './slices/gamificationSlice'
+import { MAX_QUIZ_ERGEBNISSE } from './slices/quizSlice'
+import type { QuizErgebnis } from './slices/quizSlice'
 import { MAX_VERLAUF_EINTRAEGE } from './slices/verlaufSlice'
 import type { VerlaufEintrag } from './slices/verlaufSlice'
+import { DIFFICULTIES } from '../exercises'
 
 /**
  * Anteil des Stores, der über IPC persistiert wird - nur reine Daten, keine
@@ -21,6 +24,7 @@ export interface PersistableState {
   verlauf: AppState['verlauf']
   favoritenIds: AppState['favoritenIds']
   gamification: AppState['gamification']
+  quizErgebnisse: AppState['quizErgebnisse']
 }
 
 export function selectPersistableState(state: AppState): PersistableState {
@@ -31,6 +35,7 @@ export function selectPersistableState(state: AppState): PersistableState {
     verlauf: state.verlauf,
     favoritenIds: state.favoritenIds,
     gamification: state.gamification,
+    quizErgebnisse: state.quizErgebnisse,
   }
 }
 
@@ -67,6 +72,19 @@ function isGamificationProfile(value: unknown): value is GamificationProfile {
   )
 }
 
+function isQuizErgebnis(value: unknown): value is QuizErgebnis {
+  if (typeof value !== 'object' || value === null) return false
+  const candidate = value as Partial<QuizErgebnis>
+  return (
+    typeof candidate.id === 'string' &&
+    (DIFFICULTIES as readonly string[]).includes(candidate.difficulty ?? '') &&
+    typeof candidate.anzahlAufgaben === 'number' &&
+    typeof candidate.anzahlRichtig === 'number' &&
+    typeof candidate.dauerMs === 'number' &&
+    typeof candidate.timestamp === 'number'
+  )
+}
+
 function isPersistableState(value: unknown): value is PersistableState {
   if (typeof value !== 'object' || value === null) return false
   const candidate = value as Partial<PersistableState>
@@ -79,7 +97,9 @@ function isPersistableState(value: unknown): value is PersistableState {
     candidate.verlauf.every(isVerlaufEintrag) &&
     Array.isArray(candidate.favoritenIds) &&
     candidate.favoritenIds.every((id) => typeof id === 'string') &&
-    isGamificationProfile(candidate.gamification)
+    isGamificationProfile(candidate.gamification) &&
+    Array.isArray(candidate.quizErgebnisse) &&
+    candidate.quizErgebnisse.every(isQuizErgebnis)
   )
 }
 
@@ -87,10 +107,12 @@ function isPersistableState(value: unknown): value is PersistableState {
  * Normalisiert geladene Rohdaten vor der Validierung, damit ältere,
  * schema-kompatible Dateien ohne `verlauf` (z. B. vor IRGENDWAST-26) oder
  * ohne `calculatorMode` (z. B. vor IRGENDWAST-25) oder ohne `favoritenIds`
- * (z. B. vor IRGENDWAST-33) oder ohne `gamification` (z. B. vor
+ * (z. B. vor IRGENDWAST-33) oder ohne `quizErgebnisse` (z. B. vor
+ * IRGENDWAST-38) oder ohne `gamification` (z. B. vor
  * IRGENDWAST-41) oder mit einem `gamification`-Profil ohne `laengsterStreak`
  * (z. B. vor IRGENDWAST-43) nicht komplett verworfen werden, und ein zu
- * langer Verlauf (über `MAX_VERLAUF_EINTRAEGE`) auf die neuesten Einträge
+ * langer Verlauf (über `MAX_VERLAUF_EINTRAEGE`) bzw. eine zu lange
+ * Quiz-Ergebnisliste (über `MAX_QUIZ_ERGEBNISSE`) auf die neuesten Einträge
  * gekappt wird, statt die Slice-Begrenzung zu umgehen. Ein vorhandenes
  * `gamification` ohne `restXpBisNaechstesLevel`/`xpEventsHeute` (z. B. vor
  * IRGENDWAST-42) wird um `xpEventsHeute` ergänzt; `level` und
@@ -112,6 +134,10 @@ function normalizePersistedData(value: unknown): unknown {
 
   if (!('favoritenIds' in candidate)) {
     candidate = { ...candidate, favoritenIds: [] }
+  }
+
+  if (!('quizErgebnisse' in candidate)) {
+    candidate = { ...candidate, quizErgebnisse: [] }
   }
 
   if (!('gamification' in candidate)) {
@@ -166,6 +192,16 @@ function normalizePersistedData(value: unknown): unknown {
     }
   }
 
+  if (
+    Array.isArray(candidate.quizErgebnisse) &&
+    candidate.quizErgebnisse.length > MAX_QUIZ_ERGEBNISSE
+  ) {
+    candidate = {
+      ...candidate,
+      quizErgebnisse: candidate.quizErgebnisse.slice(0, MAX_QUIZ_ERGEBNISSE),
+    }
+  }
+
   return candidate
 }
 
@@ -204,7 +240,8 @@ export function subscribeToPersistState(): () => void {
       next.calculatorMode === previous.calculatorMode &&
       next.verlauf === previous.verlauf &&
       next.favoritenIds === previous.favoritenIds &&
-      next.gamification === previous.gamification
+      next.gamification === previous.gamification &&
+      next.quizErgebnisse === previous.quizErgebnisse
     ) {
       return
     }

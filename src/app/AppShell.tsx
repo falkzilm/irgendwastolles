@@ -3,12 +3,14 @@ import './AppShell.css'
 import { CalculatorPage } from '../pages/CalculatorPage'
 import { FormulasPage } from '../pages/FormulasPage'
 import { ProgressPage } from '../pages/ProgressPage'
+import { QuizPage } from '../pages/QuizPage'
 
-type NavKey = 'calculator' | 'formulas' | 'progress'
+type NavKey = 'calculator' | 'formulas' | 'quiz' | 'progress'
 
 const NAV_ITEMS: { key: NavKey; label: string }[] = [
   { key: 'calculator', label: 'Rechner' },
   { key: 'formulas', label: 'Formeln' },
+  { key: 'quiz', label: 'Quiz' },
   { key: 'progress', label: 'Fortschritt' },
 ]
 
@@ -38,6 +40,7 @@ export function AppShell() {
       <main className="app-shell__content">
         {activeView === 'calculator' && <CalculatorPage />}
         {activeView === 'formulas' && <FormulasPage />}
+        {activeView === 'quiz' && <QuizPage />}
         {activeView === 'progress' && <ProgressPage />}
       </main>
     </div>

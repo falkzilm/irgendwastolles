@@ -219,6 +219,31 @@ wird wie `verlauf` über `src/store/persistence.ts` persistiert, siehe
 `gamification` wird wie `verlauf` und `favoritenIds` über
 `src/store/persistence.ts` persistiert, siehe [persistence.md](./persistence.md).
 
+## Quiz-Slice
+
+`quizSlice.ts` setzt den Persistenz-Teil aus IRGENDWAST-38 um (Rundenergebnis
+einer Quizrunde):
+
+- `quizErgebnisse: QuizErgebnis[]` (`{ id, difficulty, anzahlAufgaben,
+anzahlRichtig, dauerMs, timestamp }`), neueste Einträge zuerst.
+- `addQuizErgebnis(ergebnis)` fügt vorne einen Eintrag an und kappt bei
+  `MAX_QUIZ_ERGEBNISSE` (50).
+
+`src/pages/QuizPage.tsx` setzt darauf die eigentliche Quiz-Ansicht um: Nutzer
+wählen Schwierigkeitsstufe und Aufgabenanzahl, beantworten die über
+`generateExercises`/`checkAnswer` (siehe [exercises.md](./exercises.md))
+erzeugten Aufgaben mit direktem Richtig/Falsch-Feedback und sehen am Ende
+eine Übersicht aus Anzahl richtiger Antworten und benötigter Zeit. Die aktive
+Runde (aktuelle Aufgabe, Index, Zwischenstand) lebt ausschließlich als
+lokaler Komponentenzustand der Seite, nicht im Store - ein Abbruch verwirft
+diesen Zustand einfach, ohne den Store oder eine bereits persistierte Runde
+zu berühren. Erst ein abgeschlossenes Rundenergebnis wird per
+`addQuizErgebnis` in `quizErgebnisse` eingetragen und zusätzlich per
+`recordEvent({ type: 'quiz_round_finished' })` an das Gamification-Profil
+gemeldet (siehe oben). `quizErgebnisse` wird wie `verlauf` über
+`src/store/persistence.ts` persistiert, siehe
+[persistence.md](./persistence.md).
+
 Die deklarative Achievement-Liste sowie die reine Auswertungsfunktion, die
 aus `freigeschalteteAchievements` und dem restlichen Profil neu
 freigeschaltete Erfolge ermittelt (IRGENDWAST-44), liegen unter

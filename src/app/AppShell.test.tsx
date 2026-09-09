@@ -21,6 +21,7 @@ describe('AppShell', () => {
 
     expect(screen.getByRole('button', { name: 'Rechner' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Formeln' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Quiz' })).toBeInTheDocument()
     expect(
       screen.getByRole('button', { name: 'Fortschritt' }),
     ).toBeInTheDocument()
@@ -59,6 +60,18 @@ describe('AppShell', () => {
       screen.getByRole('heading', { name: 'Fortschritt' }),
     ).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Fortschritt' })).toHaveAttribute(
+      'aria-current',
+      'page',
+    )
+  })
+
+  it('zeigt beim Wechsel zu Quiz die Quiz-Ansicht', () => {
+    renderAppShell()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Quiz' }))
+
+    expect(screen.getByRole('heading', { name: 'Quiz' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Quiz' })).toHaveAttribute(
       'aria-current',
       'page',
     )
