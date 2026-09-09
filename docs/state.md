@@ -150,10 +150,10 @@ inklusive Tages-Streak, Grundlage für die weiteren Gamification-Items):
 - `gamification: GamificationProfile` mit `xp`, `level`, `streak`,
   `laengsterStreak` (der höchste je erreichte Streak, siehe unten),
   `letzterAktivitaetsTag` (lokales Kalenderdatum `YYYY-MM-DD` oder `null`
-  vor dem ersten Event), `freigeschalteteAchievements` (IDs künftiger
-  Achievements), `anzahlBerechnungen` und `anzahlQuizRunden`. Ein neues
-  Profil startet mit den Defaults `level: 1`, `xp: 0`, `streak: 0`,
-  `laengsterStreak: 0`.
+  vor dem ersten Event), `freigeschalteteAchievements` (IDs freigeschalteter
+  Achievements, siehe [achievements.md](./achievements.md)),
+  `anzahlBerechnungen` und `anzahlQuizRunden`. Ein neues Profil startet mit
+  den Defaults `level: 1`, `xp: 0`, `streak: 0`, `laengsterStreak: 0`.
 - `recordEvent(event: GamificationEvent, jetzt?: Date)` ist der
   **einzige** Weg, das Profil zu verändern - es gibt keine weiteren
   `set...`-Actions auf dem Gamification-State. `jetzt` ist die injizierbare
@@ -184,5 +184,19 @@ inklusive Tages-Streak, Grundlage für die weiteren Gamification-Items):
   zukünftige Formel-/Quiz-Typen) ergänzen `GamificationEvent` um eine
   weitere Variante, statt den State direkt zu setzen.
 
+  Nach dem Fortschreiben von XP/Level/Streak/Zählern ruft `recordEvent`
+  `ermittleNeueAchievements` (IRGENDWAST-44, siehe
+  [achievements.md](./achievements.md)) mit dem so entstandenen Profil auf
+  und trägt die ids der zurückgelieferten Achievements in
+  `freigeschalteteAchievements` ein - ein Unlock wird dadurch innerhalb des
+  Event-Flows genau einmal ausgelöst, ein erneutes Erfüllen derselben
+  Bedingung löst wegen der bereits eingetragenen id keinen weiteren Unlock
+  aus.
+
 `gamification` wird wie `verlauf` und `favoritenIds` über
 `src/store/persistence.ts` persistiert, siehe [persistence.md](./persistence.md).
+
+Die deklarative Achievement-Liste sowie die reine Auswertungsfunktion, die
+aus `freigeschalteteAchievements` und dem restlichen Profil neu
+freigeschaltete Erfolge ermittelt (IRGENDWAST-44), liegen unter
+`src/achievements/`, siehe [achievements.md](./achievements.md).
