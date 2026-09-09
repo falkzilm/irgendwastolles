@@ -1,4 +1,5 @@
 import type { StateCreator } from 'zustand'
+import { ermittleNeueAchievements } from '../../achievements/evaluate'
 import type { AppState } from '../types'
 
 /** Siehe docs/state.md - IRGENDWAST-41. */
@@ -33,8 +34,10 @@ export interface GamificationSlice {
   gamification: GamificationProfile
   /**
    * Einziger Weg, das Gamification-Profil zu verändern: schreibt XP, Level,
-   * Streak sowie die passenden Zähler abhängig vom Event-Typ fort (siehe
-   * docs/state.md).
+   * Streak sowie die passenden Zähler abhängig vom Event-Typ fort und trägt
+   * anschließend neu erfüllte Achievements (siehe `ermittleNeueAchievements`
+   * in `src/achievements/evaluate.ts`) in `freigeschalteteAchievements` ein,
+   * damit sie nicht erneut ausgelöst werden (siehe docs/state.md).
    */
   recordEvent: (event: GamificationEvent) => void
 }
@@ -91,19 +94,32 @@ export const createGamificationSlice: StateCreator<
       const heute = heutigerTag()
       const xp = profil.xp + XP_BELOHNUNG[event.type]
 
+      const fortgeschriebenesProfil: GamificationProfile = {
+        ...profil,
+        xp,
+        level: Math.floor(xp / XP_PRO_LEVEL) + 1,
+        streak: fortgeschriebenerStreak(profil, heute),
+        letzterAktivitaetsTag: heute,
+        anzahlBerechnungen:
+          profil.anzahlBerechnungen +
+          (event.type === 'calculation_done' ? 1 : 0),
+        anzahlQuizRunden:
+          profil.anzahlQuizRunden +
+          (event.type === 'quiz_round_finished' ? 1 : 0),
+      }
+
+      const neueAchievements = ermittleNeueAchievements(fortgeschriebenesProfil)
+      if (neueAchievements.length === 0) {
+        return { gamification: fortgeschriebenesProfil }
+      }
+
       return {
         gamification: {
-          ...profil,
-          xp,
-          level: Math.floor(xp / XP_PRO_LEVEL) + 1,
-          streak: fortgeschriebenerStreak(profil, heute),
-          letzterAktivitaetsTag: heute,
-          anzahlBerechnungen:
-            profil.anzahlBerechnungen +
-            (event.type === 'calculation_done' ? 1 : 0),
-          anzahlQuizRunden:
-            profil.anzahlQuizRunden +
-            (event.type === 'quiz_round_finished' ? 1 : 0),
+          ...fortgeschriebenesProfil,
+          freigeschalteteAchievements: [
+            ...fortgeschriebenesProfil.freigeschalteteAchievements,
+            ...neueAchievements.map((achievement) => achievement.id),
+          ],
         },
       }
     }),

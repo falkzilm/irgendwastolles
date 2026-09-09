@@ -95,4 +95,36 @@ describe('gamificationSlice', () => {
 
     expect(useAppStore.getState().gamification.streak).toBe(1)
   })
+
+  it('schaltet eine Achievement frei, sobald ihre Bedingung erfüllt ist', () => {
+    useAppStore.getState().recordEvent({ type: 'calculation_done' })
+
+    expect(
+      useAppStore.getState().gamification.freigeschalteteAchievements,
+    ).toContain('erste-berechnung')
+  })
+
+  it('löst dieselbe Achievement bei wiederholten Events nicht erneut aus', () => {
+    for (let i = 0; i < 5; i++) {
+      useAppStore.getState().recordEvent({ type: 'calculation_done' })
+    }
+
+    const { freigeschalteteAchievements } = useAppStore.getState().gamification
+    expect(
+      freigeschalteteAchievements.filter((id) => id === 'erste-berechnung'),
+    ).toEqual(['erste-berechnung'])
+  })
+
+  it('schaltet mehrere gleichzeitig erfüllte Achievements in einem Event frei', () => {
+    for (let i = 0; i < 100; i++) {
+      useAppStore.getState().recordEvent({ type: 'calculation_done' })
+    }
+
+    const { freigeschalteteAchievements } = useAppStore.getState().gamification
+    expect(freigeschalteteAchievements).toContain('erste-berechnung')
+    expect(freigeschalteteAchievements).toContain('hundert-berechnungen')
+    expect(new Set(freigeschalteteAchievements).size).toBe(
+      freigeschalteteAchievements.length,
+    )
+  })
 })

@@ -65,8 +65,12 @@ erreicht: false }`. `aktuell` ist auf `ziel` gedeckelt, damit Kennzahlen,
 Beide Funktionen sind reine Funktionen ohne Seiteneffekt und unit-getestet
 (`definitions.test.ts`, `evaluate.test.ts`); sie greifen nicht selbst auf den
 Store zu und lösen `freigeschalteteAchievements` nicht selbst aus - das
-Fortschreiben des Profils nach einem Unlock ist Aufgabe des Aufrufers (z. B.
-künftig `recordEvent`).
+Fortschreiben des Profils nach einem Unlock ist Aufgabe des Aufrufers.
+`recordEvent` in `gamificationSlice.ts` ist dieser Aufrufer: es wendet das
+Event zunächst auf XP/Level/Streak/Zähler an, ruft anschließend
+`ermittleNeueAchievements` mit diesem fortgeschriebenen Profil auf und trägt
+die ids der zurückgelieferten Achievements in einem Zug in
+`freigeschalteteAchievements` ein (siehe [state.md](./state.md)).
 
 ## Aufbau
 

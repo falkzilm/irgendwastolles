@@ -149,9 +149,10 @@ weiteren Gamification-Items):
 
 - `gamification: GamificationProfile` mit `xp`, `level`, `streak`,
   `letzterAktivitaetsTag` (ISO-Datum `YYYY-MM-DD` oder `null` vor dem ersten
-  Event), `freigeschalteteAchievements` (IDs künftiger Achievements),
-  `anzahlBerechnungen` und `anzahlQuizRunden`. Ein neues Profil startet mit
-  den Defaults `level: 1`, `xp: 0`, `streak: 0`.
+  Event), `freigeschalteteAchievements` (IDs freigeschalteter Achievements,
+  siehe [achievements.md](./achievements.md)), `anzahlBerechnungen` und
+  `anzahlQuizRunden`. Ein neues Profil startet mit den Defaults `level: 1`,
+  `xp: 0`, `streak: 0`.
 - `recordEvent(event: GamificationEvent)` ist der **einzige** Weg, das
   Profil zu verändern - es gibt keine weiteren `set...`-Actions auf dem
   Gamification-State. Aktuell unterstützte Events:
@@ -168,6 +169,15 @@ weiteren Gamification-Items):
   überhaupt) setzt ihn auf 1 zurück. Weitere Events (z. B. für zukünftige
   Formel-/Quiz-Typen) ergänzen `GamificationEvent` um eine weitere Variante,
   statt den State direkt zu setzen.
+
+  Nach dem Fortschreiben von XP/Level/Streak/Zählern ruft `recordEvent`
+  `ermittleNeueAchievements` (IRGENDWAST-44, siehe
+  [achievements.md](./achievements.md)) mit dem so entstandenen Profil auf
+  und trägt die ids der zurückgelieferten Achievements in
+  `freigeschalteteAchievements` ein - ein Unlock wird dadurch innerhalb des
+  Event-Flows genau einmal ausgelöst, ein erneutes Erfüllen derselben
+  Bedingung löst wegen der bereits eingetragenen id keinen weiteren Unlock
+  aus.
 
 `gamification` wird wie `verlauf` und `favoritenIds` über
 `src/store/persistence.ts` persistiert, siehe [persistence.md](./persistence.md).
