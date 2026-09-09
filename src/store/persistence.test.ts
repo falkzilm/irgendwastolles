@@ -147,6 +147,7 @@ describe('store persistence', () => {
       level: 1,
       restXpBisNaechstesLevel: 55,
       streak: 3,
+      laengsterStreak: 5,
       letzterAktivitaetsTag: '2026-03-05',
       freigeschalteteAchievements: ['erste-berechnung'],
       anzahlBerechnungen: 4,
@@ -196,6 +197,7 @@ describe('store persistence', () => {
       level: 1,
       restXpBisNaechstesLevel: 100,
       streak: 0,
+      laengsterStreak: 0,
       letzterAktivitaetsTag: null,
       freigeschalteteAchievements: [],
       anzahlBerechnungen: 0,
@@ -235,6 +237,7 @@ describe('store persistence', () => {
       level: 2,
       restXpBisNaechstesLevel: 150,
       streak: 3,
+      laengsterStreak: 3,
       letzterAktivitaetsTag: '2026-03-05',
       freigeschalteteAchievements: [],
       anzahlBerechnungen: 10,
@@ -276,12 +279,43 @@ describe('store persistence', () => {
       level: 3,
       restXpBisNaechstesLevel: 200,
       streak: 3,
+      laengsterStreak: 3,
       letzterAktivitaetsTag: '2026-03-05',
       freigeschalteteAchievements: [],
       anzahlBerechnungen: 10,
       anzahlQuizRunden: 2,
       xpEventsHeute: {},
     })
+  })
+
+  it('ergänzt bei alten, vor IRGENDWAST-43 persistierten Gamification-Profilen ohne laengsterStreak den Wert von streak, statt das Profil zu verwerfen', async () => {
+    window.api = {
+      loadPersistedState: vi.fn().mockResolvedValue({
+        data: {
+          theme: 'dark',
+          angleMode: 'rad',
+          calculatorMode: 'scientific',
+          verlauf: [],
+          favoritenIds: [],
+          gamification: {
+            xp: 45,
+            level: 1,
+            streak: 3,
+            letzterAktivitaetsTag: '2026-03-05',
+            freigeschalteteAchievements: [],
+            anzahlBerechnungen: 4,
+            anzahlQuizRunden: 1,
+          },
+        },
+      }),
+      savePersistedState: vi.fn(),
+      ping: vi.fn(),
+    }
+
+    await hydratePersistedState()
+
+    expect(useAppStore.getState().gamification.streak).toBe(3)
+    expect(useAppStore.getState().gamification.laengsterStreak).toBe(3)
   })
 
   it('kappt einen zu langen geladenen Verlauf auf MAX_VERLAUF_EINTRAEGE Einträge', async () => {

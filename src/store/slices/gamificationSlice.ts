@@ -1,4 +1,5 @@
 import type { StateCreator } from 'zustand'
+import { ermittleNeueAchievements } from '../../achievements/evaluate'
 import type { AppState } from '../types'
 
 /**
@@ -47,7 +48,9 @@ export interface GamificationProfile {
   /** XP, die ab dem aktuellen `xp`-Gesamtwert noch bis zum nächsten Level fehlen. */
   restXpBisNaechstesLevel: number
   streak: number
-  /** ISO-Datum (`YYYY-MM-DD`) des letzten Events, oder `null` vor dem ersten Event. */
+  /** Der höchste je erreichte Streak-Wert, unabhängig vom aktuellen `streak`. */
+  laengsterStreak: number
+  /** Lokales Kalenderdatum (`YYYY-MM-DD`) des letzten Events, oder `null` vor dem ersten Event. */
   letzterAktivitaetsTag: string | null
   freigeschalteteAchievements: string[]
   anzahlBerechnungen: number
@@ -64,11 +67,19 @@ export interface GamificationSlice {
   gamification: GamificationProfile
   /**
    * Einziger Weg, das Gamification-Profil zu verändern: schreibt XP, Level,
-   * Streak sowie die passenden Zähler abhängig vom Event-Typ fort (siehe
-   * docs/state.md) und meldet zurück, ob das Event zu einem Level-Up
-   * geführt hat.
+   * Streak sowie die passenden Zähler abhängig vom Event-Typ fort und trägt
+   * anschließend neu erfüllte Achievements (siehe `ermittleNeueAchievements`
+   * in `src/achievements/evaluate.ts`) in `freigeschalteteAchievements` ein,
+   * damit sie nicht erneut ausgelöst werden (siehe docs/state.md). `jetzt`
+   * ist die Zeitquelle für den Streak (Default: die aktuelle Systemzeit) und
+   * in Tests injizierbar, damit Tageswechsel und Zeitzonenwechsel ohne
+   * globales Mocken der Systemzeit geprüft werden können. Meldet zurück, ob
+   * das Event zu einem Level-Up geführt hat.
    */
-  recordEvent: (event: GamificationEvent) => { levelUp: boolean; level: number }
+  recordEvent: (
+    event: GamificationEvent,
+    jetzt?: Date,
+  ) => { levelUp: boolean; level: number }
 }
 
 export function erstelleDefaultGamificationProfil(): GamificationProfile {
@@ -77,6 +88,7 @@ export function erstelleDefaultGamificationProfil(): GamificationProfile {
     level: 1,
     restXpBisNaechstesLevel: xpSchwelleFuerLevel(2),
     streak: 0,
+    laengsterStreak: 0,
     letzterAktivitaetsTag: null,
     freigeschalteteAchievements: [],
     anzahlBerechnungen: 0,
@@ -112,14 +124,28 @@ export function berechneLevelStand(
   }
 }
 
-function heutigerTag(): string {
-  return new Date().toISOString().slice(0, 10)
+/**
+ * Lokaler Kalendertag (nicht UTC) als `YYYY-MM-DD`. Verwendet die
+ * lokalen `Date`-Komponenten statt `toISOString()`, damit der Streak den
+ * Kalendertag am tatsächlichen Aufenthaltsort abbildet und nicht durch die
+ * UTC-Verschiebung um Mitternacht springt.
+ */
+function lokalerTag(jetzt: Date): string {
+  const jahr = jetzt.getFullYear()
+  const monat = String(jetzt.getMonth() + 1).padStart(2, '0')
+  const tag = String(jetzt.getDate()).padStart(2, '0')
+  return `${jahr}-${monat}-${tag}`
 }
 
+/**
+ * Kalendertag vor `tag`, per lokaler Datumsarithmetik (nicht über UTC-
+ * Subtraktion), damit das Ergebnis auch bei einem Zeitzonen- oder
+ * Uhrumstellung (z. B. Sommer-/Winterzeit) der tatsächliche vorherige
+ * lokale Kalendertag bleibt.
+ */
 function vorherigerTag(tag: string): string {
-  const datum = new Date(`${tag}T00:00:00.000Z`)
-  datum.setUTCDate(datum.getUTCDate() - 1)
-  return datum.toISOString().slice(0, 10)
+  const [jahr, monat, tagZahl] = tag.split('-').map(Number)
+  return lokalerTag(new Date(jahr, monat - 1, tagZahl - 1))
 }
 
 /**
@@ -139,16 +165,34 @@ function fortgeschriebenerStreak(
 }
 
 /**
+ * Erkennt einen lokalen Kalendertag, der vor dem zuletzt gespeicherten
+ * Aktivitätstag liegt (z. B. durch Reisen nach Westen über die Datumsgrenze
+ * oder eine manuelle Uhrkorrektur). String-Vergleich genügt, da
+ * `letzterAktivitaetsTag` stets im Format `YYYY-MM-DD` vorliegt und dieses
+ * Format lexikografisch chronologisch sortiert ist.
+ */
+function istVorLetzterAktivitaet(
+  profil: GamificationProfile,
+  heute: string,
+): boolean {
+  return (
+    profil.letzterAktivitaetsTag !== null &&
+    heute < profil.letzterAktivitaetsTag
+  )
+}
+
+/**
  * Reine Vergabe-Regel (IRGENDWAST-42): übersetzt ein Event unter
- * Berücksichtigung von `XP_FARM_DECKEL` in einen XP-Zuwachs und schreibt
- * das Profil fort. Getrennt von der Store-Action, damit die Regeln isoliert
- * testbar sind.
+ * Berücksichtigung von `XP_FARM_DECKEL` in einen XP-Zuwachs, schreibt Level,
+ * Rest-XP, Streak und Achievements fort. Getrennt von der Store-Action,
+ * damit die Regeln isoliert testbar sind.
  */
 function fortgeschriebenesProfil(
   profil: GamificationProfile,
   event: GamificationEvent,
+  jetzt: Date,
 ): { profil: GamificationProfile; levelUp: boolean } {
-  const heute = heutigerTag()
+  const heute = lokalerTag(jetzt)
   const zaehlerVorEvent =
     profil.letzterAktivitaetsTag === heute ? profil.xpEventsHeute : {}
   const bisherigeAnzahlHeute = zaehlerVorEvent[event.type] ?? 0
@@ -160,23 +204,47 @@ function fortgeschriebenesProfil(
   const xp = profil.xp + xpZuwachs
   const levelStand = berechneLevelStand(xp)
 
-  return {
-    profil: {
-      ...profil,
-      xp,
-      ...levelStand,
-      streak: fortgeschriebenerStreak(profil, heute),
-      letzterAktivitaetsTag: heute,
-      anzahlBerechnungen:
-        profil.anzahlBerechnungen + (event.type === 'calculation_done' ? 1 : 0),
-      anzahlQuizRunden:
-        profil.anzahlQuizRunden +
-        (event.type === 'quiz_round_finished' ? 1 : 0),
-      xpEventsHeute: {
-        ...zaehlerVorEvent,
-        [event.type]: bisherigeAnzahlHeute + 1,
-      },
+  // Ein Tag vor dem gespeicherten Aktivitätstag (Zeitzonen-/Uhrsprung
+  // rückwärts) darf den Marker nicht zurückbewegen und den Streak weder
+  // erhöhen noch zurücksetzen - der spätere Tag wurde bereits gezählt.
+  const rueckwaertsspringenderTag = istVorLetzterAktivitaet(profil, heute)
+  const streak = rueckwaertsspringenderTag
+    ? profil.streak
+    : fortgeschriebenerStreak(profil, heute)
+
+  const fortgeschrieben: GamificationProfile = {
+    ...profil,
+    xp,
+    ...levelStand,
+    streak,
+    laengsterStreak: Math.max(profil.laengsterStreak, streak),
+    letzterAktivitaetsTag: rueckwaertsspringenderTag
+      ? profil.letzterAktivitaetsTag
+      : heute,
+    anzahlBerechnungen:
+      profil.anzahlBerechnungen + (event.type === 'calculation_done' ? 1 : 0),
+    anzahlQuizRunden:
+      profil.anzahlQuizRunden + (event.type === 'quiz_round_finished' ? 1 : 0),
+    xpEventsHeute: {
+      ...zaehlerVorEvent,
+      [event.type]: bisherigeAnzahlHeute + 1,
     },
+  }
+
+  const neueAchievements = ermittleNeueAchievements(fortgeschrieben)
+  const profilMitAchievements =
+    neueAchievements.length === 0
+      ? fortgeschrieben
+      : {
+          ...fortgeschrieben,
+          freigeschalteteAchievements: [
+            ...fortgeschrieben.freigeschalteteAchievements,
+            ...neueAchievements.map((achievement) => achievement.id),
+          ],
+        }
+
+  return {
+    profil: profilMitAchievements,
     levelUp: levelStand.level > profil.level,
   }
 }
@@ -189,10 +257,11 @@ export const createGamificationSlice: StateCreator<
 > = (set, get) => ({
   gamification: erstelleDefaultGamificationProfil(),
 
-  recordEvent: (event) => {
+  recordEvent: (event, jetzt = new Date()) => {
     const { profil, levelUp } = fortgeschriebenesProfil(
       get().gamification,
       event,
+      jetzt,
     )
     set({ gamification: profil })
     return { levelUp, level: profil.level }
