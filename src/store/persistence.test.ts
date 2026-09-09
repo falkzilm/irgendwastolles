@@ -243,6 +243,47 @@ describe('store persistence', () => {
     })
   })
 
+  it('berechnet bei alten, vor IRGENDWAST-42 persistierten Gamification-Profilen level und restXpBisNaechstesLevel aus xp neu, statt ein von der alten linearen Kurve stammendes level beizubehalten', async () => {
+    window.api = {
+      loadPersistedState: vi.fn().mockResolvedValue({
+        data: {
+          theme: 'dark',
+          angleMode: 'rad',
+          calculatorMode: 'scientific',
+          verlauf: [],
+          favoritenIds: [],
+          gamification: {
+            // Alte lineare Kurve (100 XP/Level) hätte hier level 5 ergeben;
+            // die neue progressive Kurve ergibt für xp: 400 level 3.
+            xp: 400,
+            level: 5,
+            streak: 3,
+            letzterAktivitaetsTag: '2026-03-05',
+            freigeschalteteAchievements: [],
+            anzahlBerechnungen: 10,
+            anzahlQuizRunden: 2,
+          },
+        },
+      }),
+      savePersistedState: vi.fn(),
+      ping: vi.fn(),
+    }
+
+    await hydratePersistedState()
+
+    expect(useAppStore.getState().gamification).toEqual({
+      xp: 400,
+      level: 3,
+      restXpBisNaechstesLevel: 200,
+      streak: 3,
+      letzterAktivitaetsTag: '2026-03-05',
+      freigeschalteteAchievements: [],
+      anzahlBerechnungen: 10,
+      anzahlQuizRunden: 2,
+      xpEventsHeute: {},
+    })
+  })
+
   it('kappt einen zu langen geladenen Verlauf auf MAX_VERLAUF_EINTRAEGE Einträge', async () => {
     const verlauf = Array.from({ length: 110 }, (_, i) => ({
       id: `${i}`,

@@ -91,7 +91,10 @@ function isPersistableState(value: unknown): value is PersistableState {
  * (über `MAX_VERLAUF_EINTRAEGE`) auf die neuesten Einträge gekappt wird,
  * statt die Slice-Begrenzung zu umgehen. Ein vorhandenes `gamification`
  * ohne `restXpBisNaechstesLevel`/`xpEventsHeute` (z. B. vor IRGENDWAST-42)
- * wird um beide Felder ergänzt statt verworfen.
+ * wird um `xpEventsHeute` ergänzt; `level` und `restXpBisNaechstesLevel`
+ * werden dabei aus `xp` neu berechnet statt das persistierte `level`
+ * beizubehalten, da dieses noch von der alten, linearen Kurve stammen kann
+ * und dann nicht mehr zu `xp` passen würde.
  */
 function normalizePersistedData(value: unknown): unknown {
   if (typeof value !== 'object' || value === null) return value
@@ -128,9 +131,7 @@ function normalizePersistedData(value: unknown): unknown {
         ...candidate,
         gamification: {
           ...gamification,
-          restXpBisNaechstesLevel:
-            gamification.restXpBisNaechstesLevel ??
-            berechneLevelStand(xp).restXpBisNaechstesLevel,
+          ...berechneLevelStand(xp),
           xpEventsHeute: gamification.xpEventsHeute ?? {},
         },
       }
