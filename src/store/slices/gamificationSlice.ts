@@ -22,7 +22,9 @@ export interface GamificationProfile {
   xp: number
   level: number
   streak: number
-  /** ISO-Datum (`YYYY-MM-DD`) des letzten Events, oder `null` vor dem ersten Event. */
+  /** Der höchste je erreichte Streak-Wert, unabhängig vom aktuellen `streak`. */
+  laengsterStreak: number
+  /** Lokales Kalenderdatum (`YYYY-MM-DD`) des letzten Events, oder `null` vor dem ersten Event. */
   letzterAktivitaetsTag: string | null
   freigeschalteteAchievements: string[]
   anzahlBerechnungen: number
@@ -34,9 +36,12 @@ export interface GamificationSlice {
   /**
    * Einziger Weg, das Gamification-Profil zu verändern: schreibt XP, Level,
    * Streak sowie die passenden Zähler abhängig vom Event-Typ fort (siehe
-   * docs/state.md).
+   * docs/state.md). `jetzt` ist die Zeitquelle für den Streak (Default: die
+   * aktuelle Systemzeit) und in Tests injizierbar, damit Tageswechsel und
+   * Zeitzonenwechsel ohne globales Mocken der Systemzeit geprüft werden
+   * können.
    */
-  recordEvent: (event: GamificationEvent) => void
+  recordEvent: (event: GamificationEvent, jetzt?: Date) => void
 }
 
 export function erstelleDefaultGamificationProfil(): GamificationProfile {
@@ -44,6 +49,7 @@ export function erstelleDefaultGamificationProfil(): GamificationProfile {
     xp: 0,
     level: 1,
     streak: 0,
+    laengsterStreak: 0,
     letzterAktivitaetsTag: null,
     freigeschalteteAchievements: [],
     anzahlBerechnungen: 0,
@@ -51,14 +57,28 @@ export function erstelleDefaultGamificationProfil(): GamificationProfile {
   }
 }
 
-function heutigerTag(): string {
-  return new Date().toISOString().slice(0, 10)
+/**
+ * Lokaler Kalendertag (nicht UTC) als `YYYY-MM-DD`. Verwendet die
+ * lokalen `Date`-Komponenten statt `toISOString()`, damit der Streak den
+ * Kalendertag am tatsächlichen Aufenthaltsort abbildet und nicht durch die
+ * UTC-Verschiebung um Mitternacht springt.
+ */
+function lokalerTag(jetzt: Date): string {
+  const jahr = jetzt.getFullYear()
+  const monat = String(jetzt.getMonth() + 1).padStart(2, '0')
+  const tag = String(jetzt.getDate()).padStart(2, '0')
+  return `${jahr}-${monat}-${tag}`
 }
 
+/**
+ * Kalendertag vor `tag`, per lokaler Datumsarithmetik (nicht über UTC-
+ * Subtraktion), damit das Ergebnis auch bei einem Zeitzonen- oder
+ * Uhrumstellung (z. B. Sommer-/Winterzeit) der tatsächliche vorherige
+ * lokale Kalendertag bleibt.
+ */
 function vorherigerTag(tag: string): string {
-  const datum = new Date(`${tag}T00:00:00.000Z`)
-  datum.setUTCDate(datum.getUTCDate() - 1)
-  return datum.toISOString().slice(0, 10)
+  const [jahr, monat, tagZahl] = tag.split('-').map(Number)
+  return lokalerTag(new Date(jahr, monat - 1, tagZahl - 1))
 }
 
 /**
@@ -85,18 +105,20 @@ export const createGamificationSlice: StateCreator<
 > = (set) => ({
   gamification: erstelleDefaultGamificationProfil(),
 
-  recordEvent: (event) =>
+  recordEvent: (event, jetzt = new Date()) =>
     set((state) => {
       const profil = state.gamification
-      const heute = heutigerTag()
+      const heute = lokalerTag(jetzt)
       const xp = profil.xp + XP_BELOHNUNG[event.type]
+      const streak = fortgeschriebenerStreak(profil, heute)
 
       return {
         gamification: {
           ...profil,
           xp,
           level: Math.floor(xp / XP_PRO_LEVEL) + 1,
-          streak: fortgeschriebenerStreak(profil, heute),
+          streak,
+          laengsterStreak: Math.max(profil.laengsterStreak, streak),
           letzterAktivitaetsTag: heute,
           anzahlBerechnungen:
             profil.anzahlBerechnungen +

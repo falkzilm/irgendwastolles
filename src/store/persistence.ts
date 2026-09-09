@@ -49,6 +49,7 @@ function isGamificationProfile(value: unknown): value is GamificationProfile {
     typeof candidate.xp === 'number' &&
     typeof candidate.level === 'number' &&
     typeof candidate.streak === 'number' &&
+    typeof candidate.laengsterStreak === 'number' &&
     (candidate.letzterAktivitaetsTag === null ||
       typeof candidate.letzterAktivitaetsTag === 'string') &&
     Array.isArray(candidate.freigeschalteteAchievements) &&
@@ -81,9 +82,10 @@ function isPersistableState(value: unknown): value is PersistableState {
  * schema-kompatible Dateien ohne `verlauf` (z. B. vor IRGENDWAST-26) oder
  * ohne `calculatorMode` (z. B. vor IRGENDWAST-25) oder ohne `favoritenIds`
  * (z. B. vor IRGENDWAST-33) oder ohne `gamification` (z. B. vor
- * IRGENDWAST-41) nicht komplett verworfen werden, und ein zu langer Verlauf
- * (über `MAX_VERLAUF_EINTRAEGE`) auf die neuesten Einträge gekappt wird,
- * statt die Slice-Begrenzung zu umgehen.
+ * IRGENDWAST-41) oder mit einem `gamification`-Profil ohne `laengsterStreak`
+ * (z. B. vor IRGENDWAST-43) nicht komplett verworfen werden, und ein zu
+ * langer Verlauf (über `MAX_VERLAUF_EINTRAEGE`) auf die neuesten Einträge
+ * gekappt wird, statt die Slice-Begrenzung zu umgehen.
  */
 function normalizePersistedData(value: unknown): unknown {
   if (typeof value !== 'object' || value === null) return value
@@ -105,6 +107,22 @@ function normalizePersistedData(value: unknown): unknown {
     candidate = {
       ...candidate,
       gamification: erstelleDefaultGamificationProfil(),
+    }
+  }
+
+  if (
+    typeof candidate.gamification === 'object' &&
+    candidate.gamification !== null &&
+    !('laengsterStreak' in candidate.gamification)
+  ) {
+    const gamification = candidate.gamification as Record<string, unknown>
+    candidate = {
+      ...candidate,
+      gamification: {
+        ...gamification,
+        laengsterStreak:
+          typeof gamification.streak === 'number' ? gamification.streak : 0,
+      },
     }
   }
 
