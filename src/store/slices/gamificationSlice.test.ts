@@ -155,4 +155,31 @@ describe('gamificationSlice', () => {
     )
     expect(useAppStore.getState().gamification.streak).toBe(2)
   })
+
+  it('ignoriert für Streak und Aktivitätstag einen lokalen Tag, der vor dem gespeicherten Aktivitätstag liegt', () => {
+    const { recordEvent } = useAppStore.getState()
+
+    // Event am 06.03.
+    recordEvent({ type: 'calculation_done' }, new Date('2026-03-06T10:00:00'))
+    expect(useAppStore.getState().gamification.streak).toBe(1)
+    expect(useAppStore.getState().gamification.letzterAktivitaetsTag).toBe(
+      '2026-03-06',
+    )
+
+    // Zeitzonen-/Uhrsprung rückwärts auf den 05.03.: darf den bereits
+    // gezählten 06.03. weder überschreiben noch den Streak verändern.
+    recordEvent({ type: 'calculation_done' }, new Date('2026-03-05T10:00:00'))
+    expect(useAppStore.getState().gamification.streak).toBe(1)
+    expect(useAppStore.getState().gamification.letzterAktivitaetsTag).toBe(
+      '2026-03-06',
+    )
+
+    // Rückkehr zum 06.03.: darf, weil dieser Tag schon gezählt wurde, nicht
+    // erneut als Folgetag gewertet werden.
+    recordEvent({ type: 'calculation_done' }, new Date('2026-03-06T18:00:00'))
+    expect(useAppStore.getState().gamification.streak).toBe(1)
+    expect(useAppStore.getState().gamification.letzterAktivitaetsTag).toBe(
+      '2026-03-06',
+    )
+  })
 })

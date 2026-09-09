@@ -97,6 +97,23 @@ function fortgeschriebenerStreak(
   return 1
 }
 
+/**
+ * Erkennt einen lokalen Kalendertag, der vor dem zuletzt gespeicherten
+ * Aktivitätstag liegt (z. B. durch Reisen nach Westen über die Datumsgrenze
+ * oder eine manuelle Uhrkorrektur). String-Vergleich genügt, da
+ * `letzterAktivitaetsTag` stets im Format `YYYY-MM-DD` vorliegt und dieses
+ * Format lexikografisch chronologisch sortiert ist.
+ */
+function istVorLetzterAktivitaet(
+  profil: GamificationProfile,
+  heute: string,
+): boolean {
+  return (
+    profil.letzterAktivitaetsTag !== null &&
+    heute < profil.letzterAktivitaetsTag
+  )
+}
+
 export const createGamificationSlice: StateCreator<
   AppState,
   [],
@@ -110,7 +127,13 @@ export const createGamificationSlice: StateCreator<
       const profil = state.gamification
       const heute = lokalerTag(jetzt)
       const xp = profil.xp + XP_BELOHNUNG[event.type]
-      const streak = fortgeschriebenerStreak(profil, heute)
+      // Ein Tag vor dem gespeicherten Aktivitätstag (Zeitzonen-/Uhrsprung
+      // rückwärts) darf den Marker nicht zurückbewegen und den Streak weder
+      // erhöhen noch zurücksetzen - der spätere Tag wurde bereits gezählt.
+      const rueckwaertsspringenderTag = istVorLetzterAktivitaet(profil, heute)
+      const streak = rueckwaertsspringenderTag
+        ? profil.streak
+        : fortgeschriebenerStreak(profil, heute)
 
       return {
         gamification: {
@@ -119,7 +142,9 @@ export const createGamificationSlice: StateCreator<
           level: Math.floor(xp / XP_PRO_LEVEL) + 1,
           streak,
           laengsterStreak: Math.max(profil.laengsterStreak, streak),
-          letzterAktivitaetsTag: heute,
+          letzterAktivitaetsTag: rueckwaertsspringenderTag
+            ? profil.letzterAktivitaetsTag
+            : heute,
           anzahlBerechnungen:
             profil.anzahlBerechnungen +
             (event.type === 'calculation_done' ? 1 : 0),

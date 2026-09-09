@@ -174,7 +174,11 @@ inklusive Tages-Streak, Grundlage für die weiteren Gamification-Items):
   bei einem Zeitzonen- oder Uhrumstellung (z. B. Sommer-/Winterzeit) robust
   bleibt: ein Event am selben lokalen Tag lässt ihn unverändert, eines am
   lokalen Folgetag erhöht ihn um eins, ein größerer Abstand (oder das erste
-  Event überhaupt) setzt ihn auf 1 zurück. `laengsterStreak` wird bei jedem
+  Event überhaupt) setzt ihn auf 1 zurück. Liegt der lokale Tag von `jetzt`
+  dagegen _vor_ `letzterAktivitaetsTag` (z. B. Reise nach Westen über die
+  Datumsgrenze oder eine manuelle Uhrkorrektur rückwärts), bleiben `streak`
+  und `letzterAktivitaetsTag` unverändert - der bereits gezählte spätere Tag
+  wird weder überschrieben noch entwertet. `laengsterStreak` wird bei jedem
   Event auf `Math.max(laengsterStreak, streak)` aktualisiert und damit
   unabhängig vom aktuellen `streak` gespeichert. Weitere Events (z. B. für
   zukünftige Formel-/Quiz-Typen) ergänzen `GamificationEvent` um eine
