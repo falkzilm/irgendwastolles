@@ -171,3 +171,8 @@ weiteren Gamification-Items):
 
 `gamification` wird wie `verlauf` und `favoritenIds` über
 `src/store/persistence.ts` persistiert, siehe [persistence.md](./persistence.md).
+
+Die deklarative Achievement-Liste sowie die reine Auswertungsfunktion, die
+aus `freigeschalteteAchievements` und dem restlichen Profil neu
+freigeschaltete Erfolge ermittelt (IRGENDWAST-44), liegen unter
+`src/achievements/`, siehe [achievements.md](./achievements.md).

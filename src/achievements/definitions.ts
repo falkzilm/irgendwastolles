@@ -1,0 +1,121 @@
+import type { Achievement } from './types'
+
+/**
+ * Kuratierte Achievement-Liste (IRGENDWAST-44). Jede Achievement liest ihre
+ * Kennzahl direkt aus dem `GamificationProfile` (siehe `docs/state.md`);
+ * neue Achievements werden hier ergänzt statt im Aufrufer verzweigt.
+ */
+export const ACHIEVEMENTS: Achievement[] = [
+  {
+    id: 'erste-berechnung',
+    title: 'Erste Schritte',
+    description: 'Die erste Berechnung im Rechner durchgeführt.',
+    icon: '🧮',
+    ziel: 1,
+    fortschritt: (profil) => profil.anzahlBerechnungen,
+  },
+  {
+    id: 'hundert-berechnungen',
+    title: 'Rechenmeister',
+    description: '100 Berechnungen im Rechner durchgeführt.',
+    icon: '🔢',
+    ziel: 100,
+    fortschritt: (profil) => profil.anzahlBerechnungen,
+  },
+  {
+    id: 'fuenfhundert-berechnungen',
+    title: 'Rechenprofi',
+    description: '500 Berechnungen im Rechner durchgeführt.',
+    icon: '🧠',
+    ziel: 500,
+    fortschritt: (profil) => profil.anzahlBerechnungen,
+  },
+  {
+    id: 'erste-quizrunde',
+    title: 'Quiz-Neuling',
+    description: 'Die erste Quizrunde abgeschlossen.',
+    icon: '❓',
+    ziel: 1,
+    fortschritt: (profil) => profil.anzahlQuizRunden,
+  },
+  {
+    id: 'zehn-quizrunden',
+    title: 'Quiz-Kenner',
+    description: '10 Quizrunden abgeschlossen.',
+    icon: '📘',
+    ziel: 10,
+    fortschritt: (profil) => profil.anzahlQuizRunden,
+  },
+  {
+    id: 'fuenfzig-quizrunden',
+    title: 'Quiz-Champion',
+    description: '50 Quizrunden abgeschlossen.',
+    icon: '🏆',
+    ziel: 50,
+    fortschritt: (profil) => profil.anzahlQuizRunden,
+  },
+  {
+    id: 'streak-7-tage',
+    title: 'Eine Woche dabei',
+    description: '7 Tage in Folge aktiv gewesen.',
+    icon: '🔥',
+    ziel: 7,
+    fortschritt: (profil) => profil.streak,
+  },
+  {
+    id: 'streak-30-tage',
+    title: 'Ein Monat dabei',
+    description: '30 Tage in Folge aktiv gewesen.',
+    icon: '📅',
+    ziel: 30,
+    fortschritt: (profil) => profil.streak,
+  },
+  {
+    id: 'streak-100-tage',
+    title: 'Hundert Tage stark',
+    description: '100 Tage in Folge aktiv gewesen.',
+    icon: '💎',
+    ziel: 100,
+    fortschritt: (profil) => profil.streak,
+  },
+  {
+    id: 'level-5',
+    title: 'Aufsteiger',
+    description: 'Level 5 erreicht.',
+    icon: '⭐',
+    ziel: 5,
+    fortschritt: (profil) => profil.level,
+  },
+  {
+    id: 'level-10',
+    title: 'Fortgeschritten',
+    description: 'Level 10 erreicht.',
+    icon: '🌟',
+    ziel: 10,
+    fortschritt: (profil) => profil.level,
+  },
+  {
+    id: 'xp-500',
+    title: 'Fleißig',
+    description: '500 XP gesammelt.',
+    icon: '📈',
+    ziel: 500,
+    fortschritt: (profil) => profil.xp,
+  },
+  {
+    id: 'xp-1000',
+    title: 'Sehr fleißig',
+    description: '1000 XP gesammelt.',
+    icon: '🥇',
+    ziel: 1000,
+    fortschritt: (profil) => profil.xp,
+  },
+  {
+    id: 'xp-2000',
+    title: 'Unermüdlich',
+    description: '2000 XP gesammelt.',
+    icon: '🚀',
+    ziel: 2000,
+    fortschritt: (profil) => profil.xp,
+  },
+]
