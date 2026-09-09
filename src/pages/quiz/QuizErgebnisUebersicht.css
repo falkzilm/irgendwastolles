@@ -1,0 +1,12 @@
+.quiz-ergebnis {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+}
+
+.quiz-ergebnis__zeile {
+  font-size: var(--font-size-lg);
+  margin: 0;
+}

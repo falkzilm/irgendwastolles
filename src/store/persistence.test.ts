@@ -26,10 +26,21 @@ describe('store persistence', () => {
     expect(useAppStore.getState().calculatorMode).toBe('simple')
     expect(useAppStore.getState().verlauf).toEqual([])
     expect(useAppStore.getState().favoritenIds).toEqual([])
+    expect(useAppStore.getState().quizErgebnisse).toEqual([])
   })
 
   it('übernimmt gültige, über IPC geladene Daten in den Store', async () => {
     const verlauf = [{ id: '1', expression: '2+3', result: '5', timestamp: 1 }]
+    const quizErgebnisse = [
+      {
+        id: '1',
+        difficulty: 'mittel',
+        anzahlAufgaben: 10,
+        anzahlRichtig: 8,
+        dauerMs: 60_000,
+        timestamp: 1,
+      },
+    ]
     window.api = {
       loadPersistedState: vi.fn().mockResolvedValue({
         data: {
@@ -38,6 +49,7 @@ describe('store persistence', () => {
           calculatorMode: 'scientific',
           verlauf,
           favoritenIds: ['kreisflaeche'],
+          quizErgebnisse,
         },
       }),
       savePersistedState: vi.fn(),
@@ -51,6 +63,50 @@ describe('store persistence', () => {
     expect(useAppStore.getState().calculatorMode).toBe('scientific')
     expect(useAppStore.getState().verlauf).toEqual(verlauf)
     expect(useAppStore.getState().favoritenIds).toEqual(['kreisflaeche'])
+    expect(useAppStore.getState().quizErgebnisse).toEqual(quizErgebnisse)
+  })
+
+  it('ignoriert geladene Daten mit ungültigen Quizergebnissen und behält die Defaults', async () => {
+    window.api = {
+      loadPersistedState: vi.fn().mockResolvedValue({
+        data: {
+          theme: 'dark',
+          angleMode: 'rad',
+          calculatorMode: 'scientific',
+          verlauf: [],
+          favoritenIds: [],
+          quizErgebnisse: [{ difficulty: 'unbekannt' }],
+        },
+      }),
+      savePersistedState: vi.fn(),
+      ping: vi.fn(),
+    }
+
+    await hydratePersistedState()
+
+    expect(useAppStore.getState().theme).toBe('light')
+    expect(useAppStore.getState().quizErgebnisse).toEqual([])
+  })
+
+  it('ergänzt bei alten, vor IRGENDWAST-38 persistierten Daten ohne quizErgebnisse eine leere Liste, statt die restlichen Werte zu verwerfen', async () => {
+    window.api = {
+      loadPersistedState: vi.fn().mockResolvedValue({
+        data: {
+          theme: 'dark',
+          angleMode: 'rad',
+          calculatorMode: 'scientific',
+          verlauf: [],
+          favoritenIds: [],
+        },
+      }),
+      savePersistedState: vi.fn(),
+      ping: vi.fn(),
+    }
+
+    await hydratePersistedState()
+
+    expect(useAppStore.getState().theme).toBe('dark')
+    expect(useAppStore.getState().quizErgebnisse).toEqual([])
   })
 
   it('ignoriert ungültige geladene Daten und behält die Defaults', async () => {
@@ -342,6 +398,38 @@ describe('store persistence', () => {
 
     expect(useAppStore.getState().verlauf).toHaveLength(100)
     expect(useAppStore.getState().verlauf).toEqual(verlauf.slice(0, 100))
+  })
+
+  it('kappt eine zu lange geladene Quiz-Ergebnisliste auf MAX_QUIZ_ERGEBNISSE Einträge', async () => {
+    const quizErgebnisse = Array.from({ length: 60 }, (_, i) => ({
+      id: `${i}`,
+      difficulty: 'leicht',
+      anzahlAufgaben: 10,
+      anzahlRichtig: i,
+      dauerMs: 1000,
+      timestamp: i,
+    }))
+    window.api = {
+      loadPersistedState: vi.fn().mockResolvedValue({
+        data: {
+          theme: 'dark',
+          angleMode: 'rad',
+          calculatorMode: 'scientific',
+          verlauf: [],
+          favoritenIds: [],
+          quizErgebnisse,
+        },
+      }),
+      savePersistedState: vi.fn(),
+      ping: vi.fn(),
+    }
+
+    await hydratePersistedState()
+
+    expect(useAppStore.getState().quizErgebnisse).toHaveLength(50)
+    expect(useAppStore.getState().quizErgebnisse).toEqual(
+      quizErgebnisse.slice(0, 50),
+    )
   })
 
   it('speichert Store-Änderungen über window.api.savePersistedState', () => {

@@ -92,5 +92,5 @@ src/exercises/
 ```
 
 Das Modul hat keine Abhängigkeit auf React, den Store oder eine UI-Komponente
-und lässt sich dadurch unverändert von einer künftigen Übungsseite
-(Quiz-/Übungsmodus) verwenden.
+und wird unverändert von der Quiz-/Übungsseite (`src/pages/QuizPage.tsx`,
+IRGENDWAST-38, siehe [state.md](./state.md)) verwendet.
