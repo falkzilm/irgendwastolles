@@ -1,6 +1,9 @@
 import { useAppStore } from './index'
 import type { AppState } from './types'
-import { erstelleDefaultGamificationProfil } from './slices/gamificationSlice'
+import {
+  berechneLevelStand,
+  erstelleDefaultGamificationProfil,
+} from './slices/gamificationSlice'
 import type { GamificationProfile } from './slices/gamificationSlice'
 import { MAX_VERLAUF_EINTRAEGE } from './slices/verlaufSlice'
 import type { VerlaufEintrag } from './slices/verlaufSlice'
@@ -48,6 +51,7 @@ function isGamificationProfile(value: unknown): value is GamificationProfile {
   return (
     typeof candidate.xp === 'number' &&
     typeof candidate.level === 'number' &&
+    typeof candidate.restXpBisNaechstesLevel === 'number' &&
     typeof candidate.streak === 'number' &&
     typeof candidate.laengsterStreak === 'number' &&
     (candidate.letzterAktivitaetsTag === null ||
@@ -57,7 +61,9 @@ function isGamificationProfile(value: unknown): value is GamificationProfile {
       (id) => typeof id === 'string',
     ) &&
     typeof candidate.anzahlBerechnungen === 'number' &&
-    typeof candidate.anzahlQuizRunden === 'number'
+    typeof candidate.anzahlQuizRunden === 'number' &&
+    typeof candidate.xpEventsHeute === 'object' &&
+    candidate.xpEventsHeute !== null
   )
 }
 
@@ -85,7 +91,12 @@ function isPersistableState(value: unknown): value is PersistableState {
  * IRGENDWAST-41) oder mit einem `gamification`-Profil ohne `laengsterStreak`
  * (z. B. vor IRGENDWAST-43) nicht komplett verworfen werden, und ein zu
  * langer Verlauf (über `MAX_VERLAUF_EINTRAEGE`) auf die neuesten Einträge
- * gekappt wird, statt die Slice-Begrenzung zu umgehen.
+ * gekappt wird, statt die Slice-Begrenzung zu umgehen. Ein vorhandenes
+ * `gamification` ohne `restXpBisNaechstesLevel`/`xpEventsHeute` (z. B. vor
+ * IRGENDWAST-42) wird um `xpEventsHeute` ergänzt; `level` und
+ * `restXpBisNaechstesLevel` werden dabei aus `xp` neu berechnet statt das
+ * persistierte `level` beizubehalten, da dieses noch von der alten,
+ * linearen Kurve stammen kann und dann nicht mehr zu `xp` passen würde.
  */
 function normalizePersistedData(value: unknown): unknown {
   if (typeof value !== 'object' || value === null) return value
@@ -107,6 +118,25 @@ function normalizePersistedData(value: unknown): unknown {
     candidate = {
       ...candidate,
       gamification: erstelleDefaultGamificationProfil(),
+    }
+  } else if (
+    typeof candidate.gamification === 'object' &&
+    candidate.gamification !== null
+  ) {
+    const gamification = candidate.gamification as Record<string, unknown>
+    if (
+      !('restXpBisNaechstesLevel' in gamification) ||
+      !('xpEventsHeute' in gamification)
+    ) {
+      const xp = typeof gamification.xp === 'number' ? gamification.xp : 0
+      candidate = {
+        ...candidate,
+        gamification: {
+          ...gamification,
+          ...berechneLevelStand(xp),
+          xpEventsHeute: gamification.xpEventsHeute ?? {},
+        },
+      }
     }
   }
 
