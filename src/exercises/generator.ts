@@ -224,6 +224,10 @@ export function generateExercises(
     throw new Error('categories darf nicht leer sein')
   }
 
+  if (!Number.isSafeInteger(count) || count < 0) {
+    throw new Error('count muss eine nichtnegative ganze Zahl sein')
+  }
+
   const rng = createRng(seed)
   const exercises: Exercise[] = []
 

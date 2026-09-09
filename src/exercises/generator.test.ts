@@ -75,6 +75,24 @@ describe('generateExercises', () => {
     ).toThrow()
   })
 
+  it('wirft bei count: Infinity statt endlos zu laufen', () => {
+    expect(() =>
+      generateExercises({ seed: 1, count: Infinity, difficulty: 'leicht' }),
+    ).toThrow()
+  })
+
+  it('wirft bei negativem count', () => {
+    expect(() =>
+      generateExercises({ seed: 1, count: -1, difficulty: 'leicht' }),
+    ).toThrow()
+  })
+
+  it('wirft bei nicht-ganzzahligem count', () => {
+    expect(() =>
+      generateExercises({ seed: 1, count: 1.5, difficulty: 'leicht' }),
+    ).toThrow()
+  })
+
   it('liefert bei Subtraktion nie ein negatives Ergebnis', () => {
     const exercises = generateExercises({
       seed: 99,
