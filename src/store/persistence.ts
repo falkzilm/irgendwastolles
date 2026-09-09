@@ -1,6 +1,9 @@
 import { useAppStore } from './index'
 import type { AppState } from './types'
-import { erstelleDefaultGamificationProfil } from './slices/gamificationSlice'
+import {
+  berechneLevelStand,
+  erstelleDefaultGamificationProfil,
+} from './slices/gamificationSlice'
 import type { GamificationProfile } from './slices/gamificationSlice'
 import { MAX_VERLAUF_EINTRAEGE } from './slices/verlaufSlice'
 import type { VerlaufEintrag } from './slices/verlaufSlice'
@@ -48,6 +51,7 @@ function isGamificationProfile(value: unknown): value is GamificationProfile {
   return (
     typeof candidate.xp === 'number' &&
     typeof candidate.level === 'number' &&
+    typeof candidate.restXpBisNaechstesLevel === 'number' &&
     typeof candidate.streak === 'number' &&
     (candidate.letzterAktivitaetsTag === null ||
       typeof candidate.letzterAktivitaetsTag === 'string') &&
@@ -56,7 +60,9 @@ function isGamificationProfile(value: unknown): value is GamificationProfile {
       (id) => typeof id === 'string',
     ) &&
     typeof candidate.anzahlBerechnungen === 'number' &&
-    typeof candidate.anzahlQuizRunden === 'number'
+    typeof candidate.anzahlQuizRunden === 'number' &&
+    typeof candidate.xpEventsHeute === 'object' &&
+    candidate.xpEventsHeute !== null
   )
 }
 
@@ -83,7 +89,9 @@ function isPersistableState(value: unknown): value is PersistableState {
  * (z. B. vor IRGENDWAST-33) oder ohne `gamification` (z. B. vor
  * IRGENDWAST-41) nicht komplett verworfen werden, und ein zu langer Verlauf
  * (über `MAX_VERLAUF_EINTRAEGE`) auf die neuesten Einträge gekappt wird,
- * statt die Slice-Begrenzung zu umgehen.
+ * statt die Slice-Begrenzung zu umgehen. Ein vorhandenes `gamification`
+ * ohne `restXpBisNaechstesLevel`/`xpEventsHeute` (z. B. vor IRGENDWAST-42)
+ * wird um beide Felder ergänzt statt verworfen.
  */
 function normalizePersistedData(value: unknown): unknown {
   if (typeof value !== 'object' || value === null) return value
@@ -105,6 +113,27 @@ function normalizePersistedData(value: unknown): unknown {
     candidate = {
       ...candidate,
       gamification: erstelleDefaultGamificationProfil(),
+    }
+  } else if (
+    typeof candidate.gamification === 'object' &&
+    candidate.gamification !== null
+  ) {
+    const gamification = candidate.gamification as Record<string, unknown>
+    if (
+      !('restXpBisNaechstesLevel' in gamification) ||
+      !('xpEventsHeute' in gamification)
+    ) {
+      const xp = typeof gamification.xp === 'number' ? gamification.xp : 0
+      candidate = {
+        ...candidate,
+        gamification: {
+          ...gamification,
+          restXpBisNaechstesLevel:
+            gamification.restXpBisNaechstesLevel ??
+            berechneLevelStand(xp).restXpBisNaechstesLevel,
+          xpEventsHeute: gamification.xpEventsHeute ?? {},
+        },
+      }
     }
   }
 

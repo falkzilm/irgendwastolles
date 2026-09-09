@@ -145,11 +145,13 @@ describe('store persistence', () => {
     const gamification = {
       xp: 45,
       level: 1,
+      restXpBisNaechstesLevel: 55,
       streak: 3,
       letzterAktivitaetsTag: '2026-03-05',
       freigeschalteteAchievements: ['erste-berechnung'],
       anzahlBerechnungen: 4,
       anzahlQuizRunden: 1,
+      xpEventsHeute: { calculation_done: 4 },
     }
     window.api = {
       loadPersistedState: vi.fn().mockResolvedValue({
@@ -192,11 +194,52 @@ describe('store persistence', () => {
     expect(useAppStore.getState().gamification).toEqual({
       xp: 0,
       level: 1,
+      restXpBisNaechstesLevel: 100,
       streak: 0,
       letzterAktivitaetsTag: null,
       freigeschalteteAchievements: [],
       anzahlBerechnungen: 0,
       anzahlQuizRunden: 0,
+      xpEventsHeute: {},
+    })
+  })
+
+  it('ergänzt bei alten, vor IRGENDWAST-42 persistierten Gamification-Profilen ohne restXpBisNaechstesLevel/xpEventsHeute beide Felder, statt das Profil zu verwerfen', async () => {
+    window.api = {
+      loadPersistedState: vi.fn().mockResolvedValue({
+        data: {
+          theme: 'dark',
+          angleMode: 'rad',
+          calculatorMode: 'scientific',
+          verlauf: [],
+          favoritenIds: [],
+          gamification: {
+            xp: 150,
+            level: 2,
+            streak: 3,
+            letzterAktivitaetsTag: '2026-03-05',
+            freigeschalteteAchievements: [],
+            anzahlBerechnungen: 10,
+            anzahlQuizRunden: 2,
+          },
+        },
+      }),
+      savePersistedState: vi.fn(),
+      ping: vi.fn(),
+    }
+
+    await hydratePersistedState()
+
+    expect(useAppStore.getState().gamification).toEqual({
+      xp: 150,
+      level: 2,
+      restXpBisNaechstesLevel: 150,
+      streak: 3,
+      letzterAktivitaetsTag: '2026-03-05',
+      freigeschalteteAchievements: [],
+      anzahlBerechnungen: 10,
+      anzahlQuizRunden: 2,
+      xpEventsHeute: {},
     })
   })
 

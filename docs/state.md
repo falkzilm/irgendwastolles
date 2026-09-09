@@ -143,31 +143,51 @@ wird wie `verlauf` über `src/store/persistence.ts` persistiert, siehe
 
 ## Gamification-Slice
 
-`gamificationSlice.ts` setzt die Anforderungen aus IRGENDWAST-41 um
-(Datenmodell und Store-Slice für das Spielerprofil, Grundlage für die
-weiteren Gamification-Items):
+`gamificationSlice.ts` setzt die Anforderungen aus IRGENDWAST-41
+(Datenmodell und Store-Slice für das Spielerprofil) sowie IRGENDWAST-42
+(XP-Vergabe und Level-Kurve) um.
 
-- `gamification: GamificationProfile` mit `xp`, `level`, `streak`,
-  `letzterAktivitaetsTag` (ISO-Datum `YYYY-MM-DD` oder `null` vor dem ersten
-  Event), `freigeschalteteAchievements` (IDs künftiger Achievements),
-  `anzahlBerechnungen` und `anzahlQuizRunden`. Ein neues Profil startet mit
-  den Defaults `level: 1`, `xp: 0`, `streak: 0`.
+- `gamification: GamificationProfile` mit `xp`, `level`,
+  `restXpBisNaechstesLevel`, `streak`, `letzterAktivitaetsTag` (ISO-Datum
+  `YYYY-MM-DD` oder `null` vor dem ersten Event), `freigeschalteteAchievements`
+  (IDs künftiger Achievements), `anzahlBerechnungen`, `anzahlQuizRunden` und
+  `xpEventsHeute` (Zähler je Event-Art am aktuellen Tag, Grundlage der
+  Farming-Deckelung, siehe unten). Ein neues Profil startet mit den Defaults
+  `level: 1`, `xp: 0`, `streak: 0`.
 - `recordEvent(event: GamificationEvent)` ist der **einzige** Weg, das
   Profil zu verändern - es gibt keine weiteren `set...`-Actions auf dem
-  Gamification-State. Aktuell unterstützte Events:
-  - `{ type: 'calculation_done' }` - eine erfolgreiche Berechnung im Rechner
-    (vergibt XP, erhöht `anzahlBerechnungen`).
-  - `{ type: 'quiz_round_finished' }` - eine abgeschlossene Quizrunde
-    (vergibt XP, erhöht `anzahlQuizRunden`).
+  Gamification-State. Es gibt `{ levelUp: boolean; level: number }` zurück,
+  damit Aufrufer (z. B. künftig eine Level-Up-Animation) ein Level-Up direkt
+  am Ergebnis erkennen können, ohne `gamification.level` vorher/nachher
+  selbst zu vergleichen. Aktuell unterstützte Events, jeweils mit fest
+  definierter XP-Belohnung (siehe `XP_BELOHNUNG` in `gamificationSlice.ts`):
+  - `{ type: 'calculation_done' }` (5 XP) - eine erfolgreiche Berechnung im
+    Rechner (erhöht `anzahlBerechnungen`). Ein triviales, beliebig oft
+    wiederholbares Ereignis, daher über `XP_FARM_DECKEL` pro Kalendertag auf
+    20 XP-vergebende Events begrenzt.
+  - `{ type: 'quiz_round_finished' }` (20 XP) - eine abgeschlossene
+    Quizrunde (erhöht `anzahlQuizRunden`). Erfordert pro Aufruf
+    eigenständigen Aufwand und ist daher ungedeckelt.
 
-  Jedes Event vergibt eine feste XP-Menge (siehe `XP_BELOHNUNG` in
-  `gamificationSlice.ts`); `level` ergibt sich aus `xp` über `XP_PRO_LEVEL`
-  (100 XP/Level). `streak` wird anhand von `letzterAktivitaetsTag`
-  fortgeschrieben: ein Event am selben Tag lässt ihn unverändert, eines am
-  Folgetag erhöht ihn um eins, ein größerer Abstand (oder das erste Event
-  überhaupt) setzt ihn auf 1 zurück. Weitere Events (z. B. für zukünftige
-  Formel-/Quiz-Typen) ergänzen `GamificationEvent` um eine weitere Variante,
-  statt den State direkt zu setzen.
+  Ist für eine Event-Art an einem Tag der Deckel erreicht, zählt ein
+  weiteres Event zwar weiterhin für die fachlichen Zähler
+  (`anzahlBerechnungen`/`anzahlQuizRunden`) und den Streak, vergibt aber
+  keine weitere XP. Der Zähler in `xpEventsHeute` setzt sich beim ersten
+  Event eines neuen Kalendertags zurück.
+
+  `level` und `restXpBisNaechstesLevel` werden deterministisch aus `xp`
+  abgeleitet (`berechneLevelStand` in `gamificationSlice.ts`): die
+  XP-Schwelle für Level `n` liegt kumulativ bei
+  `XP_PRO_LEVEL_BASIS * (n - 1) * n / 2` (100 XP-Basis-Einheit) - die Kurve
+  ist damit progressiv, jedes weitere Level braucht mehr XP als das
+  vorherige (Level 1→2: 100 XP, 2→3: 200 XP, 3→4: 300 XP, ...).
+  `restXpBisNaechstesLevel` ist die Differenz zwischen der Schwelle des
+  nächsten Levels und `xp`. `streak` wird anhand von
+  `letzterAktivitaetsTag` fortgeschrieben: ein Event am selben Tag lässt ihn
+  unverändert, eines am Folgetag erhöht ihn um eins, ein größerer Abstand
+  (oder das erste Event überhaupt) setzt ihn auf 1 zurück. Weitere Events
+  (z. B. für zukünftige Formel-/Quiz-Typen) ergänzen `GamificationEvent` um
+  eine weitere Variante, statt den State direkt zu setzen.
 
 `gamification` wird wie `verlauf` und `favoritenIds` über
 `src/store/persistence.ts` persistiert, siehe [persistence.md](./persistence.md).
