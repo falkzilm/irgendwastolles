@@ -74,6 +74,7 @@ export const createCalculatorSlice: StateCreator<
       const result = formatResult(outcome.value)
       set({ result, error: null, justEvaluated: true })
       get().addVerlaufEintrag(expression, result)
+      get().recordEvent({ type: 'calculation_done' })
       return
     }
     set({ result: null, error: outcome.error.message, justEvaluated: false })
