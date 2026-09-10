@@ -4,14 +4,16 @@ import { CalculatorPage } from '../pages/CalculatorPage'
 import { FormulasPage } from '../pages/FormulasPage'
 import { ProgressPage } from '../pages/ProgressPage'
 import { QuizPage } from '../pages/QuizPage'
+import { SettingsPage } from '../pages/SettingsPage'
 
-type NavKey = 'calculator' | 'formulas' | 'quiz' | 'progress'
+type NavKey = 'calculator' | 'formulas' | 'quiz' | 'progress' | 'settings'
 
 const NAV_ITEMS: { key: NavKey; label: string }[] = [
   { key: 'calculator', label: 'Rechner' },
   { key: 'formulas', label: 'Formeln' },
   { key: 'quiz', label: 'Quiz' },
   { key: 'progress', label: 'Fortschritt' },
+  { key: 'settings', label: 'Einstellungen' },
 ]
 
 export function AppShell() {
@@ -42,6 +44,7 @@ export function AppShell() {
         {activeView === 'formulas' && <FormulasPage />}
         {activeView === 'quiz' && <QuizPage />}
         {activeView === 'progress' && <ProgressPage />}
+        {activeView === 'settings' && <SettingsPage />}
       </main>
     </div>
   )

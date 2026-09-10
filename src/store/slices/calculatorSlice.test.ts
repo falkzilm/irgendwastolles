@@ -113,6 +113,27 @@ describe('calculatorSlice', () => {
     expect(useAppStore.getState().result).toBe('0.893996663601')
   })
 
+  it('meldet eine erfolgreiche Berechnung als calculation_done an die Gamification', () => {
+    useAppStore.getState().input('2')
+    useAppStore.getState().input('+')
+    useAppStore.getState().input('3')
+
+    useAppStore.getState().evaluate()
+
+    expect(useAppStore.getState().gamification.xp).toBe(5)
+    expect(useAppStore.getState().gamification.anzahlBerechnungen).toBe(1)
+  })
+
+  it('meldet keine Berechnung bei einem Fehler an die Gamification', () => {
+    useAppStore.getState().input('2')
+    useAppStore.getState().input('+')
+
+    useAppStore.getState().evaluate()
+
+    expect(useAppStore.getState().gamification.xp).toBe(0)
+    expect(useAppStore.getState().gamification.anzahlBerechnungen).toBe(0)
+  })
+
   it('backspace() nach = beginnt eine leere neue Eingabe', () => {
     useAppStore.getState().input('2')
     useAppStore.getState().input('+')

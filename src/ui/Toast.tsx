@@ -13,12 +13,14 @@ type ToastVariant = 'info' | 'success' | 'danger'
 
 interface ToastItem {
   id: number
+  /** Optionaler Titel, z. B. für Level-Up-/Achievement-Benachrichtigungen (IRGENDWAST-46). */
+  title?: string
   message: string
   variant: ToastVariant
 }
 
 interface ToastContextValue {
-  showToast: (message: string, variant?: ToastVariant) => void
+  showToast: (message: string, variant?: ToastVariant, title?: string) => void
 }
 
 const ToastContext = createContext<ToastContextValue | undefined>(undefined)
@@ -34,9 +36,9 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const showToast = useCallback(
-    (message: string, variant: ToastVariant = 'info') => {
+    (message: string, variant: ToastVariant = 'info', title?: string) => {
       const id = nextId.current++
-      setToasts((current) => [...current, { id, message, variant }])
+      setToasts((current) => [...current, { id, title, message, variant }])
       window.setTimeout(() => dismissToast(id), AUTO_DISMISS_MS)
     },
     [dismissToast],
@@ -58,7 +60,12 @@ export function ToastProvider({ children }: { children: ReactNode }) {
             className={`ui-toast ui-toast--${toast.variant}`}
             role="status"
           >
-            <span className="ui-toast__message">{toast.message}</span>
+            <span className="ui-toast__content">
+              {toast.title && (
+                <span className="ui-toast__title">{toast.title}</span>
+              )}
+              <span className="ui-toast__message">{toast.message}</span>
+            </span>
             <button
               type="button"
               className="ui-toast__close"

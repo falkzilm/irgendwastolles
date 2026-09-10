@@ -73,6 +73,9 @@ oder die Actions im State geändert – nicht direkt mutiert.
 - `angleMode: 'deg' | 'rad'` (Winkelmodus für den Rechner), `setAngleMode`
 - `calculatorMode: 'simple' | 'scientific'` (IRGENDWAST-25: einfaches vs.
   wissenschaftliches Tastenfeld), `setCalculatorMode`, `toggleCalculatorMode`
+- `notificationsEnabled: boolean` (Default `true`, IRGENDWAST-46: Schalter für
+  Gamification-Benachrichtigungen bei Level-Up/Achievement-Unlock),
+  `setNotificationsEnabled` - siehe [notifications.md](./notifications.md)
 
 Der Store ist über den Hook `useAppStore` aus `src/store` im Renderer nutzbar.
 

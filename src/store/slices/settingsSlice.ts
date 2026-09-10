@@ -9,11 +9,14 @@ export interface SettingsSlice {
   theme: Theme
   angleMode: AngleMode
   calculatorMode: CalculatorMode
+  /** Ob Gamification-Benachrichtigungen (Level-Up, Achievement-Unlock) angezeigt werden (IRGENDWAST-46). */
+  notificationsEnabled: boolean
   setTheme: (theme: Theme) => void
   toggleTheme: () => void
   setAngleMode: (mode: AngleMode) => void
   setCalculatorMode: (mode: CalculatorMode) => void
   toggleCalculatorMode: () => void
+  setNotificationsEnabled: (enabled: boolean) => void
 }
 
 export const createSettingsSlice: StateCreator<
@@ -25,6 +28,7 @@ export const createSettingsSlice: StateCreator<
   theme: 'light',
   angleMode: 'deg',
   calculatorMode: 'simple',
+  notificationsEnabled: true,
   setTheme: (theme) => set({ theme }),
   toggleTheme: () =>
     set((state) => ({ theme: state.theme === 'light' ? 'dark' : 'light' })),
@@ -35,4 +39,6 @@ export const createSettingsSlice: StateCreator<
       calculatorMode:
         state.calculatorMode === 'simple' ? 'scientific' : 'simple',
     })),
+  setNotificationsEnabled: (notificationsEnabled) =>
+    set({ notificationsEnabled }),
 })
