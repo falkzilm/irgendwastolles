@@ -6,6 +6,10 @@
   flex-direction: column;
   gap: var(--space-2);
   z-index: 200;
+  /* Der Viewport selbst darf keine Eingaben abfangen (z. B. Klicks im
+     Rechner darunter, siehe IRGENDWAST-46) - nur die einzelnen
+     Benachrichtigungen sind interaktiv. */
+  pointer-events: none;
 }
 
 .ui-toast {
@@ -19,6 +23,17 @@
   background-color: var(--color-bg-elevated);
   color: var(--color-fg);
   box-shadow: var(--shadow-md);
+  pointer-events: auto;
+}
+
+.ui-toast__content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.ui-toast__title {
+  font-weight: var(--font-weight-bold);
 }
 
 .ui-toast--success {
@@ -27,10 +42,6 @@
 
 .ui-toast--danger {
   border-color: var(--color-danger);
-}
-
-.ui-toast__message {
-  flex: 1;
 }
 
 .ui-toast__close {

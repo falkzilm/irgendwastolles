@@ -16,7 +16,7 @@ function renderAppShell() {
 }
 
 describe('AppShell', () => {
-  it('shows navigation for Rechner, Formeln and Fortschritt', () => {
+  it('shows navigation for Rechner, Formeln, Quiz, Fortschritt and Einstellungen', () => {
     renderAppShell()
 
     expect(screen.getByRole('button', { name: 'Rechner' })).toBeInTheDocument()
@@ -25,6 +25,22 @@ describe('AppShell', () => {
     expect(
       screen.getByRole('button', { name: 'Fortschritt' }),
     ).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'Einstellungen' }),
+    ).toBeInTheDocument()
+  })
+
+  it('zeigt beim Wechsel zu Einstellungen die Einstellungen-Ansicht', () => {
+    renderAppShell()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Einstellungen' }))
+
+    expect(
+      screen.getByRole('heading', { name: 'Einstellungen' }),
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'Einstellungen' }),
+    ).toHaveAttribute('aria-current', 'page')
   })
 
   it('starts on the Rechner view', () => {

@@ -47,4 +47,14 @@ describe('settingsSlice', () => {
     useAppStore.getState().toggleCalculatorMode()
     expect(useAppStore.getState().calculatorMode).toBe('simple')
   })
+
+  it('sind Benachrichtigungen standardmäßig aktiviert und lassen sich deaktivieren', () => {
+    expect(useAppStore.getState().notificationsEnabled).toBe(true)
+
+    useAppStore.getState().setNotificationsEnabled(false)
+    expect(useAppStore.getState().notificationsEnabled).toBe(false)
+
+    useAppStore.getState().setNotificationsEnabled(true)
+    expect(useAppStore.getState().notificationsEnabled).toBe(true)
+  })
 })

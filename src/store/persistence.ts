@@ -21,6 +21,7 @@ export interface PersistableState {
   theme: AppState['theme']
   angleMode: AppState['angleMode']
   calculatorMode: AppState['calculatorMode']
+  notificationsEnabled: AppState['notificationsEnabled']
   verlauf: AppState['verlauf']
   favoritenIds: AppState['favoritenIds']
   gamification: AppState['gamification']
@@ -32,6 +33,7 @@ export function selectPersistableState(state: AppState): PersistableState {
     theme: state.theme,
     angleMode: state.angleMode,
     calculatorMode: state.calculatorMode,
+    notificationsEnabled: state.notificationsEnabled,
     verlauf: state.verlauf,
     favoritenIds: state.favoritenIds,
     gamification: state.gamification,
@@ -93,6 +95,7 @@ function isPersistableState(value: unknown): value is PersistableState {
     (candidate.angleMode === 'deg' || candidate.angleMode === 'rad') &&
     (candidate.calculatorMode === 'simple' ||
       candidate.calculatorMode === 'scientific') &&
+    typeof candidate.notificationsEnabled === 'boolean' &&
     Array.isArray(candidate.verlauf) &&
     candidate.verlauf.every(isVerlaufEintrag) &&
     Array.isArray(candidate.favoritenIds) &&
@@ -110,7 +113,8 @@ function isPersistableState(value: unknown): value is PersistableState {
  * (z. B. vor IRGENDWAST-33) oder ohne `quizErgebnisse` (z. B. vor
  * IRGENDWAST-38) oder ohne `gamification` (z. B. vor
  * IRGENDWAST-41) oder mit einem `gamification`-Profil ohne `laengsterStreak`
- * (z. B. vor IRGENDWAST-43) nicht komplett verworfen werden, und ein zu
+ * (z. B. vor IRGENDWAST-43) oder ohne `notificationsEnabled` (z. B. vor
+ * IRGENDWAST-46) nicht komplett verworfen werden, und ein zu
  * langer Verlauf (über `MAX_VERLAUF_EINTRAEGE`) bzw. eine zu lange
  * Quiz-Ergebnisliste (über `MAX_QUIZ_ERGEBNISSE`) auf die neuesten Einträge
  * gekappt wird, statt die Slice-Begrenzung zu umgehen. Ein vorhandenes
@@ -130,6 +134,10 @@ function normalizePersistedData(value: unknown): unknown {
 
   if (!('calculatorMode' in candidate)) {
     candidate = { ...candidate, calculatorMode: 'simple' }
+  }
+
+  if (!('notificationsEnabled' in candidate)) {
+    candidate = { ...candidate, notificationsEnabled: true }
   }
 
   if (!('favoritenIds' in candidate)) {
@@ -238,6 +246,7 @@ export function subscribeToPersistState(): () => void {
       next.theme === previous.theme &&
       next.angleMode === previous.angleMode &&
       next.calculatorMode === previous.calculatorMode &&
+      next.notificationsEnabled === previous.notificationsEnabled &&
       next.verlauf === previous.verlauf &&
       next.favoritenIds === previous.favoritenIds &&
       next.gamification === previous.gamification &&
