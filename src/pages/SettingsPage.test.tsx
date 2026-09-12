@@ -31,4 +31,26 @@ describe('SettingsPage', () => {
 
     expect(useAppStore.getState().notificationsEnabled).toBe(false)
   })
+
+  it('zeigt den HUD-Schalter standardmäßig aktiviert', () => {
+    render(<SettingsPage />)
+
+    expect(
+      screen.getByRole('checkbox', {
+        name: 'Fortschritts-HUD (Level, XP-Balken, Streak) anzeigen',
+      }),
+    ).toBeChecked()
+  })
+
+  it('deaktiviert das HUD im Store per Klick auf den Schalter', () => {
+    render(<SettingsPage />)
+
+    fireEvent.click(
+      screen.getByRole('checkbox', {
+        name: 'Fortschritts-HUD (Level, XP-Balken, Streak) anzeigen',
+      }),
+    )
+
+    expect(useAppStore.getState().hudEnabled).toBe(false)
+  })
 })

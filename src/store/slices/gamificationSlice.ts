@@ -128,6 +128,20 @@ export function berechneLevelStand(
 }
 
 /**
+ * Anteil (0..1) des aktuellen Levels, der bereits per XP erreicht wurde -
+ * Grundlage des XP-Fortschrittsbalkens im HUD (IRGENDWAST-47). Die für das
+ * aktuelle Level benötigte XP-Menge ist `XP_PRO_LEVEL_BASIS * level` (siehe
+ * `xpSchwelleFuerLevel`), der bereits verbrauchte Anteil ergibt sich daraus
+ * als Gegenstück zu `restXpBisNaechstesLevel`.
+ */
+export function berechneXpFortschritt(
+  profil: Pick<GamificationProfile, 'level' | 'restXpBisNaechstesLevel'>,
+): number {
+  const xpFuerLevel = XP_PRO_LEVEL_BASIS * profil.level
+  return 1 - profil.restXpBisNaechstesLevel / xpFuerLevel
+}
+
+/**
  * Lokaler Kalendertag (nicht UTC) als `YYYY-MM-DD`. Verwendet die
  * lokalen `Date`-Komponenten statt `toISOString()`, damit der Streak den
  * Kalendertag am tatsächlichen Aufenthaltsort abbildet und nicht durch die
