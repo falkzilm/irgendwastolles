@@ -251,6 +251,9 @@ describe('store persistence', () => {
       laengsterStreak: 5,
       letzterAktivitaetsTag: '2026-03-05',
       freigeschalteteAchievements: ['erste-berechnung'],
+      achievementFreischaltDaten: {
+        'erste-berechnung': '2026-03-05T10:00:00.000Z',
+      },
       anzahlBerechnungen: 4,
       anzahlQuizRunden: 1,
       xpEventsHeute: { calculation_done: 4 },
@@ -301,6 +304,7 @@ describe('store persistence', () => {
       laengsterStreak: 0,
       letzterAktivitaetsTag: null,
       freigeschalteteAchievements: [],
+      achievementFreischaltDaten: {},
       anzahlBerechnungen: 0,
       anzahlQuizRunden: 0,
       xpEventsHeute: {},
@@ -341,6 +345,7 @@ describe('store persistence', () => {
       laengsterStreak: 3,
       letzterAktivitaetsTag: '2026-03-05',
       freigeschalteteAchievements: [],
+      achievementFreischaltDaten: {},
       anzahlBerechnungen: 10,
       anzahlQuizRunden: 2,
       xpEventsHeute: {},
@@ -383,6 +388,7 @@ describe('store persistence', () => {
       laengsterStreak: 3,
       letzterAktivitaetsTag: '2026-03-05',
       freigeschalteteAchievements: [],
+      achievementFreischaltDaten: {},
       anzahlBerechnungen: 10,
       anzahlQuizRunden: 2,
       xpEventsHeute: {},
@@ -417,6 +423,41 @@ describe('store persistence', () => {
 
     expect(useAppStore.getState().gamification.streak).toBe(3)
     expect(useAppStore.getState().gamification.laengsterStreak).toBe(3)
+  })
+
+  it('ergänzt bei alten, vor IRGENDWAST-48 persistierten Gamification-Profilen ohne achievementFreischaltDaten ein leeres Objekt, statt das Profil zu verwerfen', async () => {
+    window.api = {
+      loadPersistedState: vi.fn().mockResolvedValue({
+        data: {
+          theme: 'dark',
+          angleMode: 'rad',
+          calculatorMode: 'scientific',
+          verlauf: [],
+          favoritenIds: [],
+          gamification: {
+            xp: 45,
+            level: 1,
+            streak: 3,
+            laengsterStreak: 3,
+            letzterAktivitaetsTag: '2026-03-05',
+            freigeschalteteAchievements: ['erste-berechnung'],
+            anzahlBerechnungen: 4,
+            anzahlQuizRunden: 1,
+          },
+        },
+      }),
+      savePersistedState: vi.fn(),
+      ping: vi.fn(),
+    }
+
+    await hydratePersistedState()
+
+    expect(
+      useAppStore.getState().gamification.achievementFreischaltDaten,
+    ).toEqual({})
+    expect(
+      useAppStore.getState().gamification.freigeschalteteAchievements,
+    ).toEqual(['erste-berechnung'])
   })
 
   it('kappt einen zu langen geladenen Verlauf auf MAX_VERLAUF_EINTRAEGE Einträge', async () => {

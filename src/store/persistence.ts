@@ -67,6 +67,11 @@ function isGamificationProfile(value: unknown): value is GamificationProfile {
     candidate.freigeschalteteAchievements.every(
       (id) => typeof id === 'string',
     ) &&
+    typeof candidate.achievementFreischaltDaten === 'object' &&
+    candidate.achievementFreischaltDaten !== null &&
+    Object.values(candidate.achievementFreischaltDaten).every(
+      (datum) => typeof datum === 'string',
+    ) &&
     typeof candidate.anzahlBerechnungen === 'number' &&
     typeof candidate.anzahlQuizRunden === 'number' &&
     typeof candidate.xpEventsHeute === 'object' &&
@@ -113,7 +118,8 @@ function isPersistableState(value: unknown): value is PersistableState {
  * (z. B. vor IRGENDWAST-33) oder ohne `quizErgebnisse` (z. B. vor
  * IRGENDWAST-38) oder ohne `gamification` (z. B. vor
  * IRGENDWAST-41) oder mit einem `gamification`-Profil ohne `laengsterStreak`
- * (z. B. vor IRGENDWAST-43) oder ohne `notificationsEnabled` (z. B. vor
+ * (z. B. vor IRGENDWAST-43) oder ohne `achievementFreischaltDaten` (z. B. vor
+ * IRGENDWAST-48) oder ohne `notificationsEnabled` (z. B. vor
  * IRGENDWAST-46) nicht komplett verworfen werden, und ein zu
  * langer Verlauf (über `MAX_VERLAUF_EINTRAEGE`) bzw. eine zu lange
  * Quiz-Ergebnisliste (über `MAX_QUIZ_ERGEBNISSE`) auf die neuesten Einträge
@@ -186,6 +192,21 @@ function normalizePersistedData(value: unknown): unknown {
         ...gamification,
         laengsterStreak:
           typeof gamification.streak === 'number' ? gamification.streak : 0,
+      },
+    }
+  }
+
+  if (
+    typeof candidate.gamification === 'object' &&
+    candidate.gamification !== null &&
+    !('achievementFreischaltDaten' in candidate.gamification)
+  ) {
+    const gamification = candidate.gamification as Record<string, unknown>
+    candidate = {
+      ...candidate,
+      gamification: {
+        ...gamification,
+        achievementFreischaltDaten: {},
       },
     }
   }

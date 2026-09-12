@@ -1,0 +1,101 @@
+.progress-page__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+}
+
+.progress-page__status-filter {
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-bg-elevated);
+  color: var(--color-fg);
+  font-family: inherit;
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+}
+
+.progress-page__status-filter[aria-pressed='true'] {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.progress-page__empty {
+  color: var(--color-fg-muted);
+  margin-top: var(--space-5);
+}
+
+.progress-page__cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+  gap: var(--space-4);
+  margin-top: var(--space-5);
+}
+
+.progress-page__card-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.progress-page__card-icon {
+  font-size: var(--font-size-lg);
+  line-height: 1;
+}
+
+.progress-page__card-title {
+  flex: 1;
+  font-size: var(--font-size-md);
+  margin: 0;
+}
+
+.progress-page__status-badge {
+  flex-shrink: 0;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-bg);
+  color: var(--color-fg-muted);
+  font-size: var(--font-size-sm);
+}
+
+.progress-page__status-badge--freigeschaltet {
+  background-color: var(--color-primary);
+  color: var(--color-primary-fg);
+}
+
+.progress-page__card-description {
+  color: var(--color-fg-muted);
+  font-size: var(--font-size-sm);
+}
+
+.progress-page__unlock-date {
+  font-size: var(--font-size-sm);
+  color: var(--color-fg-muted);
+}
+
+.progress-page__progress {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.progress-page__progress-bar {
+  flex: 1;
+  height: 0.5rem;
+  border-radius: var(--radius-sm);
+  background-color: var(--color-bg);
+  overflow: hidden;
+}
+
+.progress-page__progress-fill {
+  height: 100%;
+  background-color: var(--color-primary);
+  border-radius: var(--radius-sm);
+}
+
+.progress-page__progress-label {
+  flex-shrink: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-fg-muted);
+}
