@@ -28,6 +28,7 @@ describe('store persistence', () => {
     expect(useAppStore.getState().verlauf).toEqual([])
     expect(useAppStore.getState().favoritenIds).toEqual([])
     expect(useAppStore.getState().quizErgebnisse).toEqual([])
+    expect(useAppStore.getState().formelNutzung).toEqual({})
   })
 
   it('übernimmt gültige, über IPC geladene Daten in den Store', async () => {
@@ -51,6 +52,7 @@ describe('store persistence', () => {
           verlauf,
           favoritenIds: ['kreisflaeche'],
           quizErgebnisse,
+          formelNutzung: { kreisflaeche: 3 },
         },
       }),
       savePersistedState: vi.fn(),
@@ -65,6 +67,29 @@ describe('store persistence', () => {
     expect(useAppStore.getState().verlauf).toEqual(verlauf)
     expect(useAppStore.getState().favoritenIds).toEqual(['kreisflaeche'])
     expect(useAppStore.getState().quizErgebnisse).toEqual(quizErgebnisse)
+    expect(useAppStore.getState().formelNutzung).toEqual({ kreisflaeche: 3 })
+  })
+
+  it('ergänzt bei alten, vor IRGENDWAST-49 persistierten Daten ohne formelNutzung ein leeres Objekt, statt die restlichen Werte zu verwerfen', async () => {
+    window.api = {
+      loadPersistedState: vi.fn().mockResolvedValue({
+        data: {
+          theme: 'dark',
+          angleMode: 'rad',
+          calculatorMode: 'scientific',
+          verlauf: [],
+          favoritenIds: [],
+          quizErgebnisse: [],
+        },
+      }),
+      savePersistedState: vi.fn(),
+      ping: vi.fn(),
+    }
+
+    await hydratePersistedState()
+
+    expect(useAppStore.getState().theme).toBe('dark')
+    expect(useAppStore.getState().formelNutzung).toEqual({})
   })
 
   it('ignoriert geladene Daten mit ungültigen Quizergebnissen und behält die Defaults', async () => {

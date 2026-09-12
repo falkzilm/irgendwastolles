@@ -162,6 +162,24 @@ describe('FormulaDetail', () => {
     expect(onClose).toHaveBeenCalled()
   })
 
+  it('zählt die Übernahme in den Rechner als Formel-Nutzung', () => {
+    renderDetail(rechteckflaeche)
+
+    fireEvent.change(screen.getByLabelText('a (m)'), {
+      target: { value: '4' },
+    })
+    fireEvent.change(screen.getByLabelText('b (m)'), {
+      target: { value: '5' },
+    })
+    fireEvent.click(
+      screen.getByRole('button', { name: 'In den Rechner übernehmen' }),
+    )
+
+    expect(useAppStore.getState().formelNutzung).toEqual({
+      rechteckflaeche: 1,
+    })
+  })
+
   it('übernimmt ein Ergebnis in Exponentialschreibweise als vom Rechner auswertbaren Ausdruck', () => {
     renderDetail(grossesProdukt)
 

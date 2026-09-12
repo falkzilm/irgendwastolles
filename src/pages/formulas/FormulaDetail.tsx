@@ -66,6 +66,7 @@ export function FormulaDetail({ formula, onClose }: FormulaDetailProps) {
   const [values, setValues] = useState<Record<string, string>>({})
   const angleMode = useAppStore((state) => state.angleMode)
   const loadExpression = useAppStore((state) => state.loadExpression)
+  const recordFormelNutzung = useAppStore((state) => state.recordFormelNutzung)
   const { showToast } = useToast()
 
   const fieldErrors = useMemo(() => {
@@ -117,6 +118,7 @@ export function FormulaDetail({ formula, onClose }: FormulaDetailProps) {
   function handleTransfer() {
     if (!resultText) return
     loadExpression(toCalculatorExpression(resultText))
+    recordFormelNutzung(formula.id)
     showToast(`Ergebnis ${resultText} in den Rechner übernommen`, 'success')
     onClose()
   }

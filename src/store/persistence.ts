@@ -26,6 +26,7 @@ export interface PersistableState {
   favoritenIds: AppState['favoritenIds']
   gamification: AppState['gamification']
   quizErgebnisse: AppState['quizErgebnisse']
+  formelNutzung: AppState['formelNutzung']
 }
 
 export function selectPersistableState(state: AppState): PersistableState {
@@ -38,6 +39,7 @@ export function selectPersistableState(state: AppState): PersistableState {
     favoritenIds: state.favoritenIds,
     gamification: state.gamification,
     quizErgebnisse: state.quizErgebnisse,
+    formelNutzung: state.formelNutzung,
   }
 }
 
@@ -87,6 +89,11 @@ function isQuizErgebnis(value: unknown): value is QuizErgebnis {
   )
 }
 
+function isFormelNutzung(value: unknown): value is Record<string, number> {
+  if (typeof value !== 'object' || value === null) return false
+  return Object.values(value).every((anzahl) => typeof anzahl === 'number')
+}
+
 function isPersistableState(value: unknown): value is PersistableState {
   if (typeof value !== 'object' || value === null) return false
   const candidate = value as Partial<PersistableState>
@@ -102,7 +109,8 @@ function isPersistableState(value: unknown): value is PersistableState {
     candidate.favoritenIds.every((id) => typeof id === 'string') &&
     isGamificationProfile(candidate.gamification) &&
     Array.isArray(candidate.quizErgebnisse) &&
-    candidate.quizErgebnisse.every(isQuizErgebnis)
+    candidate.quizErgebnisse.every(isQuizErgebnis) &&
+    isFormelNutzung(candidate.formelNutzung)
   )
 }
 
@@ -117,7 +125,8 @@ function isPersistableState(value: unknown): value is PersistableState {
  * IRGENDWAST-46) nicht komplett verworfen werden, und ein zu
  * langer Verlauf (über `MAX_VERLAUF_EINTRAEGE`) bzw. eine zu lange
  * Quiz-Ergebnisliste (über `MAX_QUIZ_ERGEBNISSE`) auf die neuesten Einträge
- * gekappt wird, statt die Slice-Begrenzung zu umgehen. Ein vorhandenes
+ * gekappt wird, statt die Slice-Begrenzung zu umgehen. Fehlt `formelNutzung`
+ * (z. B. vor IRGENDWAST-49), wird ein leeres Objekt ergänzt. Ein vorhandenes
  * `gamification` ohne `restXpBisNaechstesLevel`/`xpEventsHeute` (z. B. vor
  * IRGENDWAST-42) wird um `xpEventsHeute` ergänzt; `level` und
  * `restXpBisNaechstesLevel` werden dabei aus `xp` neu berechnet statt das
@@ -146,6 +155,10 @@ function normalizePersistedData(value: unknown): unknown {
 
   if (!('quizErgebnisse' in candidate)) {
     candidate = { ...candidate, quizErgebnisse: [] }
+  }
+
+  if (!('formelNutzung' in candidate)) {
+    candidate = { ...candidate, formelNutzung: {} }
   }
 
   if (!('gamification' in candidate)) {
@@ -250,7 +263,8 @@ export function subscribeToPersistState(): () => void {
       next.verlauf === previous.verlauf &&
       next.favoritenIds === previous.favoritenIds &&
       next.gamification === previous.gamification &&
-      next.quizErgebnisse === previous.quizErgebnisse
+      next.quizErgebnisse === previous.quizErgebnisse &&
+      next.formelNutzung === previous.formelNutzung
     ) {
       return
     }

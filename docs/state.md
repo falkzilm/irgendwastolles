@@ -251,3 +251,20 @@ Die deklarative Achievement-Liste sowie die reine Auswertungsfunktion, die
 aus `freigeschalteteAchievements` und dem restlichen Profil neu
 freigeschaltete Erfolge ermittelt (IRGENDWAST-44), liegen unter
 `src/achievements/`, siehe [achievements.md](./achievements.md).
+
+## Formel-Nutzung-Slice
+
+`formelNutzungSlice.ts` zählt, wie oft einzelne Formeln aus `FORMULA_CATALOG`
+(siehe [formulas.md](./formulas.md)) genutzt wurden - Grundlage der
+"meistgenutzten Formeln" im Statistik-Dashboard (IRGENDWAST-49, siehe
+[statistik.md](./statistik.md)):
+
+- `formelNutzung: Record<string, number>` - Nutzungszähler je Formel-id.
+- `recordFormelNutzung(formulaId)` zählt die Nutzung der übergebenen id um
+  eins hoch (Default 0).
+
+`src/pages/formulas/FormulaDetail.tsx` ruft `recordFormelNutzung(formula.id)`
+auf, sobald ein Ergebnis per "In den Rechner übernehmen" tatsächlich verwendet
+wird - das bloße Öffnen der Detailansicht zählt nicht als Nutzung.
+`formelNutzung` wird wie `quizErgebnisse` über `src/store/persistence.ts`
+persistiert, siehe [persistence.md](./persistence.md).
