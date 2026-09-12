@@ -53,6 +53,8 @@ export interface GamificationProfile {
   /** Lokales Kalenderdatum (`YYYY-MM-DD`) des letzten Events, oder `null` vor dem ersten Event. */
   letzterAktivitaetsTag: string | null
   freigeschalteteAchievements: string[]
+  /** ISO-Zeitstempel des Freischaltens je Achievement-`id`, für die Anzeige des Freischaltdatums (IRGENDWAST-48). */
+  achievementFreischaltDaten: Record<string, string>
   anzahlBerechnungen: number
   anzahlQuizRunden: number
   /**
@@ -91,6 +93,7 @@ export function erstelleDefaultGamificationProfil(): GamificationProfile {
     laengsterStreak: 0,
     letzterAktivitaetsTag: null,
     freigeschalteteAchievements: [],
+    achievementFreischaltDaten: {},
     anzahlBerechnungen: 0,
     anzahlQuizRunden: 0,
     xpEventsHeute: {},
@@ -255,6 +258,15 @@ function fortgeschriebenesProfil(
             ...fortgeschrieben.freigeschalteteAchievements,
             ...neueAchievements.map((achievement) => achievement.id),
           ],
+          achievementFreischaltDaten: {
+            ...fortgeschrieben.achievementFreischaltDaten,
+            ...Object.fromEntries(
+              neueAchievements.map((achievement) => [
+                achievement.id,
+                jetzt.toISOString(),
+              ]),
+            ),
+          },
         }
 
   return {

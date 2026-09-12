@@ -70,7 +70,28 @@ Fortschreiben des Profils nach einem Unlock ist Aufgabe des Aufrufers.
 Event zunächst auf XP/Level/Streak/Zähler an, ruft anschließend
 `ermittleNeueAchievements` mit diesem fortgeschriebenen Profil auf und trägt
 die ids der zurückgelieferten Achievements in einem Zug in
-`freigeschalteteAchievements` ein (siehe [state.md](./state.md)).
+`freigeschalteteAchievements` sowie deren Freischalt-Zeitpunkt (der
+injizierbare `jetzt`-Parameter von `recordEvent` als ISO-String) in
+`achievementFreischaltDaten` ein (siehe [state.md](./state.md)).
+
+## Trophäenseite
+
+`src/pages/ProgressPage.tsx` setzt IRGENDWAST-48 um (Trophäenseite mit
+freigeschalteten und offenen Erfolgen, erreichbar über die
+Shell-Navigation im Bereich "Fortschritt", siehe `AppShell.tsx`). Die Seite
+ruft `ermittleFortschritt(gamification)` auf und zeigt pro Achievement Titel,
+Beschreibung, Icon sowie ein Status-Badge ("Freigeschaltet"/"Offen"):
+
+- Freigeschaltete Achievements zeigen zusätzlich das Freischaltdatum aus
+  `gamification.achievementFreischaltDaten[achievement.id]`, formatiert über
+  `Date#toLocaleDateString('de-DE')`.
+- Offene Achievements zeigen stattdessen einen Fortschrittsbalken
+  (`aktuell`/`ziel` aus `AchievementFortschritt`) - da jede Achievement im
+  Katalog über `fortschritt` einen Zähler hat, gilt das für alle offenen
+  Einträge.
+- Ein Statusfilter ("Alle"/"Freigeschaltet"/"Offen") grenzt die Liste über
+  lokalen Komponentenzustand ein, analog zum Favoriten-Filter in
+  `FormulasPage.tsx` (siehe [formulas.md](./formulas.md)).
 
 ## Aufbau
 
