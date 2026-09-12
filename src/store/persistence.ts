@@ -22,6 +22,7 @@ export interface PersistableState {
   angleMode: AppState['angleMode']
   calculatorMode: AppState['calculatorMode']
   notificationsEnabled: AppState['notificationsEnabled']
+  hudEnabled: AppState['hudEnabled']
   verlauf: AppState['verlauf']
   favoritenIds: AppState['favoritenIds']
   gamification: AppState['gamification']
@@ -34,6 +35,7 @@ export function selectPersistableState(state: AppState): PersistableState {
     angleMode: state.angleMode,
     calculatorMode: state.calculatorMode,
     notificationsEnabled: state.notificationsEnabled,
+    hudEnabled: state.hudEnabled,
     verlauf: state.verlauf,
     favoritenIds: state.favoritenIds,
     gamification: state.gamification,
@@ -96,6 +98,7 @@ function isPersistableState(value: unknown): value is PersistableState {
     (candidate.calculatorMode === 'simple' ||
       candidate.calculatorMode === 'scientific') &&
     typeof candidate.notificationsEnabled === 'boolean' &&
+    typeof candidate.hudEnabled === 'boolean' &&
     Array.isArray(candidate.verlauf) &&
     candidate.verlauf.every(isVerlaufEintrag) &&
     Array.isArray(candidate.favoritenIds) &&
@@ -114,7 +117,8 @@ function isPersistableState(value: unknown): value is PersistableState {
  * IRGENDWAST-38) oder ohne `gamification` (z. B. vor
  * IRGENDWAST-41) oder mit einem `gamification`-Profil ohne `laengsterStreak`
  * (z. B. vor IRGENDWAST-43) oder ohne `notificationsEnabled` (z. B. vor
- * IRGENDWAST-46) nicht komplett verworfen werden, und ein zu
+ * IRGENDWAST-46) oder ohne `hudEnabled` (z. B. vor IRGENDWAST-47) nicht
+ * komplett verworfen werden, und ein zu
  * langer Verlauf (über `MAX_VERLAUF_EINTRAEGE`) bzw. eine zu lange
  * Quiz-Ergebnisliste (über `MAX_QUIZ_ERGEBNISSE`) auf die neuesten Einträge
  * gekappt wird, statt die Slice-Begrenzung zu umgehen. Ein vorhandenes
@@ -138,6 +142,10 @@ function normalizePersistedData(value: unknown): unknown {
 
   if (!('notificationsEnabled' in candidate)) {
     candidate = { ...candidate, notificationsEnabled: true }
+  }
+
+  if (!('hudEnabled' in candidate)) {
+    candidate = { ...candidate, hudEnabled: true }
   }
 
   if (!('favoritenIds' in candidate)) {
@@ -247,6 +255,7 @@ export function subscribeToPersistState(): () => void {
       next.angleMode === previous.angleMode &&
       next.calculatorMode === previous.calculatorMode &&
       next.notificationsEnabled === previous.notificationsEnabled &&
+      next.hudEnabled === previous.hudEnabled &&
       next.verlauf === previous.verlauf &&
       next.favoritenIds === previous.favoritenIds &&
       next.gamification === previous.gamification &&
