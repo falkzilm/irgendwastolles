@@ -202,4 +202,8 @@ Eingabefeld je Eintrag aus `formula.variables`.
   große/kleine Ergebnisse in Exponentialschreibweise aus (z. B. `1e12`), die
   der Rechner-Tokenizer nicht versteht; `toCalculatorExpression()`
   (`src/engine/format.ts`) übersetzt das `e<exponent>`-Suffix daher in
-  `*10^<exponent>`, bevor der Ausdruck an `loadExpression()` geht.
+  `*10^<exponent>`, bevor der Ausdruck an `loadExpression()` geht. Derselbe
+  Klick zählt außerdem per `recordFormelNutzung(formula.id)`
+  (`formelNutzungSlice`) als Formel-Nutzung - Grundlage der meistgenutzten
+  Formeln im Statistik-Dashboard (IRGENDWAST-49, siehe
+  [statistik.md](./statistik.md)).

@@ -1,5 +1,6 @@
 import type { CalculatorSlice } from './slices/calculatorSlice'
 import type { FavoritenSlice } from './slices/favoritenSlice'
+import type { FormelNutzungSlice } from './slices/formelNutzungSlice'
 import type { GamificationSlice } from './slices/gamificationSlice'
 import type { QuizSlice } from './slices/quizSlice'
 import type { SettingsSlice } from './slices/settingsSlice'
@@ -15,4 +16,5 @@ export type AppState = SettingsSlice &
   VerlaufSlice &
   FavoritenSlice &
   GamificationSlice &
-  QuizSlice
+  QuizSlice &
+  FormelNutzungSlice

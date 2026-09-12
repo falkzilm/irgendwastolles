@@ -1,3 +1,47 @@
+.progress-page__section-title {
+  margin: var(--space-5) 0 0;
+}
+
+.progress-page__kacheln {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+}
+
+.progress-page__kachel h3 {
+  margin: 0;
+  font-size: var(--font-size-lg);
+}
+
+.progress-page__leer {
+  color: var(--color-fg-muted);
+  margin-top: var(--space-3);
+}
+
+.progress-page__kennzahlen {
+  display: flex;
+  gap: var(--space-5);
+  margin-top: var(--space-3);
+}
+
+.progress-page__kennzahl {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin: 0;
+}
+
+.progress-page__kennzahl-wert {
+  font-size: 2rem;
+  font-weight: var(--font-weight-bold);
+}
+
+.progress-page__kennzahl-label {
+  font-size: var(--font-size-sm);
+  color: var(--color-fg-muted);
+}
+
 .progress-page__toolbar {
   display: flex;
   flex-wrap: wrap;
@@ -72,6 +116,29 @@
 .progress-page__unlock-date {
   font-size: var(--font-size-sm);
   color: var(--color-fg-muted);
+}
+
+.progress-page__formeln {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: var(--space-3) 0 0;
+  padding-left: var(--space-5);
+}
+
+.progress-page__formel {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.progress-page__formel-titel {
+  font-weight: var(--font-weight-bold);
+}
+
+.progress-page__formel-anzahl {
+  color: var(--color-fg-muted);
+  font-size: var(--font-size-sm);
 }
 
 .progress-page__progress {
