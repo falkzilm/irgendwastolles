@@ -158,7 +158,9 @@ wird wie `verlauf` über `src/store/persistence.ts` persistiert, siehe
   erreichte Streak, siehe unten), `letzterAktivitaetsTag` (lokales
   Kalenderdatum `YYYY-MM-DD` oder `null` vor dem ersten Event),
   `freigeschalteteAchievements` (IDs freigeschalteter Achievements, siehe
-  [achievements.md](./achievements.md)), `anzahlBerechnungen`,
+  [achievements.md](./achievements.md)), `achievementFreischaltDaten`
+  (IRGENDWAST-48: ISO-Zeitstempel des Freischaltens je Achievement-`id`, für
+  die Anzeige des Freischaltdatums auf der Trophäenseite), `anzahlBerechnungen`,
   `anzahlQuizRunden` und `xpEventsHeute` (Zähler je Event-Art am aktuellen
   Tag, Grundlage der Farming-Deckelung, siehe unten). Ein neues Profil
   startet mit den Defaults `level: 1`, `xp: 0`, `streak: 0`,

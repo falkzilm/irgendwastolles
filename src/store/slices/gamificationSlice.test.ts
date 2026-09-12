@@ -23,6 +23,7 @@ describe('gamificationSlice', () => {
       laengsterStreak: 0,
       letzterAktivitaetsTag: null,
       freigeschalteteAchievements: [],
+      achievementFreischaltDaten: {},
       anzahlBerechnungen: 0,
       anzahlQuizRunden: 0,
       xpEventsHeute: {},
@@ -219,6 +220,39 @@ describe('gamificationSlice', () => {
     expect(
       useAppStore.getState().gamification.freigeschalteteAchievements,
     ).toContain('erste-berechnung')
+  })
+
+  it('vermerkt beim Freischalten einer Achievement den Zeitpunkt aus `jetzt`', () => {
+    useAppStore
+      .getState()
+      .recordEvent(
+        { type: 'calculation_done' },
+        new Date('2026-03-05T10:00:00.000Z'),
+      )
+
+    expect(
+      useAppStore.getState().gamification.achievementFreischaltDaten[
+        'erste-berechnung'
+      ],
+    ).toBe('2026-03-05T10:00:00.000Z')
+  })
+
+  it('lässt das Freischaltdatum unverändert, wenn dieselbe Achievement erneut erfüllt wird', () => {
+    const { recordEvent } = useAppStore.getState()
+    recordEvent(
+      { type: 'calculation_done' },
+      new Date('2026-03-05T10:00:00.000Z'),
+    )
+    recordEvent(
+      { type: 'calculation_done' },
+      new Date('2026-03-06T10:00:00.000Z'),
+    )
+
+    expect(
+      useAppStore.getState().gamification.achievementFreischaltDaten[
+        'erste-berechnung'
+      ],
+    ).toBe('2026-03-05T10:00:00.000Z')
   })
 
   it('löst dieselbe Achievement bei wiederholten Events nicht erneut aus', () => {
