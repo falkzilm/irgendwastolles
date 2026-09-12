@@ -25,6 +25,7 @@ describe('store persistence', () => {
     expect(useAppStore.getState().angleMode).toBe('deg')
     expect(useAppStore.getState().calculatorMode).toBe('simple')
     expect(useAppStore.getState().notificationsEnabled).toBe(true)
+    expect(useAppStore.getState().hudEnabled).toBe(true)
     expect(useAppStore.getState().verlauf).toEqual([])
     expect(useAppStore.getState().favoritenIds).toEqual([])
     expect(useAppStore.getState().quizErgebnisse).toEqual([])
@@ -244,6 +245,51 @@ describe('store persistence', () => {
 
     expect(useAppStore.getState().theme).toBe('dark')
     expect(useAppStore.getState().notificationsEnabled).toBe(true)
+  })
+
+  it('übernimmt ein explizit deaktiviertes hudEnabled', async () => {
+    window.api = {
+      loadPersistedState: vi.fn().mockResolvedValue({
+        data: {
+          theme: 'dark',
+          angleMode: 'rad',
+          calculatorMode: 'scientific',
+          notificationsEnabled: true,
+          hudEnabled: false,
+          verlauf: [],
+          favoritenIds: [],
+          quizErgebnisse: [],
+        },
+      }),
+      savePersistedState: vi.fn(),
+      ping: vi.fn(),
+    }
+
+    await hydratePersistedState()
+
+    expect(useAppStore.getState().hudEnabled).toBe(false)
+  })
+
+  it('ergänzt bei alten, vor IRGENDWAST-47 persistierten Daten ohne hudEnabled den Default true, statt die restlichen Werte zu verwerfen', async () => {
+    window.api = {
+      loadPersistedState: vi.fn().mockResolvedValue({
+        data: {
+          theme: 'dark',
+          angleMode: 'rad',
+          calculatorMode: 'scientific',
+          verlauf: [],
+          favoritenIds: [],
+          quizErgebnisse: [],
+        },
+      }),
+      savePersistedState: vi.fn(),
+      ping: vi.fn(),
+    }
+
+    await hydratePersistedState()
+
+    expect(useAppStore.getState().theme).toBe('dark')
+    expect(useAppStore.getState().hudEnabled).toBe(true)
   })
 
   it('ergänzt bei alten, vor IRGENDWAST-33 persistierten Daten ohne favoritenIds eine leere Favoritenliste, statt die restlichen Werte zu verwerfen', async () => {

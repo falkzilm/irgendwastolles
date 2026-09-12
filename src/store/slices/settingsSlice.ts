@@ -11,12 +11,15 @@ export interface SettingsSlice {
   calculatorMode: CalculatorMode
   /** Ob Gamification-Benachrichtigungen (Level-Up, Achievement-Unlock) angezeigt werden (IRGENDWAST-46). */
   notificationsEnabled: boolean
+  /** Ob das Fortschritts-HUD (Level, XP-Balken, Streak) in der Shell angezeigt wird (IRGENDWAST-47). */
+  hudEnabled: boolean
   setTheme: (theme: Theme) => void
   toggleTheme: () => void
   setAngleMode: (mode: AngleMode) => void
   setCalculatorMode: (mode: CalculatorMode) => void
   toggleCalculatorMode: () => void
   setNotificationsEnabled: (enabled: boolean) => void
+  setHudEnabled: (enabled: boolean) => void
 }
 
 export const createSettingsSlice: StateCreator<
@@ -29,6 +32,7 @@ export const createSettingsSlice: StateCreator<
   angleMode: 'deg',
   calculatorMode: 'simple',
   notificationsEnabled: true,
+  hudEnabled: true,
   setTheme: (theme) => set({ theme }),
   toggleTheme: () =>
     set((state) => ({ theme: state.theme === 'light' ? 'dark' : 'light' })),
@@ -41,4 +45,5 @@ export const createSettingsSlice: StateCreator<
     })),
   setNotificationsEnabled: (notificationsEnabled) =>
     set({ notificationsEnabled }),
+  setHudEnabled: (hudEnabled) => set({ hudEnabled }),
 })

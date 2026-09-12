@@ -27,6 +27,7 @@ export type { AppState } from './types'
 export type { CalculatorSlice } from './slices/calculatorSlice'
 export type { FavoritenSlice } from './slices/favoritenSlice'
 export type { FormelNutzungSlice } from './slices/formelNutzungSlice'
+export { berechneXpFortschritt } from './slices/gamificationSlice'
 export type {
   GamificationEvent,
   GamificationProfile,

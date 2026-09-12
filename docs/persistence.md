@@ -46,10 +46,10 @@ Fehlers:
 ## Was wird persistiert?
 
 `src/store/persistence.ts` wählt bewusst nur einzelne Felder aus (aktuell
-`theme`, `angleMode` aus `settingsSlice`, `verlauf` aus `verlaufSlice`,
-`favoritenIds` aus `favoritenSlice`, `gamification` aus
-`gamificationSlice`, `quizErgebnisse` aus `quizSlice` sowie `formelNutzung`
-aus `formelNutzungSlice`, siehe
+`theme`, `angleMode`, `notificationsEnabled`, `hudEnabled` aus
+`settingsSlice`, `verlauf` aus `verlaufSlice`, `favoritenIds` aus
+`favoritenSlice`, `gamification` aus `gamificationSlice`, `quizErgebnisse`
+aus `quizSlice` sowie `formelNutzung` aus `formelNutzungSlice`, siehe
 [state.md](./state.md)), keine Actions. Neue
 fachliche Slices, die persistiert werden sollen, ergänzen ihre Felder in
 `PersistableState`/`selectPersistableState` sowie in der Validierung
@@ -61,9 +61,10 @@ ergänzt bei Dateien ohne `gamification` (also vor IRGENDWAST-41 gespeichert)
 das Default-Profil, statt die restlichen Daten zu verwerfen. Das ist die
 Referenz dafür, wie künftige, tatsächlich schema-relevante Änderungen über
 die `MIGRATIONS`-Map abgebildet werden - rein additive, optionale Felder wie
-`verlauf`/`calculatorMode`/`favoritenIds`/`quizErgebnisse`/`formelNutzung`
-davor wurden dagegen bewusst ohne Versionssprung direkt in
-`normalizePersistedData` nachgezogen.
+`verlauf`/`calculatorMode`/`favoritenIds`/`quizErgebnisse`/
+`notificationsEnabled`/`hudEnabled`/`formelNutzung` davor wurden dagegen
+bewusst ohne Versionssprung direkt in `normalizePersistedData`
+nachgezogen.
 
 `theme` wird zusätzlich weiterhin über `localStorage` durch `ThemeProvider`
 (siehe state.md) gespiegelt. Da `hydratePersistedState()` bereits vor dem

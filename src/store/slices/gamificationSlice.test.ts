@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { useAppStore } from '../index'
-import { berechneLevelStand } from './gamificationSlice'
+import { berechneLevelStand, berechneXpFortschritt } from './gamificationSlice'
 
 const initialState = useAppStore.getState()
 
@@ -104,6 +104,33 @@ describe('gamificationSlice', () => {
         .recordEvent({ type: 'quiz_round_finished' })
       expect(ergebnis.levelUp).toBe(true)
       expect(ergebnis.level).toBe(2)
+    })
+  })
+
+  describe('XP-Fortschritt (HUD)', () => {
+    it('berechnet 0 für ein frisches Level', () => {
+      expect(
+        berechneXpFortschritt({ level: 1, restXpBisNaechstesLevel: 100 }),
+      ).toBe(0)
+    })
+
+    it('berechnet den Fortschritt anteilig innerhalb des aktuellen Levels', () => {
+      expect(
+        berechneXpFortschritt({ level: 1, restXpBisNaechstesLevel: 50 }),
+      ).toBeCloseTo(0.5)
+      expect(
+        berechneXpFortschritt({ level: 2, restXpBisNaechstesLevel: 50 }),
+      ).toBeCloseTo(0.75)
+    })
+
+    it('zeigt nach einem Level-Up den korrekten neuen Fortschritt (nahe 0 statt am alten Level orientiert)', () => {
+      for (let i = 0; i < 20; i++) {
+        useAppStore.getState().recordEvent({ type: 'calculation_done' })
+      }
+
+      const { gamification } = useAppStore.getState()
+      expect(gamification.level).toBe(2)
+      expect(berechneXpFortschritt(gamification)).toBeCloseTo(0)
     })
   })
 

@@ -1,9 +1,12 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import { axe } from 'jest-axe'
-import { describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it } from 'vitest'
 import { AppShell } from './AppShell'
+import { useAppStore } from '../store'
 import { ThemeProvider } from '../ui/theme'
 import { ToastProvider } from '../ui/Toast'
+
+const initialState = useAppStore.getState()
 
 function renderAppShell() {
   return render(
@@ -16,6 +19,27 @@ function renderAppShell() {
 }
 
 describe('AppShell', () => {
+  beforeEach(() => {
+    useAppStore.setState(initialState, true)
+  })
+
+  it('zeigt das Fortschritts-HUD unabhängig von der aktiven Ansicht', () => {
+    renderAppShell()
+
+    expect(screen.getByText('Level 1')).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Quiz' }))
+
+    expect(screen.getByText('Level 1')).toBeInTheDocument()
+  })
+
+  it('blendet das HUD aus, wenn es in den Einstellungen deaktiviert ist', () => {
+    useAppStore.getState().setHudEnabled(false)
+    renderAppShell()
+
+    expect(screen.queryByText('Level 1')).not.toBeInTheDocument()
+  })
+
   it('shows navigation for Rechner, Formeln, Quiz, Fortschritt and Einstellungen', () => {
     renderAppShell()
 
