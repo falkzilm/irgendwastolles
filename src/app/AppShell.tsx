@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import './AppShell.css'
+import { ProgressHud } from './ProgressHud'
 import { CalculatorPage } from '../pages/CalculatorPage'
 import { FormulasPage } from '../pages/FormulasPage'
 import { ProgressPage } from '../pages/ProgressPage'
@@ -39,6 +40,7 @@ export function AppShell() {
           ))}
         </ul>
       </nav>
+      <ProgressHud />
       <main className="app-shell__content">
         {activeView === 'calculator' && <CalculatorPage />}
         {activeView === 'formulas' && <FormulasPage />}

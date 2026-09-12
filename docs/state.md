@@ -76,6 +76,9 @@ oder die Actions im State geändert – nicht direkt mutiert.
 - `notificationsEnabled: boolean` (Default `true`, IRGENDWAST-46: Schalter für
   Gamification-Benachrichtigungen bei Level-Up/Achievement-Unlock),
   `setNotificationsEnabled` - siehe [notifications.md](./notifications.md)
+- `hudEnabled: boolean` (Default `true`, IRGENDWAST-47: Schalter für das
+  Fortschritts-HUD in der App-Shell), `setHudEnabled` - siehe unten
+  ("Fortschritts-HUD")
 
 Der Store ist über den Hook `useAppStore` aus `src/store` im Renderer nutzbar.
 
@@ -221,6 +224,30 @@ wird wie `verlauf` über `src/store/persistence.ts` persistiert, siehe
 
 `gamification` wird wie `verlauf` und `favoritenIds` über
 `src/store/persistence.ts` persistiert, siehe [persistence.md](./persistence.md).
+
+`berechneXpFortschritt(profil)` (ebenfalls in `gamificationSlice.ts`) leitet
+aus `level` und `restXpBisNaechstesLevel` den Anteil (0..1) ab, der vom
+aktuellen Level bereits per XP erreicht wurde: die für das aktuelle Level
+benötigte XP-Menge ist `XP_PRO_LEVEL_BASIS * level`, der Fortschritt somit
+`1 - restXpBisNaechstesLevel / (XP_PRO_LEVEL_BASIS * level)`. Grundlage des
+XP-Balkens im Fortschritts-HUD (IRGENDWAST-47, siehe unten) - da beide Werte
+direkt aus dem bereits fortgeschriebenen `xp`/`level` abgeleitet werden,
+zeigt der Balken nach einem Level-Up sofort den korrekten neuen Fortschritt,
+ohne eine gesonderte Level-Up-Behandlung zu benötigen.
+
+## Fortschritts-HUD
+
+`app/ProgressHud.tsx` setzt IRGENDWAST-47 um (Level, XP-Fortschrittsbalken
+und aktueller Streak dauerhaft sichtbar in der App-Shell): eine Komponente,
+die `gamification.level`, `gamification.restXpBisNaechstesLevel` (über
+`berechneXpFortschritt`, siehe oben) sowie `gamification.streak` per
+Selektor liest und in `AppShell.tsx` zwischen der Hauptnavigation und dem
+Seiteninhalt gerendert wird - sie bleibt damit beim Wechsel der aktiven
+Ansicht sichtbar, ohne eigenen Store-State zu benötigen: jeder
+`recordEvent`-Aufruf (siehe oben) lässt sie sich automatisch über den
+Zustand-Store neu rendern. Ist `hudEnabled` (siehe `settingsSlice.ts` oben)
+deaktiviert, rendert die Komponente nichts; `src/pages/SettingsPage.tsx`
+bietet dafür einen weiteren Schalter neben dem für Benachrichtigungen.
 
 ## Quiz-Slice
 

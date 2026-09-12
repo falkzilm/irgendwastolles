@@ -57,4 +57,14 @@ describe('settingsSlice', () => {
     useAppStore.getState().setNotificationsEnabled(true)
     expect(useAppStore.getState().notificationsEnabled).toBe(true)
   })
+
+  it('ist das HUD standardmäßig aktiviert und lässt sich deaktivieren', () => {
+    expect(useAppStore.getState().hudEnabled).toBe(true)
+
+    useAppStore.getState().setHudEnabled(false)
+    expect(useAppStore.getState().hudEnabled).toBe(false)
+
+    useAppStore.getState().setHudEnabled(true)
+    expect(useAppStore.getState().hudEnabled).toBe(true)
+  })
 })

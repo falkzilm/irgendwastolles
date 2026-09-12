@@ -24,6 +24,7 @@ export const useAppStore = create<AppState>()((...args) => ({
 export type { AppState } from './types'
 export type { CalculatorSlice } from './slices/calculatorSlice'
 export type { FavoritenSlice } from './slices/favoritenSlice'
+export { berechneXpFortschritt } from './slices/gamificationSlice'
 export type {
   GamificationEvent,
   GamificationProfile,
